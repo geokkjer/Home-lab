@@ -6,14 +6,13 @@
 
 
 * About
+
 My attempt at a litterate configuration for Emacs.
 to tangle this file.
 keyboard shortcut `C-c C-v t` (org-babel-tangle) in Emacs.
 This will generate the `~/.emacs.d/init.el` file with the configuration.
 
 * Prep  
-
-
 
 * Configuration
 
@@ -57,7 +56,7 @@ Here we set up the UI to our liking. We disable the menu bar, tool bar, and scro
 
 Set up package management
 
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp
 ;; Initialize package sources
 (require 'package)
 
@@ -71,6 +70,7 @@ Set up package management
 (unless package-archive-contents
   (package-refresh-contents))
 #+END_SRC
+
 Set up doom modeline, which is a nice status line for Emacs. We set it up to show the current buffer name and the current line number.
 
 #+BEGIN_SRC emacs-lisp
@@ -188,21 +188,12 @@ Copilot Chat
 ** Language support
 Here we install and configure support for various programming languages. We use the `use-package` macro to ensure that the packages are installed and configured correctly.
 
-** NixOS from Emacs
-Editing Nix files and doing NixOS admin stuff like nixos-rebuild boot --upgrade
-Run the commands with M-x shell-command
+** NixOS from Emacs ?
+maybe we want to make this useful
+
 
 #+BEGIN_SRC emacs-lisp 
-;; NixOS commands   
-(defun nixos-upgrade ()
-  "Run 'nixos-rebuild boot --upgrade' in a shell."
-  (interactive)
-  (shell-command "nixos-rebuild boot --upgrade"))
 
-(defun nixos-switch ()
-  "Run 'nixos-rebuild switch' in a shell."
-  (interactive)
-  (shell-command "nixos-rebuild switch"))
 #+END_SRC
 
 
