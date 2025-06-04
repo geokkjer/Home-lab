@@ -312,9 +312,11 @@ Home-lab/
   - **Infrastructure**: Container-focused (Podman), PostgreSQL database
   - **Integration**: Central Git hosting for all home lab projects
 - [ ] Plan for additional users across machines:
-  - Service accounts for automation
-  - Admin accounts for management
-  - Guest accounts for temporary access
+  - [x] **geir** - Primary user (development, desktop, daily use)
+  - [x] **sma** - Admin user (Diziet Sma, system administration, security oversight)
+  - [ ] Service accounts for automation (forgejo-admin, backup-agent)
+  - [ ] Guest accounts for temporary access
+  - [x] Culture character naming convention established
 - [ ] Network infrastructure planning
 - [ ] Consider hardware requirements for future expansion
 
