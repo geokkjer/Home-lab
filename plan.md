@@ -122,15 +122,15 @@ Home-lab/
 - [ ] Switch to flake configuration permanently
 
 ### 1.7 GitOps Foundation & CI/CD Setup ✅ NEW
-- [ ] Initialize git repository for infrastructure as code
-- [ ] Create comprehensive `.gitignore` for NixOS/Nix projects
-- [ ] Set up initial commit with current modular configuration
-- [ ] Plan CI/CD pipeline for configuration validation
-- [ ] Design branch strategy for infrastructure changes
-- [ ] Create templates for pull request workflows
-- [ ] Plan automated testing for configuration changes
-- [ ] Set up secrets management strategy for CI/CD
-- [ ] Document GitOps workflow for multi-machine deployments
+- [x] Initialize git repository for infrastructure as code
+- [x] Create comprehensive `.gitignore` for NixOS/Nix projects
+- [x] Set up initial commit with current modular configuration
+- [x] Plan CI/CD pipeline for configuration validation
+- [x] Design branch strategy for infrastructure changes
+- [x] Create templates for pull request workflows
+- [x] Plan automated testing for configuration changes
+- [x] Set up secrets management strategy for CI/CD
+- [x] Document GitOps workflow for multi-machine deployments
 
 ### 1.8 Additional Migration Tasks
 - [x] Update all documentation files to use consistent naming
