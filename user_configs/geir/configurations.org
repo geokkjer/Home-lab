@@ -223,10 +223,13 @@ include /etc/sway/config.d/*
 exec dbus-sway-environment
 exec configure-gtk
 exec gammastep
+
 *+END_SRC
 
 * Zsh
+
 Configuration for zsh.
+
 #+BEGIN_SRC shell :tangle /home/geir/.config/zsh/.zshrc
 # Zsh configuration for Geir Okkenhaug Jerstad
 
@@ -253,9 +256,11 @@ fortune -s | cowsay -f dragon | clolcat
 #+END_SRC
 
 * Git
+
 Configuration for git.
 
 #+BEGIN_SRC shell :tangle /home/geir/.gitconfig
+
 user.email=geokkjer@gmail.com
 user.name=Geir Okkenhaug Jerstad
 filter.lfs.smudge=git-lfs smudge -- %f
