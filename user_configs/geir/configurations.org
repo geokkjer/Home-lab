@@ -231,7 +231,6 @@ exec gammastep
 Configuration for zsh.
 
 #+BEGIN_SRC shell :tangle /home/geir/.config/zsh/.zshrc
-# Zsh configuration for Geir Okkenhaug Jerstad
 
 zstyle ':completion:*' completer _expand _complete _ignored
 zstyle ':completion:*' matcher-list ''
