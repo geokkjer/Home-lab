@@ -1,0 +1,43 @@
+#+TITLE: Reverse Proxy Server
+#+AUTHOR: Geir Okkenhaug Jerstad
+#+DATE: [2025-06-04 Wed]
+
+* Machine Overview
+
+** Role
+- **Primary Function**: Reverse proxy and SSL/TLS termination
+- **Secondary Functions**: Load balancing, external access gateway
+- **Network Position**: Edge server handling external connections
+
+** Services
+- Nginx or Traefik reverse proxy
+- Let's Encrypt SSL certificate management
+- Fail2ban security protection
+- Basic system monitoring
+- Firewall management for external access
+
+** Architecture Notes
+- Headless operation (no desktop environment)
+- SSH-only access
+- Minimal attack surface
+- High availability requirements
+- SSL/TLS offloading for internal services
+
+** Routing Configuration
+Routes external traffic to internal services:
+- =grey-area= (Forgejo, web applications)
+- =sleeper-service= (file sharing, if exposed externally)
+- =congenital-optimist= (development services, if needed)
+
+** Security Considerations
+- First point of contact for external traffic
+- Rate limiting and DDoS protection
+- Automated security updates
+- Log monitoring and alerting
+- Certificate renewal automation
+
+** Network Configuration
+- Static IP assignment
+- Firewall rules for ports 80, 443, 22
+- Internal network access to other machines
+- Tailscale integration for management
