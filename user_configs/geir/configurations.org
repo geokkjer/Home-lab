@@ -14,6 +14,8 @@ and applications.
 
 Configuration for sway waybar fuzzel and other sway related tools
 
+** Sway main configuration
+
 #+BEGIN_SRC shell :tangle /home/geir/.config/sway/config
 default_border none
   ### Variables
@@ -225,6 +227,10 @@ exec configure-gtk
 exec gammastep
 
 #+END_SRC
+
+** Waybar configuration
+
+** Fuzzel configuration
 
 * Zsh
 
