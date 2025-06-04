@@ -1,0 +1,29 @@
+{ config, pkgs, ... }: {
+  # Common desktop configuration shared across all environments
+  
+  # XDG Portal configuration for Wayland/X11 compatibility
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
+  # Display manager and session management
+  services.dbus.enable = true;
+  
+  # Common desktop packages
+  environment.systemPackages = with pkgs; [
+    # Basic desktop tools
+    firefox
+    alacritty
+    nautilus
+    
+    # Media and graphics
+    vlc
+    gimp
+    
+    # Utilities
+    gnome-tweaks
+    dconf-editor
+  ];
+}

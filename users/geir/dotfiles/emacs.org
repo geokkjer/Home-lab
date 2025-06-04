@@ -1,0 +1,222 @@
+#+title: Emacs Configuration
+#+author: Geir Okkenhaug Jerstad 
+#+email: geir@geokkjer.eu
+#+options: toc:nil num:nil
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el
+
+
+* About
+My attempt at a litterate configuration for Emacs.
+to tangle this file.
+keyboard shortcut `C-c C-v t` (org-babel-tangle) in Emacs.
+This will generate the `~/.emacs.d/init.el` file with the configuration.
+
+* Prep  
+
+
+
+* Configuration
+
+** Setup lexical binding
+Here we set up lexical binding, which is a feature in Emacs Lisp that allows for more efficient variable scoping and function closures. This is recommended for performance reasons.
+#+BEGIN_SRC emacs-lisp
+;; enable lexical binding
+(setq lexical-binding t)
+#+END_SRC
+
+** Set automatic update of packages
+
+We set up Emacs to automatically update packages on startup. This ensures that we always have the latest versions of the packages we use.
+#+BEGIN_SRC emacs-lisp
+(defun geokkjer/display-startup-time ()
+  (message "Emacs loaded in %s with %d grabage collections."
+           (format "%.2f seconds"
+                   (float-time
+                    (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook #'geokkjer/display-startup-time)
+
+(setq gc-cons-threshold (* 50 1000 1000))
+#+END_SRC
+
+** Customize UI
+Here we set up the UI to our liking. We disable the menu bar, tool bar, and scroll bar, and set the font size to 14pt.
+#+BEGIN_SRC emacs-lisp
+;; disable startup screen
+(setq inhibit-startup-screen t)
+;; disable menu bar
+(menu-bar-mode -1)
+;; disable tool bar
+(tool-bar-mode -1)
+;; disable scroll bar
+(scroll-bar-mode -1)
+;; set font size
+(set-face-attribute 'default nil :height 140)
+#+END_SRC
+
+Set up package management
+
+#+BEGIN_SRC
+;; Initialize package sources
+(require 'package)
+
+;; Set the repos
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+#+END_SRC
+Set up doom modeline, which is a nice status line for Emacs. We set it up to show the current buffer name and the current line number.
+
+#+BEGIN_SRC emacs-lisp
+;; Doom modline, all-the-icons and doom-theme
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+
+(setq doom-modeline-icon t)
+(use-package all-the-icons)
+
+(use-package doom-themes
+  :init (load-theme 'doom-monokai-pro t))
+#+END_SRC
+
+Set up all-the-icons, which provides icons for various file types and modes in Emacs. This enhances the visual appearance of the UI.
+install all-the-icons if not already installed with '<M-x> all-the-icons-install-fonts'
+
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :if (display-graphic-p) ;; only load in GUI Emacs
+  :ensure t
+  :init
+  (unless (package-installed-p 'all-the-icons)
+    (package-refresh-contents)
+    (package-install 'all-the-icons))
+  :config
+  (all-the-icons-setup))
+#+END_SRC
+
+
+** Org Mode
+Configure Org-mode for literate programming and note-taking.
+
+#+BEGIN_SRC emacs-lisp
+;; ensure org-mode is installed and up to date
+(use-package org
+  :ensure t
+  :mode ("\\.org\\'" . org-mode)
+  :config
+  ;; enable syntax highlighting in code blocks
+  (setq org-src-fontify-natively t)
+  ;; preserve indentation in code blocks
+  (setq org-src-preserve-indentation t)
+  ;; enable babel for code execution
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t)
+     (nix . t)))
+  ;; don't ask for confirmation when evaluating code blocks
+  (setq org-confirm-babel-evaluate nil))
+#+END_SRC
+
+* Code Completion and ide features
+** LSP Mode
+Here we install lsp-mode and lsp-ui, which are the core components of the LSP (Language Server Protocol) support in Emacs. We also set up keybindings for common LSP commands.
+#+BEGIN_SRC emacs-lisp
+;; install lsp-mode and lsp-ui if not already installed
+(unless (package-installed-p 'lsp-mode)
+  (package-refresh-contents)
+  (package-install 'lsp-mode))
+(unless (package-installed-p 'lsp-ui)
+  (package-refresh-contents)
+  (package-install 'lsp-ui))
+(require 'lsp-mode)
+(require 'lsp-ui)
+;; enable lsp-mode in programming buffers
+(add-hook 'prog-mode-hook #'lsp)
+
+;; Enable line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+#+END_SRC
+
+** GitHub Copilot
+
+Here we install from MELPA, enable it in all prog-modes and bind keys for completion:
+run <M-x> copilot-install-server and <M-x> copilot-login
+
+#+BEGIN_SRC emacs-lisp
+;; ensure Copilot is installed
+(unless (package-installed-p 'copilot)
+  (package-refresh-contents)
+  (package-install 'copilot))
+
+(require 'copilot)
+;; turn on in programming buffers
+(add-hook 'prog-mode-hook #'copilot-mode)
+
+;; keybindings: M-TAB to trigger, TAB to accept
+(define-key copilot-mode-map       (kbd "M-TAB") #'copilot-complete)
+(define-key copilot-completion-map (kbd "<tab>")   #'copilot-accept-completion)
+#+END_SRC 
+
+Copilot Chat
+
+#+BEGIN_SRC emacs-lisp
+
+(unless (package-installed-p 'copilot-chat)
+  (package-install 'copilot-chat))
+
+(use-package copilot-chat
+  :bind (:map global-map
+	      ("C-c C-y" . copilot-chat-yank)
+	      ("C-c M-y" . copilot-chat-yank-pop)
+              ("C-c C-M-y" . (lambda () (interactive) (copilot-chat-yank-pop -1))))
+  )
+#+END_SRC
+
+
+** Language support
+Here we install and configure support for various programming languages. We use the `use-package` macro to ensure that the packages are installed and configured correctly.
+
+** NixOS from Emacs
+Editing Nix files and doing NixOS admin stuff like nixos-rebuild boot --upgrade
+Run the commands with M-x shell-command
+
+#+BEGIN_SRC emacs-lisp 
+;; NixOS commands   
+(defun nixos-upgrade ()
+  "Run 'nixos-rebuild boot --upgrade' in a shell."
+  (interactive)
+  (shell-command "nixos-rebuild boot --upgrade"))
+
+(defun nixos-switch ()
+  "Run 'nixos-rebuild switch' in a shell."
+  (interactive)
+  (shell-command "nixos-rebuild switch"))
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+;; install nix-mode
+(use-package nix-mode
+  :ensure t
+  :mode "\\.nix\\'")
+;; install nix-repl
+(use-package nix-repl
+  :ensure t
+  :mode "\\.nix\\'")
+;; install nixpkgs
+(use-package nixpkgs
+  :ensure t
+  :mode "\\.nix\\'")
+#+END_SRC

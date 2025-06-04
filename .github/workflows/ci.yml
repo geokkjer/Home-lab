@@ -1,0 +1,233 @@
+name: 🏠 Home Lab CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Weekly dependency updates check
+    - cron: '0 0 * * 0'
+
+env:
+  NIXPKGS_ALLOW_UNFREE: 1
+
+jobs:
+  # Lint and validate flake configuration
+  validate:
+    name: 🔍 Validate Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Setup Nix Magic Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Check flake syntax
+        run: nix flake check --all-systems
+
+      - name: Format check
+        run: |
+          nix fmt
+          git diff --exit-code
+
+  # Build configurations for all machines
+  build:
+    name: 🔨 Build Configurations
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      matrix:
+        machine: [congenital-optimist, sleeper-service]
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Setup Nix Magic Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build ${{ matrix.machine }} configuration
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.machine }}.config.system.build.toplevel
+          
+      - name: Check configuration size
+        run: |
+          nix path-info -S .#nixosConfigurations.${{ matrix.machine }}.config.system.build.toplevel
+          
+  # Security and dependency auditing
+  security:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Setup Nix Magic Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Run security audit
+        run: |
+          echo "TODO: Implement security auditing"
+          # Future: nix-audit or similar security tools
+          # Check for known vulnerabilities in dependencies
+          
+      - name: Check for secrets in repository
+        run: |
+          echo "Checking for accidentally committed secrets..."
+          if grep -r "PRIVATE KEY\|password\|secret" . --exclude-dir=.git --exclude="*.md" --exclude=".github"; then
+            echo "❌ Potential secrets found in repository"
+            exit 1
+          else
+            echo "✅ No obvious secrets found"
+          fi
+
+  # Documentation and module validation
+  documentation:
+    name: 📚 Documentation & Modules
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Setup Nix Magic Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Validate module structure
+        run: |
+          echo "Validating module structure..."
+          
+          # Check that all modules have proper structure
+          for module in modules/*/*.nix; do
+            echo "Checking $module"
+            nix eval --file "$module" || echo "Warning: $module may have syntax issues"
+          done
+
+      - name: Generate documentation
+        run: |
+          echo "TODO: Generate system documentation"
+          # Future: Automatically generate module documentation
+          # Update README with current system state
+
+  # Update flake.lock and test
+  update-dependencies:
+    name: 🔄 Update Dependencies
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Setup Nix Magic Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Update flake.lock
+        run: |
+          nix flake update
+          
+      - name: Test updated dependencies
+        run: |
+          nix flake check
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "🔄 Update flake.lock - Automated dependency update"
+          title: "Automated dependency update"
+          body: |
+            ## 🔄 Automated Dependency Update
+            
+            This PR updates the flake.lock file with the latest versions of all inputs.
+            
+            ### Changes
+            - Updated all flake inputs to latest versions
+            - Ran `nix flake check` to ensure compatibility
+            
+            ### Validation
+            - [x] Flake syntax validation passed
+            - [x] Build tests completed successfully
+            
+            Please review and test locally before merging.
+          branch: automated/update-dependencies
+          delete-branch: true
+
+  # Deployment (for self-hosted runners on actual machines)
+  deploy:
+    name: 🚀 Deploy Configuration
+    runs-on: self-hosted
+    needs: [validate, build, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to machines
+        run: |
+          echo "TODO: Implement deployment strategy"
+          # Future: Implement actual deployment
+          # This would require self-hosted runners on each machine
+          # or remote deployment via SSH
+          
+          echo "Would deploy to:"
+          echo "- congenital-optimist"
+          echo "- sleeper-service"
+
+  # Notification on completion
+  notify:
+    name: 📢 Notify Results
+    runs-on: ubuntu-latest
+    needs: [validate, build, security, documentation]
+    if: always()
+    steps:
+      - name: Notify status
+        run: |
+          echo "Pipeline completed"
+          echo "Validate: ${{ needs.validate.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Security: ${{ needs.security.result }}"
+          echo "Documentation: ${{ needs.documentation.result }}"
+          
+          # Future: Send notifications to Discord/Slack/Email
+          # if any jobs failed

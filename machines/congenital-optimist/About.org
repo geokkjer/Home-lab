@@ -1,0 +1,103 @@
+#+TITLE: CongenitalOptimist Workstation
+#+DESCRIPTION: AMD Threadripper 1920X based development workstation for Home-lab
+#+AUTHOR: geir
+#+DATE: 2024
+
+* CongenitalOptimist: A GSV, for a machine you hope will always perform well.
+
+** Hardware Specifications
+- *CPU*: AMD Ryzen Threadripper 1920X @ 3.50GHz (12 cores, 24 threads)
+- *GPU*: AMD Radeon RX Vega [Discrete]
+- *RAM*: 64GB DDR4 (currently 28.85 GiB used / 62.68 GiB total)
+- *Architecture*: x86_64
+- *Platform*: AMD TR4 Socket
+- *Form Factor*: High-End Desktop (HEDT)
+
+** Role & Purpose
+CongenitalOptimist serves as the primary development workstation and creative powerhouse for the Home-lab infrastructure. True to its Culture name, it approaches every computational challenge with unwavering optimism and substantial processing capability.
+
+*** Primary Functions
+- Software development and compilation
+- Virtual machine hosting and testing
+- Container orchestration and development
+- Creative workloads (video editing, 3D rendering)
+- Multi-desktop environment testing
+
+*** Secondary Functions
+- Network storage client (NFS from SleeperService)
+- Build server for NixOS configurations
+- Media consumption and streaming
+- Gaming and entertainment
+- System administration hub
+
+** Software Configuration
+- *OS*: NixOS 25.05
+- *Hostname*: congenital-optimist
+- *Desktop Environments*: GNOME, Cosmic, Sway
+- *Shell*: Zsh with modern CLI tools
+- *Editor Stack*: Emacs, Neovim, VSCode, Zed
+- *Containerization*: Podman, Incus
+- *Virtualization*: libvirt/KVM with virt-manager
+
+** Network Configuration
+- *Tailscale*: Enabled for secure remote access
+- *NFS Client*: Mounts from SleeperService file server
+- *SSH*: Enabled for remote development
+- *Firewall*: NFTables with restrictive default rules
+- *DNS*: Systemd-resolved with custom entries
+
+** Storage Architecture
+- *Root Filesystem*: ZFS (zpool/root)
+- *Nix Store*: ZFS (zpool/nix) 
+- *User Data*: ZFS (zpool/home)
+- *Variable Data*: ZFS (zpool/var)
+- *Games*: ZFS (stuffpool/games)
+- *VMs*: ZFS (stuffpool/virtual)
+- *Network Storage*: NFS mount from SleeperService
+
+** Development Environment
+CongenitalOptimist embodies the Culture's optimistic approach to problem-solving. With 24 threads of Threadripper processing power and abundant memory, it tackles complex development tasks with confidence and capability.
+
+*** Configured Development Tools
+- Multiple language runtimes (Rust, Python, Go, Guile)
+- Language servers for intelligent code completion
+- Container development with Podman
+- VM development with libvirt
+- Git workflow with GitHub CLI integration
+- AI-assisted development with GitHub Copilot
+
+*** Desktop Experience
+- GNOME: Full-featured desktop for productivity
+- Cosmic: Modern System76 desktop experience
+- Sway: Tiling window manager for focused development
+- Consistent theming and font configuration
+- Modern CLI tools (eza, bat, ripgrep, starship)
+
+** Culture Context
+Like its namesake GSV, CongenitalOptimist believes that with sufficient processing power and well-designed software, any problem can be solved. It maintains an optimistic outlook even during intensive compilation tasks or complex virtualization scenarios.
+
+The Threadripper architecture mirrors the Culture's philosophy of abundant resources applied intelligently - why have 4 cores when you can have 24? Why settle for basic graphics when you can have Vega-class rendering?
+
+** Operational Philosophy
+- *Performance*: Leverage all 24 threads for parallel workloads
+- *Reliability*: ZFS ensures data integrity and snapshot capabilities
+- *Flexibility*: Multiple desktop environments for different tasks
+- *Integration*: Seamless interaction with SleeperService file server
+- *Optimization*: NixOS configuration management for reproducible setups
+
+** Power Profile
+- High-performance desktop configuration
+- Always-on development environment
+- Efficient resource utilization across cores
+- Temperature monitoring for sustained workloads
+- Balanced performance and power consumption
+
+** Future Expansion
+- Additional memory for larger virtual machine workloads
+- NVMe storage expansion for local high-speed storage
+- GPU compute acceleration for AI/ML workloads
+- Network upgrade for faster SleeperService connectivity
+- Multi-monitor setup expansion
+
+* "The ship had been constructed to be a tool, to do a job of work; and the fact that it had been invested with intelligence had not changed the essence of what it was."
+*- Iain M. Banks, describing the optimistic spirit that drives CongenitalOptimist*

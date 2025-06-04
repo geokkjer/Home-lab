@@ -1,0 +1,57 @@
+#+TITLE: SleeperService File Server
+#+DESCRIPTION: Intel Xeon E3-1230 V2 based file server for Home-lab network storage
+#+AUTHOR: geir
+#+DATE: 2025
+
+* SleeperService: A massive GSV with a reputation for taking on unusual tasks.
+
+** Hardware Specifications
+- *CPU*: Intel Xeon E3-1230 V2 @ 3.70GHz (4 cores, 8 threads)
+- *RAM*: 16GB DDR3
+- *Architecture*: x86_64
+- *Form Factor*: Server/Tower
+- *Age*: Legacy hardware, proven reliability
+
+** Role & Purpose
+SleeperService serves as the primary network storage and file server for the Home-lab infrastructure. True to its Culture name, it quietly handles the essential but unglamorous tasks that keep the network running smoothly.
+
+*** Primary Functions
+- Network File System (NFS) server
+- Centralized backup repository
+- System monitoring and alerting hub
+- Data redundancy and integrity management
+
+*** Secondary Functions
+- Log aggregation and analysis
+- Network service monitoring
+- Automated backup orchestration
+
+** Network Configuration
+- *Hostname*: sleeper-service
+- *Domain*: home-lab.local
+- *Tailscale*: Enabled for secure remote access
+- *SSH*: Primary access method (headless operation)
+- *Firewall*: Restrictive, service-specific ports only
+
+** Storage Philosophy
+SleeperService embodies the Culture principle of quiet competence. It doesn't need the latest hardware to excel at its mission - reliable, continuous service. The Xeon architecture provides ECC memory support and enterprise-grade reliability perfect for 24/7 file serving operations.
+
+** Culture Context
+Like its namesake GSV, SleeperService takes on the "unusual tasks" that other machines might find mundane. It's the dependable workhorse that ensures data is always available, backups are current, and the network storage needs of CongenitalOptimist and future machines are met without fanfare.
+
+** Operational Notes
+- Headless operation - no GUI required
+- Designed for continuous uptime
+- Energy efficient for 24/7 operation
+- Minimal resource requirements for maximum stability
+- Perfect for background services and automation
+
+** Future Expansion
+- Additional storage capacity as needed
+- Container services for lightweight applications
+- Monitoring dashboard hosting
+- Potential media streaming services
+- Network infrastructure services (DNS, DHCP)
+
+* "The ship had been constructed over a hundred years before, and was generally reckoned to be slightly eccentric."
+*- Iain M. Banks, describing vessels much like SleeperService*

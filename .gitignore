@@ -1,0 +1,108 @@
+# NixOS Home Lab - GitIgnore Configuration
+# Infrastructure as Code for Multi-Machine NixOS Environment
+
+## Nix Build Artifacts
+result
+result-*
+.direnv/
+.envrc
+
+## NixOS System Generation Links
+/result
+/result-*
+
+## Nix Store Symlinks
+*.drv
+*.drv.chk
+
+## Development Shells
+shell.nix.backup
+default.nix.backup
+
+## Backup Files
+*.backup
+*.bak
+*.orig
+*~
+.#*
+\#*#
+
+## Temporary Files
+*.tmp
+*.temp
+/tmp/
+.cache/
+
+## Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+## System-Specific Files
+hardware-configuration.nix.backup
+/boot/
+/proc/
+/sys/
+/dev/
+
+## Secrets and Keys (until we set up proper secrets management)
+secrets/*.key
+secrets/*.pem
+secrets/*.cert
+secrets/private/
+*.age
+*.gpg
+
+## Log Files
+*.log
+logs/
+/var/log/
+
+## ZFS Snapshots (metadata only, not the snapshots themselves)
+.zfs/
+
+## CI/CD Artifacts
+.github/workflows/artifacts/
+ci-cache/
+build-cache/
+
+## Local Configuration Overrides
+local.nix
+override.nix
+config.local.nix
+
+## Machine-Specific Overrides (for testing)
+machines/*/local-override.nix
+machines/*/test-config.nix
+
+## User-Specific Development Files
+users/*/dotfiles/.tangled/
+users/*/dotfiles/auto-generated/
+users/*/dotfiles/*.el~
+
+## Flake-specific ignores
+.pre-commit-config.yaml.backup
+.envrc.backup
+
+## Documentation Build Artifacts
+docs/_build/
+docs/.doctrees/
+*.pdf.tmp
+
+## Nix Profile Links
+.nix-profile
+.nix-defexpr
+
+## MacOS (if accessing from Mac)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Windows (if accessing from Windows)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
