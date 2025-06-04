@@ -224,7 +224,7 @@ exec dbus-sway-environment
 exec configure-gtk
 exec gammastep
 
-*+END_SRC
+#+END_SRC
 
 * Zsh
 
