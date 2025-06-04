@@ -418,11 +418,13 @@ Home-lab/
 - Routes traffic to internal services (grey-area, sleeper-service)
 
 ### grey-area (Application Server - Culture GCU)
+- **Hardware**: Intel Xeon E5-2670 v3 (24 cores) @ 3.10 GHz, 31.24 GiB RAM
 - **Primary Mission**: Forgejo Git hosting and project management
-- Medium to high-spec hardware (multi-core CPU, 8GB+ RAM recommended)
+- **Performance**: Excellent specs for heavy containerized workloads and CI/CD
 - Container-focused architecture using Podman
 - PostgreSQL database for Forgejo
-- Secondary services: Jellyfin, Nextcloud, Grafana
+- Concurrent multi-service deployment capability
+- Secondary services: Jellyfin (with transcoding), Nextcloud, Grafana
 - Integration hub for all home lab development projects
 - Culture name fits: "versatile ship handling varied, ambiguous tasks"
 - Central point for CI/CD pipelines and automation

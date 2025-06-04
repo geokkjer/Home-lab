@@ -1,0 +1,76 @@
+#+TITLE: Grey Area - Application Server
+#+AUTHOR: Geir Okkenhaug Jerstad
+#+DATE: [2025-06-04 Wed]
+
+* Machine Overview
+
+** Role
+- **Primary Function**: Multi-purpose application server
+- **Character**: Like the Culture GCU =Grey Area= - versatile, handles ambiguous/varied tasks
+- **Core Service**: Forgejo (Git hosting and project management)
+
+** Primary Services
+
+*** Forgejo Git Hosting
+- Self-hosted Git repositories
+- Issue tracking and project management
+- CI/CD pipelines
+- User and organization management
+- Pull request workflows
+- Container registry (if needed)
+
+*** Secondary Applications
+- Jellyfin or Plex (media server)
+- Nextcloud (file synchronization and sharing)
+- Grafana (metrics visualization)
+- Home Assistant (home automation, if desired)
+- Various containerized web applications
+
+** Architecture Notes
+- Container-focused deployment (Podman/Docker)
+- Headless operation (no desktop environment)
+- SSH access for administration
+- Reverse proxy integration with =reverse-proxy= machine
+- Database support (PostgreSQL for Forgejo)
+
+** Hardware Specifications
+- **CPU**: Intel Xeon E5-2670 v3 (24 cores) @ 3.10 GHz
+- **Memory**: 31.24 GiB RAM
+- **Storage**: SSD for application data and Git repositories
+- **Network**: Integration with =sleeper-service= for bulk storage
+- **Performance**: Excellent for containerized applications and CI/CD workloads
+
+** Resource Allocation Strategy
+- **Forgejo**: 4-6 GB RAM, dedicated CPU cores for Git operations and CI/CD
+- **PostgreSQL**: 2-4 GB RAM for database operations
+- **Jellyfin**: 4-8 GB RAM for media transcoding (hardware acceleration if available)
+- **Containers**: Remaining resources distributed across secondary applications
+- **System Reserve**: 8-10 GB RAM kept free for system operations and burst capacity
+
+** Integration Points
+- **reverse-proxy**: SSL termination and external routing
+- **sleeper-service**: Network storage for large files/backups
+- **congenital-optimist**: Development workflow integration
+- **All machines**: Centralized Git repository hosting
+
+** Data Management
+- Git repositories (local SSD for performance)
+- Application databases (PostgreSQL, SQLite)
+- Media files (network storage or local cache)
+- Configuration backups to =sleeper-service=
+
+** Security Considerations
+- Container isolation
+- User authentication (LDAP/OIDC integration possible)
+- Regular security updates
+- Backup and disaster recovery
+- Network segmentation
+
+** Performance Capabilities
+With 24 cores and 31GB RAM, this machine can handle:
+- **High-Concurrency Forgejo**: Multiple simultaneous Git operations, CI/CD builds
+- **Media Transcoding**: Real-time 4K transcoding for Jellyfin without performance impact
+- **Development Builds**: Parallel compilation of large codebases via CI/CD
+- **Container Orchestration**: 10-20+ simultaneous containers without resource constraints
+- **Database Performance**: PostgreSQL with excellent query performance and caching
+- **Future Expansion**: Room for additional services like Kubernetes, monitoring stack
