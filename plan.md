@@ -1,6 +1,22 @@
 # Home Lab Migration Plan
 
-## Current State Assessment
+## Current ├── machines/
+│   ├── congenital-optimist/ (AMD workstation)
+│   │   ├── default.nix
+│   │   ├── hardware-configuration.nix
+│   │   └── About.org
+│   ├── sleeper-service/ (Intel Xeon E3-1230 V2 file server)
+│       ├── default.nix
+│       ├── hardware-configuration.nix
+│       └── About.org
+│   ├── reverse-proxy/ (edge/gateway server)
+│   │   ├── default.nix
+│   │   ├── hardware-configuration.nix
+│   │   └── About.org
+│   └── grey-area/ (application server)
+│       ├── default.nix
+│       ├── hardware-configuration.nix
+│       └── About.orgessment
 
 ### CongenitalOptimist Machine
 - **Current NixOS Version**: 25.05
@@ -41,7 +57,15 @@ Home-lab/
 │   │   ├── default.nix
 │   │   ├── hardware-configuration.nix
 │   │   └── About.org
-│   └── sleeper-service/ (Intel Xeon E3-1230 V2 file server)
+│   ├── sleeper-service/ (Intel Xeon E3-1230 V2 file server)
+│       ├── default.nix
+│       ├── hardware-configuration.nix
+│       └── About.org
+│   ├── reverse-proxy/ (edge/gateway server)
+│   │   ├── default.nix
+│   │   ├── hardware-configuration.nix
+│   │   └── About.org
+│   └── grey-area/ (application server)
 │       ├── default.nix
 │       ├── hardware-configuration.nix
 │       └── About.org
@@ -185,12 +209,16 @@ Home-lab/
 │   │   ├── podman.nix
 │   │   ├── libvirt.nix
 │   │   └── incus.nix
-│   ├── services/ (for SleeperService)
+│   ├── services/ (for SleeperService + grey-area)
 │   │   ├── nfs.nix (network file sharing)
 │   │   ├── samba.nix (windows compatibility)
 │   │   ├── backup.nix (automated backups)
 │   │   ├── monitoring.nix (system monitoring)
-│   │   └── storage.nix (ZFS/RAID management)
+│   │   ├── storage.nix (ZFS/RAID management)
+│   │   ├── reverse-proxy.nix (nginx/traefik configuration)
+│   │   ├── forgejo.nix (git hosting and CI/CD)
+│   │   ├── media.nix (jellyfin configuration)
+│   │   └── applications.nix (containerized services)
 │   └── users/
 │       └── common.nix (shared user configurations)
 ├── users/
@@ -271,10 +299,18 @@ Home-lab/
   - Automated backup services
   - System monitoring and alerting
   - ZFS or software RAID for data redundancy
-- [ ] Plan for additional machines:
-  - Media server (Jellyfin/Plex) - could run on SleeperService
-  - Home automation hub
-  - CI/CD runner
+- [ ] **reverse-proxy** edge server:
+  - Nginx/Traefik reverse proxy
+  - SSL/TLS termination with Let's Encrypt
+  - External access gateway and load balancing
+  - Security protection (Fail2ban, rate limiting)
+  - Minimal attack surface, headless operation
+- [ ] **grey-area** application server (Culture GCU - versatile, multi-purpose):
+  - **Primary**: Forgejo Git hosting (repositories, CI/CD, project management)
+  - **Secondary**: Jellyfin media server, Nextcloud file sync
+  - **Monitoring**: Grafana visualization, Prometheus metrics
+  - **Infrastructure**: Container-focused (Podman), PostgreSQL database
+  - **Integration**: Central Git hosting for all home lab projects
 - [ ] Plan for additional users across machines:
   - Service accounts for automation
   - Admin accounts for management
@@ -371,6 +407,25 @@ Home-lab/
 - Plan for ZFS or software RAID for data redundancy
 - Headless operation - no desktop environments needed
 - SSH-only access with robust monitoring
+
+### reverse-proxy (Edge Server)
+- Lightweight hardware requirements (can be modest specs)
+- Primary role: SSL/TLS termination and traffic routing
+- External-facing server with minimal attack surface
+- Nginx or Traefik for reverse proxy functionality
+- Let's Encrypt integration for automated certificate management
+- Fail2ban and security hardening
+- Routes traffic to internal services (grey-area, sleeper-service)
+
+### grey-area (Application Server - Culture GCU)
+- **Primary Mission**: Forgejo Git hosting and project management
+- Medium to high-spec hardware (multi-core CPU, 8GB+ RAM recommended)
+- Container-focused architecture using Podman
+- PostgreSQL database for Forgejo
+- Secondary services: Jellyfin, Nextcloud, Grafana
+- Integration hub for all home lab development projects
+- Culture name fits: "versatile ship handling varied, ambiguous tasks"
+- Central point for CI/CD pipelines and automation
 
 ### Home Lab Philosophy
 - Emacs org-mode literate programming approach provides better control than Home Manager
