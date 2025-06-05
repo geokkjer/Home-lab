@@ -48,6 +48,18 @@
           ./modules/common/tty.nix
         ];
       };
+
+      # reverse-proxy - VPS edge server with Nginx reverse proxy
+      reverse-proxy = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          ./machines/reverse-proxy/configuration.nix
+          ./machines/reverse-proxy/gandicloud.nix
+          ./modules/common/nix.nix
+          ./modules/common/base.nix
+          ./modules/common/tty.nix
+        ];
+      };
     };
 
     # Custom packages for the home lab
@@ -70,6 +82,7 @@
           echo "Available configurations:"
           echo "  - congenital-optimist (Threadripper workstation)"
           echo "  - sleeper-service (Xeon file server)"
+          echo "  - reverse-proxy (VPS edge server)"
           echo ""
           echo "Build with: nixos-rebuild build --flake .#<config>"
           echo "Switch with: nixos-rebuild switch --flake .#<config>"
