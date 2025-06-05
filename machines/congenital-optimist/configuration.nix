@@ -7,10 +7,10 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/network/network-congenital-optimist.nix
     
     # System modules
     ../../modules/system/fonts.nix
-    ../../modules/system/network.nix
     ../../modules/system/applications.nix
     
     # Hardware modules

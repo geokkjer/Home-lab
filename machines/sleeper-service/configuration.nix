@@ -1,6 +1,7 @@
 { config, pkgs, inputs, unstable, ... }: {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/network/network-sleeper-service.nix
   ];
 
   # Boot configuration
@@ -10,12 +11,6 @@
     efiInstallAsRemovable = true;
     devices = [ "nodev" ];
   };
-
-  # Network configuration
-  networking.hostName = "sleeper-service";
-  networking.networkmanager.enable = true;
-  services.tailscale.enable = true;
-  networking.firewall.enable = true;
 
   # Time and locale
   time.timeZone = "Europe/Oslo";
@@ -29,15 +24,6 @@
 
   # Enable unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # SSH access (headless server)
-  services.openssh = {
-    enable = true;
-    settings = {
-      PermitRootLogin = "no";
-      PasswordAuthentication = false;
-    };
-  };
 
   # Basic system packages
   environment.systemPackages = with pkgs; [

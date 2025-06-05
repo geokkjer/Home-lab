@@ -14,7 +14,7 @@
       download-dir = "/mnt/storage";
       #rpc-whitelist-enabled = true;
       rpc-whitelist = "127.0.0.1,10.0.0.*,100.*.*.*";
-      rpc-host-whitelist = "idea,files,nixos-work,server1";
+      rpc-host-whitelist = "congenital-optimist,localhost";
     };
   };
 }
