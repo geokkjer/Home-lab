@@ -11,6 +11,8 @@
     fzf
     zoxide
     uutils-coreutils-noprefix
+    direnv       # Directory-based environment management
+    nix-direnv   # Nix integration for direnv
   ];
   environment.shellAliases = {
     vi = "nvim";

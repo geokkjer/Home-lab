@@ -18,6 +18,11 @@
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
     
+    # direnv integration
+    interactiveShellInit = ''
+      eval "$(direnv hook zsh)"
+    '';
+    
     # Common aliases for all users
     shellAliases = {
       # Modern CLI tool replacements
@@ -69,9 +74,6 @@
     git
     curl
     wget
-    
-    # Media
-    celluloid
     
     # Utilities
     file

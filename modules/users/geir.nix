@@ -95,7 +95,7 @@
     # Development preferences
     EDITOR = "emacs";
     BROWSER = "firefox";
-    TERMINAL = "alacritty";
+    TERMINAL = "kitty";
     
     # Git configuration
     GIT_EDITOR = "emacs";

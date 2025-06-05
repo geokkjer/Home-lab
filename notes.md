@@ -1,0 +1,1 @@
+# Notes to be use to write blog post 

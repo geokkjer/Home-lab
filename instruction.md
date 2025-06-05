@@ -1,10 +1,10 @@
-# AI Agent Instructions: NixOS Flakes Migration for CongenitalOptimist
+# AI Agent General Instructions
 
 ## Overview
-This document provides step-by-step instructions for AI agents to help migrate the CongenitalOptimist machine from traditional NixOS configuration to flakes-based configuration and upgrade to NixOS 25.05. The system already has excellent modular structure that we'll preserve and enhance.
+This part of the document provides general instructions for tha AI agent.
 
 ## General instructions
-This document is to be treated as an iterative work and a collaberation.
+This document is to be treated as an iterative work and a collaberation between the user and AI agent.
 
 ## Goal for this file
 Top part reusable instructions that can be transferred to other project and as away to iterativey make ai agent behave more like I prefer.
@@ -21,12 +21,14 @@ The Plan.md file should have the project information and steps.
 - Rust for binary tools etc
 
 ## Written language and style
-use Notes.md to take notes . 
+use notes.md to take notes . 
 Use a casual but knowledgeable tone. This is not a corporate project there are no audits or compliance to adhere to.
 More like an open source project, more like a hobby/passion project
 
-# Bottom part 
-itreative about the project update often
+# AI Agent Instructions: NixOS Flakes Migration for CongenitalOptimist
+## Overview
+This part of the document provides step-by-step instructions for AI agents to help migrate the CongenitalOptimist machine from traditional NixOS configuration to flakes-based configuration and upgrade to NixOS 25.05. The system already has excellent modular structure that we'll preserve and enhance.
+Itreative about the project, update often
 ## Current System Information
 - **Hostname**: work → congenital-optimist (migration in progress)
 - **Current Version**: NixOS 25.05 (migrated from 23.11)

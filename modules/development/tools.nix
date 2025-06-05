@@ -28,6 +28,7 @@
     # Development utilities
     git
     nix-direnv
+    direnv
     gh
     github-copilot-cli
   ];
