@@ -108,14 +108,16 @@
     # Shell aliases
     shellAliases = {
       # Development workflow
-      "lab" = "cd /home/geir/Home-lab";
-      "configs" = "cd /home/geir/Home-lab/user_configs/geir";
+      "lab" = "z /home/geir/Home-lab";
+      "configs" = "z /home/geir/Home-lab/user_configs/geir";
       "emacs-config" = "emacs /home/geir/Home-lab/user_configs/geir/emacs.org";
       
       # Quick system management
       "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
       "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
-      
+      "collect" = "sudo nix-collect-garbage --d";
+      "optimise" = "sudo nix-strore --optimise";
+
       # Container shortcuts
       "pdm" = "podman";
       "pdc" = "podman-compose";
