@@ -14,16 +14,22 @@ The Plan.md file should have the project information and steps.
 
 ## Programming Languages and styles
 - Prefer functional style
-- Guille scheme for 
-- Python for ai and when guile 
+- Guille scheme for scripting tasks
+- Python for ai and when python ecosystem is better
 - Bash only for short scripts
-- Typescript and javascript for web 
+- Typescript and javascript for web development
+- prefer to use vite to start new web dev projects
 - Rust for binary tools etc
 
 ## Written language and style
 use notes.md to take notes . 
 Use a casual but knowledgeable tone. This is not a corporate project there are no audits or compliance to adhere to.
 More like an open source project, more like a hobby/passion project
+
+## Documentation and Research Tools
+- **Always use context7 for NixOS information**: When working with NixOS configurations, modules, or need NixOS documentation, always use the context7 MCP server to get up-to-date and accurate information
+- Use context7 to resolve NixOS option names, module configurations, and best practices
+- Context7 provides authoritative NixOS documentation that's more reliable than general knowledge
 
 # AI Agent Instructions: NixOS Flakes Migration for CongenitalOptimist
 ## Overview

@@ -75,6 +75,8 @@
       # Development Tools
       git-credential-manager
       github-cli
+      nodejs
+      nodePackages.npm
       
       # Containers & Cloud
       podman-compose
