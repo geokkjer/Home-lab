@@ -54,7 +54,7 @@
   programs.zsh.enable = true;
 
   # Firewall configuration
-  networking.firewall.allowedTCPPorts = [ 22 9091 ]; # SSH and Transmission RPC
+  networking.firewall.allowedTCPPorts = [ 22 ]; # SSH only (Transmission disabled temporarily)
 
   system.stateVersion = "25.05";
 }

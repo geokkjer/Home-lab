@@ -1,8 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  # Transmission temporarily disabled due to build issues
+  # Will re-enable once package is stable
   services.transmission = {
-    enable = true;
+    enable = false;
     user = "geir";
     group = "users";
     settings.rpc-port = 9091;
@@ -14,4 +16,9 @@
       rpc-host-whitelist = "sleeper-service,localhost";
     };
   };
+  
+  # Ensure downloads directory exists even without Transmission
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage/downloads 0755 geir users -"
+  ];
 }
