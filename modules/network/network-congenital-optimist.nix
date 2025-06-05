@@ -18,9 +18,4 @@
     ];
   };
 
-  # ZFS services for this machine
-  services.zfs = {
-    autoScrub.enable = true;
-    trim.enable = true;
-  };
 }

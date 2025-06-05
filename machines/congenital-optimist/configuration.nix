@@ -47,7 +47,11 @@
       }
     ];
   };
-
+# ZFS services for this machine
+  services.zfs = {
+    autoScrub.enable = true;
+    trim.enable = true;
+  };
   # Basic system configuration
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "23.11"; # DO NOT CHANGE - maintains data compatibility
