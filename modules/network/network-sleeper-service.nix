@@ -30,7 +30,10 @@
     };
     
     # Network gateway and DNS (based on nmap discovery)
-    defaultGateway = "10.0.0.138";  # Discovered router at lan.home
+    defaultGateway = {
+      address = "10.0.0.138";  # Discovered router at lan.home
+      interface = "enp0s25";   # Main ethernet interface
+    };
     nameservers = [ "10.0.0.14" "10.0.0.138" "8.8.8.8" ];  # Pi-hole, router, Google DNS fallback
     
     # Additional firewall ports for file server services

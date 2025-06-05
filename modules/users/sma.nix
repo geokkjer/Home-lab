@@ -103,9 +103,9 @@
       "connections" = "ss -tuln";
       
       # Git for infrastructure
-      "lab" = "cd /home/geir/Home-lab";
-      "lab-status" = "cd /home/geir/Home-lab && git status";
-      "lab-pull" = "cd /home/geir/Home-lab && git pull";
+      "homelab" = "cd /home/geir/Home-lab";
+      "homelab-status" = "cd /home/geir/Home-lab && git status";
+      "homelab-pull" = "cd /home/geir/Home-lab && git pull";
       
       # Security
       "audit-users" = "cat /etc/passwd | grep -E '/bin/(bash|zsh|fish)'";
