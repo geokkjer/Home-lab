@@ -39,7 +39,7 @@
       zellij
       neo-cowsay
       fortune
-      lolcat
+      clolcat
       
       # Audio & System Control
       ncpamixer
