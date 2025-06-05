@@ -47,7 +47,7 @@
       fsType = "zfs";
     };
   fileSystems."/mnt/storage/media" =
-    { device = "files:/mnt/storage";
+    { device = "sleeper-service:/mnt/storage";
       fsType = "nfs";
       options = [ "x-systemd.automount" "noauto" "x-systemd.idle-timeout=600" ];
     };

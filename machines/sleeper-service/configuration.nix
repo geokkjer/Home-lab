@@ -6,6 +6,10 @@
     # Security modules
     ../../modules/security/ssh-keys.nix
 
+    # Services
+    ../../modules/services/nfs.nix
+    ../../modules/system/transmission.nix
+
     # User modules
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
@@ -47,20 +51,10 @@
     tree
   ];
 
-  # Users
-  users.users.geir = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = [
-      # Add SSH public keys here
-    ];
-  };
-
   programs.zsh.enable = true;
 
   # Firewall configuration
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedTCPPorts = [ 22 9091 ]; # SSH and Transmission RPC
 
   system.stateVersion = "25.05";
 }

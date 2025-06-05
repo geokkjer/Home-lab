@@ -22,25 +22,9 @@
     '';
   };
 
-  # Centralized SSH key management
-  security.ssh-keys = {
-    # Admin keys for sma user (server administration)
-    admin = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPgzKS1N7+7+N1/8U8++1pl4hapDm6TOy0QhrfrYA8mz geir@geokkjer.eu-admin"
-    ];
-    
-    # Development keys for geir user (git, daily use)
-    development = [
-      # Current key (keep for continuity during transition)
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHeOvTHIw+hZOAiWkIrz9t11UeGwxAMx7jN/1IIdgq7O geokkjer@gmail.com"
-      # New development key
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHukJK0Kc1YexvzF8PdqaqWNZdVffGoM6ePPMecrU6dM geir@geokkjer.eu-dev"
-    ];
-  };
-
   # SSH client configuration
   programs.ssh = {
-    enable = true;
+    startAgent = true;
     extraConfig = ''
       # Default to development key for daily use
       Host *

@@ -5,16 +5,13 @@
     enable = true;
     user = "geir";
     group = "users";
-    #home = "/mnt/storage/";
     settings.rpc-port = 9091;
     settings.rpc-bind-address = "0.0.0.0";
-    #openRPCPort = true;
     downloadDirPermissions = "770";
     settings = {
-      download-dir = "/mnt/storage";
-      #rpc-whitelist-enabled = true;
+      download-dir = "/mnt/storage/downloads";
       rpc-whitelist = "127.0.0.1,10.0.0.*,100.*.*.*";
-      rpc-host-whitelist = "congenital-optimist,localhost";
+      rpc-host-whitelist = "sleeper-service,localhost";
     };
   };
 }

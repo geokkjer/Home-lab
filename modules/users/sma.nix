@@ -22,8 +22,9 @@
     shell = pkgs.zsh;
     
     # SSH key-based authentication only (no password login)
-    openssh.authorizedKeys.keys = config.security.ssh-keys.admin or [
-      # Admin keys will be populated from security module
+    openssh.authorizedKeys.keys = [
+      # Admin key for server administration
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPgzKS1N7+7+N1/8U8++1pl4hapDm6TOy0QhrfrYA8mz geir@geokkjer.eu-admin"
     ];
 
     # Essential admin packages

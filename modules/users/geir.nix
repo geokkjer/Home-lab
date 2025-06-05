@@ -22,9 +22,11 @@
     shell = pkgs.zsh;
     
     # SSH access with development keys
-    openssh.authorizedKeys.keys = config.security.ssh-keys.development or [
-      # Fallback to current key during transition
+    openssh.authorizedKeys.keys = [
+      # Current key (keep for continuity during transition)
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHeOvTHIw+hZOAiWkIrz9t11UeGwxAMx7jN/1IIdgq7O geokkjer@gmail.com"
+      # New development key
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHukJK0Kc1YexvzF8PdqaqWNZdVffGoM6ePPMecrU6dM geir@geokkjer.eu-dev"
     ];
     
     # User-specific packages
