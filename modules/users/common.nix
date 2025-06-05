@@ -53,7 +53,7 @@
     sessionVariables = {
       EDITOR = "emacs";
       BROWSER = "firefox";
-      TERMINAL = "alacritty";
+      TERMINAL = "kitty";
     };
   };
 
@@ -64,10 +64,6 @@
     
     # Communication
     firefox
-    thunderbird
-    
-    # Productivity
-    libreoffice
     
     # Development (basic)
     git
@@ -75,7 +71,7 @@
     wget
     
     # Media
-    vlc
+    celluloid
     
     # Utilities
     file
@@ -104,8 +100,6 @@
       };
     };
     
-    # Enable CUPS for printing
-    printing.enable = true;
     
     # Enable sound
     pipewire = {

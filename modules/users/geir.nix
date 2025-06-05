@@ -62,8 +62,7 @@
       emacsPackages.vterm
       
       # Media & Entertainment
-      vlc
-      mpv
+      celluloid
       
       # File Management
       nautilus
