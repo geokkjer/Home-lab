@@ -118,7 +118,11 @@
       "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
       "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
       "collect" = "sudo nix-collect-garbage --d";
-      "optimise" = "sudo nix-strore --optimise";
+      "optimise" = "sudo nix-store --optimise";
+
+      # Git shortcuts for multi-remote workflow
+      "git-push-all" = "git push origin main && git push github main";
+      "git-status-all" = "git status && echo '--- Checking origin ---' && git log origin/main..HEAD --oneline && echo '--- Checking github ---' && git log github/main..HEAD --oneline";
 
       # Container shortcuts
       "pdm" = "podman";
