@@ -1,6 +1,7 @@
 # Home Lab Migration Plan
 
-## Current ├── machines/
+## Current 
+├── machines/
 │   ├── congenital-optimist/ (AMD workstation)
 │   │   ├── default.nix
 │   │   ├── hardware-configuration.nix
@@ -184,12 +185,20 @@ Home-lab/
 ├── flake.nix
 ├── flake.lock
 ├── machines/
-│   ├── CongenitalOptimist/ (AMD workstation)
+│   ├── congenital-optimist/ (AMD workstation)
 │   │   ├── default.nix (main machine config)
 │   │   ├── hardware-configuration.nix
 │   │   └── About.org
-│   └── SleeperService/ (Intel Xeon file server)
-│       ├── default.nix (file server config)
+│   ├── sleeper-service/ (Intel Xeon file server)
+│   │   ├── default.nix (file server config)
+│   │   ├── hardware-configuration.nix
+│   │   └── About.org
+│   ├── reverse-proxy/ (edge/gateway server)
+│   │   ├── default.nix
+│   │   ├── hardware-configuration.nix
+│   │   └── About.org
+│   └── grey-area/ (application server)
+│       ├── default.nix
 │       ├── hardware-configuration.nix
 │       └── About.org
 ├── modules/
@@ -288,27 +297,27 @@ Home-lab/
 ### 5.1 Infrastructure Additions
 
 #### Naming Convention
-- **Machine Names**: UpperCase (e.g., `CongenitalOptimist`, `SleeperService`)
-- **Folder Names**: UpperCase matching machine names (e.g., `CongenitalOptimist/`, `SleeperService/`)
+- **Machine Names**: Culture ship names in PascalCase (e.g., `CongenitalOptimist`, `SleeperService`)
+- **Folder Names**: lowercase-with-hyphens (e.g., `congenital-optimist/`, `sleeper-service/`)
 - **Flake Outputs**: lowercase-with-hyphens (e.g., `nixosConfigurations.congenital-optimist`)
 - **Hostnames**: lowercase-with-hyphens (e.g., `congenital-optimist`, `sleeper-service`)
+- **User Names**: Culture character names in lowercase (e.g., `sma`, `geir`)
 
 - [ ] **SleeperService** file server (Intel Xeon E3-1230 V2, 16GB RAM):
   - NFS server for network storage
-  - Samba server for Windows compatibility  
   - Automated backup services
   - System monitoring and alerting
   - ZFS or software RAID for data redundancy
 - [ ] **reverse-proxy** edge server:
-  - Nginx/Traefik reverse proxy
+  - Nginx/Traefik/caddy reverse proxy
   - SSL/TLS termination with Let's Encrypt
   - External access gateway and load balancing
   - Security protection (Fail2ban, rate limiting)
   - Minimal attack surface, headless operation
 - [ ] **grey-area** application server (Culture GCU - versatile, multi-purpose):
   - **Primary**: Forgejo Git hosting (repositories, CI/CD, project management)
-  - **Secondary**: Jellyfin media server, Nextcloud file sync
-  - **Monitoring**: Grafana visualization, Prometheus metrics
+  - **Secondary**: Jellyfin media server
+  - **Monitoring**: TBD
   - **Infrastructure**: Container-focused (Podman), PostgreSQL database
   - **Integration**: Central Git hosting for all home lab projects
 - [ ] Plan for additional users across machines:
@@ -343,10 +352,17 @@ Home-lab/
 - [ ] Literate dotfiles with org-mode tangling automation
 
 ### 6.2 Automation & Maintenance
+- [ ] AI integration - development of a mcp server for the cluster
 - [ ] Automated system updates
 - [ ] Configuration validation tests
 - [ ] Deployment automation
 - [ ] Monitoring and alerting
+### 6.3 Writeup
+- [ ] Take all the knowledge we have amassed and make a blog post or a series of blog posts
+
+### Phase 7: goin pro 
+- [ ] A plan to generalise this project so it is usable for other people
+- [ ] A plan to make dashboard and web interface for the project 
 
 ## Timeline Estimates
 

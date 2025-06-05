@@ -3,14 +3,38 @@
 ## Overview
 This document provides step-by-step instructions for AI agents to help migrate the CongenitalOptimist machine from traditional NixOS configuration to flakes-based configuration and upgrade to NixOS 25.05. The system already has excellent modular structure that we'll preserve and enhance.
 
+## General instructions
+This document is to be treated as an iterative work and a collaberation.
+
+## Goal for this file
+Top part reusable instructions that can be transferred to other project and as away to iterativey make ai agent behave more like I prefer.
+Bottom part should have information specific to the project.
+The Plan.md file should have the project information and steps.
+
+
+## Programming Languages and styles
+- Prefer functional style
+- Guille scheme for 
+- Python for ai and when guile 
+- Bash only for short scripts
+- Typescript and javascript for web 
+- Rust for binary tools etc
+
+## Written language and style
+use Notes.md to take notes . 
+Use a casual but knowledgeable tone. This is not a corporate project there are no audits or compliance to adhere to.
+More like an open source project, more like a hobby/passion project
+
+# Bottom part 
+itreative about the project update often
 ## Current System Information
-- **Hostname**: work (consider renaming to congenital-optimist)
-- **Current Version**: NixOS 23.11
-- **Target Version**: NixOS 25.05
+- **Hostname**: work → congenital-optimist (migration in progress)
+- **Current Version**: NixOS 25.05 (migrated from 23.11)
+- **Target Version**: NixOS 25.05 ✅ 
 - **Architecture**: x86_64-linux
 - **Storage**: ZFS (zpool for system, stuffpool for data)
 - **Hardware**: AMD CPU/GPU
-- **User**: geir
+- **Users**: geir (primary), sma (admin)
 - **Dotfiles Approach**: Literate programming with Emacs org-mode (no Home Manager)
 
 ## Current Module Structure
@@ -21,17 +45,29 @@ Home-lab/
 │   │   ├── configuration.nix (main system config)
 │   │   ├── hardware-configuration.nix
 │   │   └── About.org
-│   └── modules/
-│       ├── common/
-│       │   ├── base.nix (modern CLI tools & aliases)
-│       │   └── tty.nix (console styling with Joker theme)
-│       └── virtualization/
-│           ├── podman.nix
-│           ├── libvirt.nix
-│           └── incus.nix
-└── Users/
+│   ├── sleeper-service/
+│   ├── reverse-proxy/
+│   └── grey-area/
+├── modules/
+│   ├── common/
+│   │   ├── base.nix (modern CLI tools & aliases)
+│   │   ├── tty.nix (console styling with Joker theme)
+│   │   └── nix.nix (flakes configuration)
+│   ├── desktop/
+│   │   ├── common.nix, gnome.nix, cosmic.nix, sway.nix
+│   ├── development/
+│   │   └── tools.nix (editors, LSPs, languages)
+│   ├── hardware/
+│   │   └── amd-workstation.nix
+│   ├── system/
+│   │   ├── applications.nix, fonts.nix, network.nix
+│   ├── users/
+│   │   ├── common.nix, geir.nix, sma.nix
+│   └── virtualization/
+│       ├── podman.nix, libvirt.nix, incus.nix
+└── users/
     └── geir/
-        └── user.nix (has typo: progtams → programs)
+        └── dotfiles/ (literate org-mode configs)
 ```
 
 ## Prerequisites Check
@@ -40,7 +76,7 @@ Before starting, verify:
 2. ZFS pools are healthy (`zpool status`)
 3. All referenced modules exist and are working
 4. User has sudo/root access
-5. Fix typo in `Users/geir/user.nix` first
+5. Git repository is initialized and up to date
 
 ## Step 1: Fix Existing Configuration Issues
 
