@@ -13,30 +13,31 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  # ZFS Configuration for file server
+  # Enable ZFS support for storage pool only
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.initrd.supportedFilesystems = [ "zfs" ];
+
+  # ZFS Configuration - only for storage pool
+  boot.zfs.extraPools = [ "storage" ];
+  services.zfs.autoScrub.enable = true;
+  services.zfs.trim.enable = true;
+
+  # OS remains on ext4
   fileSystems."/" =
-    { device = "filepool/root";
-      fsType = "zfs";
+    { device = "/dev/disk/by-uuid/e7fc0e32-b9e5-4080-859e-fe9dea60823d";
+      fsType = "ext4";
     };
 
-  fileSystems."/nix" =
-    { device = "filepool/nix";
-      fsType = "zfs";
-    };
-
-  fileSystems."/var" =
-    { device = "filepool/var";
-      fsType = "zfs";
-    };
-
+  # ZFS storage pool mounted for NFS exports
   fileSystems."/mnt/storage" =
-    { device = "filepool/storage";
+    { device = "storage";
       fsType = "zfs";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/ABCD-1234";
+    { device = "/dev/disk/by-uuid/2C7A-9F08";
       fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
     };
 
   swapDevices = [ ];
