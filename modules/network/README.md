@@ -19,8 +19,8 @@ This directory contains networking configurations for all machines in the Home L
 
 ### network-congenital-optimist.nix
 - AMD Threadripper workstation
-- ZFS configuration (hostId: 8425e349)
-- Additional ports: 9091 (Transmission RPC)
+- ZFS hostId configuration (8425e349)
+- Ready for additional service ports as needed
 
 ### network-sleeper-service.nix  
 - Xeon file server

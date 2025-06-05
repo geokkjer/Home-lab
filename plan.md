@@ -243,6 +243,44 @@ Home-lab/
 └── secrets/ (for future secrets management)
 ```
 
+### 2.3 Network Infrastructure Updates
+- [x] **Network topology discovery**: Used nmap to map actual network layout
+  - **Network Range**: `10.0.0.0/24` (not 192.168.1.x as initially assumed)
+  - **Gateway**: `10.0.0.138` (lan.home - router/firewall)
+  - **DNS Server**: `10.0.0.14` (pi.hole - Pi-hole ad-blocker)
+  - **Current File Server**: `10.0.0.8` (files.home - will be renamed to sleeper-service)
+  - **Machine Migration**: sleeper-service is the existing files.home machine, not a new deployment
+- [x] **sleeper-service systemd-networkd migration**: Configured for existing file server (files.home → sleeper-service rename)
+  - **Current**: files.home at 10.0.0.8 (existing NFS server, will be renamed to sleeper-service)
+  - **Configuration**: Static IP 10.0.0.8/24 with gateway 10.0.0.138 (keeping existing IP)
+  - **Network Stack**: `networking.useNetworkd = true` with `networking.useDHCP = false`
+  - **Interface**: Configured `enp0s25` with static IPv4 addressing  
+  - **DNS**: Pi-hole primary (10.0.0.14), router fallback (10.0.0.138), Google DNS (8.8.8.8)
+  - **Firewall**: File server ports configured (NFS: 111,2049; SMB: 139,445; NetBIOS: 137,138)
+  - **Benefits**: More reliable networking for file server, better integration with NixOS declarative config
+- [ ] **Network standardization**: Plan consistent networkd configuration across all server role machines workstation and laptop can use networkmanager
+- [x] **IP address allocation**: Document static IP assignments for each service
+  - **Local Network (10.0.0.0/24)**:
+    - **10.0.0.2**: arlaptop.home (existing laptop)
+    - **10.0.0.3**: congenital-optimist (AMD workstation - current machine)
+    - **10.0.0.8**: sleeper-service (Intel Xeon file server - rename from files.home)
+    - **10.0.0.11**: grey-area (planned application server)
+    - **10.0.0.12**: reverse-proxy (planned edge server)
+    - **10.0.0.14**: pi.hole (Pi-hole DNS/ad-blocker)
+    - **10.0.0.90**: wordpresserver.home (existing WordPress server)
+    - **10.0.0.117**: webdev.home (existing web development server)
+    - **10.0.0.138**: lan.home (router/gateway)
+  - **Tailscale Network (100.x.x.x/10)**: 
+    - **100.109.28.53**: congenital-optimist (current machine)
+    - **100.119.86.92**: apps (active server) (rename to grey area)
+    - **100.114.185.71**: arlaptop (laptop) (Arch Linux with plans to migrate to NixOS)
+    - **100.81.15.84**: files (file server)
+    - **100.103.143.108**: pihole (DNS server)
+    - **100.96.189.104**: vps1 (external VPS) (rename to reverse proxy)
+    - **100.126.202.40**: wordpresserver (WordPress)
+- [ ] **VLAN planning**: Consider network segmentation for different service types
+- [ ] **DNS configuration**: Plan local DNS resolution for internal services
+
 ## Phase 3: System Upgrade & Validation
 
 ### 3.1 Pre-upgrade Preparation
@@ -326,7 +364,7 @@ Home-lab/
   - [ ] Service accounts for automation (forgejo-admin, backup-agent)
   - [ ] Guest accounts for temporary access
   - [x] Culture character naming convention established
-- [ ] Network infrastructure planning
+- [x] **Network infrastructure planning**: Started with sleeper-service systemd-networkd migration
 - [ ] Consider hardware requirements for future expansion
 
 ### 5.2 Services Architecture
@@ -338,10 +376,13 @@ Home-lab/
 - [ ] Container orchestration planning
 
 ### 5.3 Security & Networking
+- [x] **systemd-networkd migration**: Completed for sleeper-service with static IP configuration
 - [ ] VPN configuration (Tailscale expansion)
-- [ ] Firewall rules standardization
-- [ ] SSH key management
+- [ ] Firewall rules standardization across machines
+- [ ] SSH key management centralization
 - [ ] Certificate management (Let's Encrypt)
+- [ ] Network segmentation planning (VLANs for services vs. user devices)
+- [ ] DNS infrastructure (local DNS server for service discovery)
 
 ## Phase 6: Advanced Features
 
