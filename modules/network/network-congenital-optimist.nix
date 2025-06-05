@@ -15,7 +15,6 @@
     
     # Additional firewall ports for workstation services
     firewall.allowedTCPPorts = [ 
-      9091  # Transmission RPC
     ];
   };
 
