@@ -6,7 +6,7 @@
   # NFS server configuration
   services.nfs.server = {
     enable = true;
-    # Export the storage directory
+    # Export the storage directory (ZFS dataset)
     exports = ''
       /mnt/storage    10.0.0.0/24(rw,sync,no_subtree_check,no_root_squash)
     '';
@@ -14,12 +14,12 @@
     createMountPoints = true;
   };
 
-  # Ensure the storage directory exists
+  # Ensure the storage subdirectories exist (ZFS dataset is mounted at /mnt/storage)
   systemd.tmpfiles.rules = [
-    "d /mnt/storage 0755 geir users -"
-    "d /mnt/storage/media 0755 geir users -"
-    "d /mnt/storage/downloads 0755 geir users -"
-    "d /mnt/storage/backups 0755 geir users -"
+    "d /mnt/storage/media 0755 sma users -"
+    "d /mnt/storage/downloads 0755 sma users -"
+    "d /mnt/storage/backups 0755 sma users -"
+    "d /mnt/storage/shares 0755 sma users -"
   ];
 
   # Required packages for NFS

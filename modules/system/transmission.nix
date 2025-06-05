@@ -5,7 +5,7 @@
   # Will re-enable once package is stable
   services.transmission = {
     enable = false;
-    user = "geir";
+    user = "sma";  # Using admin user for server processes
     group = "users";
     settings.rpc-port = 9091;
     settings.rpc-bind-address = "0.0.0.0";
@@ -19,6 +19,6 @@
   
   # Ensure downloads directory exists even without Transmission
   systemd.tmpfiles.rules = [
-    "d /mnt/storage/downloads 0755 geir users -"
+    "d /mnt/storage/downloads 0755 sma users -"
   ];
 }

@@ -13,9 +13,25 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  # ZFS Configuration for file server
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/12345678-1234-1234-1234-123456789abc";
-      fsType = "ext4";
+    { device = "filepool/root";
+      fsType = "zfs";
+    };
+
+  fileSystems."/nix" =
+    { device = "filepool/nix";
+      fsType = "zfs";
+    };
+
+  fileSystems."/var" =
+    { device = "filepool/var";
+      fsType = "zfs";
+    };
+
+  fileSystems."/mnt/storage" =
+    { device = "filepool/storage";
+      fsType = "zfs";
     };
 
   fileSystems."/boot" =

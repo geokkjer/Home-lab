@@ -14,12 +14,19 @@
     ../../modules/users/sma.nix
   ];
 
-  # Boot configuration
+  # Boot configuration with ZFS support
   boot.loader.grub = {
     enable = true;
+    zfsSupport = true;
     efiSupport = true;
     efiInstallAsRemovable = true;
     devices = [ "nodev" ];
+  };
+
+  # ZFS services for file server
+  services.zfs = {
+    autoScrub.enable = true;
+    trim.enable = true;
   };
 
   # Time and locale

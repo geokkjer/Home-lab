@@ -10,6 +10,7 @@
   # Machine-specific network configuration
   networking = {
     hostName = "sleeper-service";
+    hostId = "a1b2c3d4";  # Required for ZFS support
     
     # Enable systemd-networkd for static networking
     useNetworkd = true;
