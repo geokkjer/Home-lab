@@ -31,6 +31,13 @@ More like an open source project, more like a hobby/passion project
 - Use context7 to resolve NixOS option names, module configurations, and best practices
 - Context7 provides authoritative NixOS documentation that's more reliable than general knowledge
 
+## User Configuration Strategy
+- **Desktop machines**: Use `geir` user (includes desktop packages, development tools)
+- **Server machines**: Use `sma` user ONLY (minimal server-focused configuration)
+- **Reason**: The `geir` user module includes heavy desktop packages (browsers, GUI apps) which are inappropriate for servers
+- **Server examples**: sleeper-service, reverse-proxy, grey-area should only import `sma` user module
+- **Desktop examples**: congenital-optimist can use both `geir` and `sma` users
+
 # AI Agent Instructions: NixOS Flakes Migration for CongenitalOptimist
 ## Overview
 This part of the document provides step-by-step instructions for AI agents to help migrate the CongenitalOptimist machine from traditional NixOS configuration to flakes-based configuration and upgrade to NixOS 25.05. The system already has excellent modular structure that we'll preserve and enhance.

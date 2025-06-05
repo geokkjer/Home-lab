@@ -10,8 +10,7 @@
     ../../modules/services/nfs.nix
     ../../modules/system/transmission.nix
 
-    # User modules
-    ../../modules/users/geir.nix
+    # User modules - server only needs sma user
     ../../modules/users/sma.nix
   ];
 
