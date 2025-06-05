@@ -5,7 +5,6 @@ in
 {
   imports = [ 
     ../../modules/common/base.nix
-    ../../modules/network/common.nix
     ../../modules/users/sma.nix
     ../../modules/security/ssh-keys.nix
   ];
@@ -15,34 +14,47 @@ in
     tailscale git 
   ];
 
-  # Override common.nix firewall settings for security
+  # Hostname configuration
+  networking.hostName = "reverse-proxy";
+
+  # DMZ-specific firewall configuration - very restrictive
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 80 443 ]; # Only HTTP/HTTPS externally
+    # Only allow HTTP/HTTPS from external network
+    allowedTCPPorts = [ 80 443 ];
     allowedUDPPorts = [ ];
-    # SSH only allowed on Tailscale interface
+    # SSH only allowed on Tailscale interface (DMZ security)
     interfaces.tailscale0.allowedTCPPorts = [ 22 ];
+    # Explicitly block all other traffic
+    rejectPackets = true;
   };
 
   # Security services
-  services.fail2ban.enable = true;
+  services.fail2ban = {
+    enable = true;
+    # Extra aggressive settings for DMZ
+    bantime = "24h";
+    maxretry = 3;
+  };
 
-  # tailscale
+  # Tailscale for secure management access
   services.tailscale.enable = true;
 
-  # Hostname configuration
-  networking.hostName = "reverse-proxy";
-  
-  # SSH configuration - only accessible via Tailscale
+  # SSH configuration - ONLY accessible via Tailscale (DMZ security)
   services.openssh = {
     enable = true;
     settings = {
       PermitRootLogin = lib.mkForce "no";
       PasswordAuthentication = false;
+      PubkeyAuthentication = true;
+      AuthenticationMethods = "publickey";
+      MaxAuthTries = 3;
+      ClientAliveInterval = 300;
+      ClientAliveCountMax = 2;
     };
     listenAddresses = [
       {
-        addr = "100.96.189.104";  # Tailscale IP from About.org
+        addr = "100.96.189.104";  # Tailscale IP only
         port = 22;
       }
     ];
