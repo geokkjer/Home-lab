@@ -234,7 +234,18 @@ exec gammastep
 
 * Zsh
 
-Configuration for zsh.
+Configuration for zsh is now managed by NixOS configuration in `/home/geir/Home-lab/modules/users/geir.nix`.
+
+The zsh configuration includes:
+- History settings (10000 entries)
+- Shell options (autocd, extendedglob)
+- Completion system
+- Emacs-style keybindings
+- Shell enhancements (starship, direnv, zoxide)
+- Fun startup message with fortune and cowsay
+
+#+BEGIN_COMMENT
+Previous zsh configuration moved to NixOS - keeping for reference:
 
 #+BEGIN_SRC shell :tangle /home/geir/.config/zsh/.zshrc
 
@@ -257,8 +268,8 @@ eval "$(zoxide init zsh)"
 
 fortune -s | cowsay -f dragon | clolcat
 
-
 #+END_SRC
+#+END_COMMENT
 
 * Git
 

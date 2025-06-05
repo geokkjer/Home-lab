@@ -61,6 +61,7 @@
         buildInputs = with nixpkgs.legacyPackages.${system}; [
           nixd
           alejandra
+          nixpkgs-fmt
           git
           emacs
         ];
@@ -81,6 +82,8 @@
           emacs
           pandoc
           starship
+          nixpkgs-fmt
+          alejandra
         ];
         shellHook = ''
           echo "Literate dotfiles development environment"

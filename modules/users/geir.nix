@@ -101,22 +101,54 @@
     GIT_EDITOR = "emacs";
   };
 
-  # Geir-specific shell configuration
-  programs.zsh.shellAliases = {
-    # Development workflow
-    "lab" = "cd /home/geir/Home-lab";
-    "configs" = "cd /home/geir/Home-lab/user_configs/geir";
-    "emacs-config" = "emacs /home/geir/Home-lab/user_configs/geir/emacs.org";
+  # Comprehensive zsh configuration for geir
+  programs.zsh = {
+    enable = true;
     
-    # Quick system management
-    "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
-    "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
+    # Shell aliases
+    shellAliases = {
+      # Development workflow
+      "lab" = "cd /home/geir/Home-lab";
+      "configs" = "cd /home/geir/Home-lab/user_configs/geir";
+      "emacs-config" = "emacs /home/geir/Home-lab/user_configs/geir/emacs.org";
+      
+      # Quick system management
+      "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
+      "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
+      
+      # Container shortcuts
+      "pdm" = "podman";
+      "pdc" = "podman-compose";
+      
+      # Media shortcuts
+      "youtube-dl" = "yt-dlp";
+    };
     
-    # Container shortcuts
-    "pdm" = "podman";
-    "pdc" = "podman-compose";
+    # History configuration
+    histSize = 10000;
+    histFile = "$HOME/.histfile";
     
-    # Media shortcuts
-    "youtube-dl" = "yt-dlp";
+    # Shell options
+    setOptions = [ "autocd" "extendedglob" ];
+    
+    # Interactive shell initialization
+    interactiveShellInit = ''
+      # Emacs-style keybindings
+      bindkey -e
+      
+      # Disable annoying shell options
+      unsetopt beep nomatch
+      
+      # Completion configuration
+      zstyle ':completion:*' completer _expand _complete _ignored
+      zstyle ':completion:*' matcher-list ""
+      autoload -Uz compinit
+      compinit
+      
+      # Initialize shell enhancements
+      eval "$(starship init zsh)"
+      eval "$(direnv hook zsh)"
+      eval "$(zoxide init zsh)"
+    '';
   };
 }
