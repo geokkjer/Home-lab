@@ -266,18 +266,19 @@ Home-lab/
     - **10.0.0.8**: sleeper-service (Intel Xeon file server - rename from files.home)
     - **10.0.0.11**: grey-area (planned application server)
     - **10.0.0.12**: reverse-proxy (planned edge server)
-    - **10.0.0.14**: pi.hole (Pi-hole DNS/ad-blocker)
-    - **10.0.0.90**: wordpresserver.home (existing WordPress server)
-    - **10.0.0.117**: webdev.home (existing web development server)
-    - **10.0.0.138**: lan.home (router/gateway)
+    - **10.0.0.14**: pi.hole (Pi-hole DNS/ad-blocker) maybe move to nixos
+    - **10.0.0.90**: wordpresserver.home (existing WordPress server) to be deleted, incus container
+    - **10.0.0.117**: webdev.home (existing web development server) to be deleted, incus container
+    - **10.0.0.138**: lan.home (router/gateway/dhcp)
   - **Tailscale Network (100.x.x.x/10)**: 
     - **100.109.28.53**: congenital-optimist (current machine)
     - **100.119.86.92**: apps (active server) (rename to grey area)
     - **100.114.185.71**: arlaptop (laptop) (Arch Linux with plans to migrate to NixOS)
-    - **100.81.15.84**: files (file server)
+    - **100.81.15.84**: files (file server rename to sleeper-service )
     - **100.103.143.108**: pihole (DNS server)
     - **100.96.189.104**: vps1 (external VPS) (rename to reverse proxy)
-    - **100.126.202.40**: wordpresserver (WordPress)
+    - **100.126.202.40**: wordpresserver (WordPress) to be deleted 
+    - remind user to update tailsce or find a way to use the cli to do this
 - [ ] **VLAN planning**: Consider network segmentation for different service types
 - [ ] **DNS configuration**: Plan local DNS resolution for internal services
 
@@ -377,9 +378,18 @@ Home-lab/
 
 ### 5.3 Security & Networking
 - [x] **systemd-networkd migration**: Completed for sleeper-service with static IP configuration
+- [x] **SSH key management centralization**: Implemented two-key strategy
+  - **Admin key** (`geir@geokkjer.eu-admin`): For sma user, server administration access
+  - **Development key** (`geir@geokkjer.eu-dev`): For geir user, git services, daily development
+  - **NixOS module**: `modules/security/ssh-keys.nix` centralizes key management
+  - **SSH client config**: Updated with role-based host patterns and key selection
+  - **Security benefits**: Principle of least privilege, limited blast radius if compromised
+  - **Usage examples**:
+    - `ssh geir@sleeper-service.home` - Uses dev key automatically
+    - `ssh admin-sleeper` - Uses admin key for sma user access
+    - `git clone git@github.com:user/repo` - Uses dev key for git operations
 - [ ] VPN configuration (Tailscale expansion)
 - [ ] Firewall rules standardization across machines
-- [ ] SSH key management centralization
 - [ ] Certificate management (Let's Encrypt)
 - [ ] Network segmentation planning (VLANs for services vs. user devices)
 - [ ] DNS infrastructure (local DNS server for service discovery)

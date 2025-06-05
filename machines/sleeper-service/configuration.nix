@@ -2,6 +2,13 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/network/network-sleeper-service.nix
+
+    # Security modules
+    ../../modules/security/ssh-keys.nix
+
+    # User modules
+    ../../modules/users/geir.nix
+    ../../modules/users/sma.nix
   ];
 
   # Boot configuration

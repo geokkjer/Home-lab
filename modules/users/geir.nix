@@ -21,6 +21,12 @@
     
     shell = pkgs.zsh;
     
+    # SSH access with development keys
+    openssh.authorizedKeys.keys = config.security.ssh-keys.development or [
+      # Fallback to current key during transition
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHeOvTHIw+hZOAiWkIrz9t11UeGwxAMx7jN/1IIdgq7O geokkjer@gmail.com"
+    ];
+    
     # User-specific packages
     packages = with pkgs; [
       # Browsers & Communication

@@ -22,9 +22,8 @@
     shell = pkgs.zsh;
     
     # SSH key-based authentication only (no password login)
-    openssh.authorizedKeys.keys = [
-      # Add SSH public key here when ready
-      # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5... sma@home-lab"
+    openssh.authorizedKeys.keys = config.security.ssh-keys.admin or [
+      # Admin keys will be populated from security module
     ];
 
     # Essential admin packages

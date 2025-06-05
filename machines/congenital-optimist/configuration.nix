@@ -9,6 +9,9 @@
     ./hardware-configuration.nix
     ../../modules/network/network-congenital-optimist.nix
     
+    # Security modules
+    ../../modules/security/ssh-keys.nix
+    
     # System modules
     ../../modules/system/fonts.nix
     ../../modules/system/applications.nix
