@@ -139,6 +139,62 @@ Home-lab/
 6. **Data Migration**: ZFS dataset property changes can be done safely without data loss
 7. **Network Integration**: Pi-hole DNS integration significantly improves package resolution reliability
 
+### Home Lab Deployment Tool (COMPLETED) ✅ NEW
+**Date**: Recently completed  
+**Status**: ✅ Fully operational  
+**Tool**: `lab` command - Custom deployment management system
+
+#### Key Achievements:
+- **Custom Package Creation**: Developed `home-lab-tools.nix` package with comprehensive deployment functionality
+- **System Integration**: Added lab command to system packages via `modules/system/applications.nix`
+- **Conflict Resolution**: Resolved shell alias conflict by renaming "lab" alias to "home-lab"
+- **Multi-Machine Support**: Deployment capabilities for sleeper-service, grey-area, and reverse-proxy
+- **Status Monitoring**: Infrastructure connectivity checking with color-coded output
+- **Deployment Modes**: Support for boot, test, and switch deployment modes
+
+#### Technical Implementation:
+- **Package Structure**: Custom Nix package using `writeShellScriptBin` with proper dependencies
+- **Color-Coded Logging**: Blue info, green success, yellow warnings, red errors for clear output
+- **SSH Infrastructure**: Leverages existing SSH key management for secure remote deployment
+- **Rsync Deployment**: Efficient configuration syncing to target machines
+- **Error Handling**: Comprehensive error checking and validation throughout deployment process
+- **Service Detection**: Proper Tailscale service monitoring with `tailscaled` detection
+
+#### Available Commands:
+- **`lab status`**: Check connectivity to all infrastructure machines
+- **`lab deploy <machine> [mode]`**: Deploy configuration to specific machine
+  - **Machines**: sleeper-service, grey-area, reverse-proxy
+  - **Modes**: boot (default), test (temporary), switch (permanent)
+- **Help System**: Built-in usage documentation and examples
+
+#### Deployment Workflow:
+1. **Configuration Sync**: Uses rsync to transfer entire Home-lab directory to target machine
+2. **Remote Execution**: SSH into target machine and execute `nixos-rebuild` with flake
+3. **Validation**: Checks deployment success and provides clear feedback
+4. **Status Verification**: Can verify deployment results with status command
+
+#### Infrastructure Status Integration:
+- **Local Machine**: Checks Tailscale service status on congenital-optimist
+- **Remote Machines**: SSH connectivity testing with timeout handling
+- **Network Topology**: Integrates with existing Tailscale mesh network
+- **Service Monitoring**: Foundation for future comprehensive monitoring system
+
+#### Usage Examples:
+```bash
+lab status                          # Check all machine connectivity
+lab deploy sleeper-service boot     # Deploy and set for next boot
+lab deploy grey-area switch         # Deploy and activate immediately
+lab deploy reverse-proxy test       # Deploy temporarily for testing
+```
+
+#### Technical Benefits:
+1. **Centralized Deployment**: Single command interface for all home lab machines
+2. **Consistent Process**: Standardized deployment workflow across infrastructure
+3. **Error Prevention**: Validation and safety checks prevent deployment failures
+4. **Operational Visibility**: Clear status reporting for infrastructure state
+5. **Extensibility**: Modular design allows easy addition of new machines and features
+6. **Integration**: Seamless integration with existing SSH and Tailscale infrastructure
+
 ---
 
 ## Phase 1: Flakes Migration (Priority: High)
