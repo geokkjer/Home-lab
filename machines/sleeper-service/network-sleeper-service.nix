@@ -4,7 +4,7 @@
 
 {
   imports = [
-    ./common.nix
+    ../../modules/network/common.nix
   ];
 
   # Machine-specific network configuration

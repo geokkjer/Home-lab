@@ -3,6 +3,9 @@
 { config, pkgs, lib, ... }:
 
 {
+  # Firewall configuration for SSH
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
   # Global SSH daemon configuration
   services.openssh = {
     enable = true;

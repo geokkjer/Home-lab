@@ -4,9 +4,9 @@
     # Security modules
     ../../modules/security/ssh-keys.nix
     # Network configuration
-    ../../modules/network/network-sleeper-service.nix
+    ./network-sleeper-service.nix
     # Services
-    ../../modules/services/nfs.nix
+    ./nfs.nix
     ../../modules/system/transmission.nix
 
     # User modules - server only needs sma user

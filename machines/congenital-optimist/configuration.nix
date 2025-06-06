@@ -7,7 +7,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/network/network-congenital-optimist.nix
+    ./network-congenital-optimist.nix
     
     # Security modules
     ../../modules/security/ssh-keys.nix

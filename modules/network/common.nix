@@ -1,5 +1,5 @@
 # Common Network Configuration
-# Shared networking settings across all machines
+# Minimal shared networking settings across all machines
 { config, pkgs, ... }:
 
 {
@@ -8,11 +8,10 @@
     # Enable nftables by default for all machines
     nftables.enable = true;
     
-    # Common firewall settings
+    # Basic firewall settings (SSH handled by security/ssh-keys.nix)
     firewall = {
       enable = true;
-      # SSH is allowed by default on all machines
-      allowedTCPPorts = [ 22 ];
+      # SSH port is configured in modules/security/ssh-keys.nix
     };
   };
 
@@ -21,13 +20,6 @@
     # Tailscale VPN for secure remote access
     tailscale.enable = true;
     
-    # SSH access with secure defaults
-    openssh = {
-      enable = true;
-      settings = {
-        PermitRootLogin = "no";
-        PasswordAuthentication = false;
-      };
-    };
+    # Note: SSH configuration is handled by modules/security/ssh-keys.nix
   };
 }
