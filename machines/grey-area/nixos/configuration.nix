@@ -47,7 +47,7 @@
   services.fwupd.enable = true;
 
   # Networking
-  networking.hostName = "apps"; 
+  networking.hostName = "grey-area"; 
   networking.networkmanager.enable = true;  
 
   # Set your time zone.
@@ -92,6 +92,6 @@
   networking.firewall.allowedTCPPorts = [ 22 19999 23231];
   networking.firewall.allowedUDPPorts = [ 22 23231 ];
   networking.nftables.enable = true;
-  system.stateVersion = "23.05"; 
+  system.stateVersion = "23.05"; # Do not change this, it maintains data compatibility.
 
 }

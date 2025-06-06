@@ -3,8 +3,8 @@
 {
   # Custom packages for Home-lab infrastructure
   
-  # Home-lab specific tools and utilities
-  home-lab-tools = pkgs.callPackage ./home-lab-tools.nix { };
+  # Home-lab administration command-line tool
+  lab = pkgs.callPackage ./home-lab-tools.nix { };
   
   # Re-export commonly used packages with custom configurations
   inherit (pkgs)

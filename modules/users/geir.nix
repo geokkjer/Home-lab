@@ -118,7 +118,7 @@
     # Shell aliases
     shellAliases = {
       # Development workflow
-      "lab" = "z /home/geir/Home-lab";
+      "home-lab" = "z /home/geir/Home-lab";
       "configs" = "z /home/geir/Home-lab/user_configs/geir";
       "emacs-config" = "emacs /home/geir/Home-lab/user_configs/geir/emacs.org";
       

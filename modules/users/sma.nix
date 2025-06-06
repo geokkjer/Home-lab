@@ -83,10 +83,13 @@
     
     # Admin-focused aliases
     shellAliases = {
-      # System management
-      "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
-      "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
-      "rebuild-boot" = "sudo nixos-rebuild boot --flake /home/geir/Home-lab";
+      # System management (use current system configuration)
+      "rebuild" = "sudo nixos-rebuild switch";
+      "rebuild-test" = "sudo nixos-rebuild test";
+      "rebuild-boot" = "sudo nixos-rebuild boot";
+      "rebuild-flake" = "cd /tmp/home-lab-config && sudo nixos-rebuild switch --flake .";
+      "rebuild-flake-test" = "cd /tmp/home-lab-config && sudo nixos-rebuild test --flake .";
+      "rebuild-flake-boot" = "cd /tmp/home-lab-config && sudo nixos-rebuild boot --flake .";
       
       # Container management
       "pods" = "podman ps -a";
@@ -101,11 +104,6 @@
       # Network
       "ports" = "ss -tulpn";
       "connections" = "ss -tuln";
-      
-      # Git for infrastructure
-      "homelab" = "cd /home/geir/Home-lab";
-      "homelab-status" = "cd /home/geir/Home-lab && git status";
-      "homelab-pull" = "cd /home/geir/Home-lab && git pull";
       
       # Security
       "audit-users" = "cat /etc/passwd | grep -E '/bin/(bash|zsh|fish)'";

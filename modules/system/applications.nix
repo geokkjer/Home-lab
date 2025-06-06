@@ -1,6 +1,13 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }: 
+let
+  # Import custom packages from the flake
+  homeLabPackages = import ../../packages { inherit pkgs; };
+in {
   # System applications and utilities
   environment.systemPackages = with pkgs; [
+    # Home lab management tools
+    homeLabPackages.lab
+
     # Terminal applications
     kitty
     terminator
