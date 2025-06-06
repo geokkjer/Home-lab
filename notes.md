@@ -1,5 +1,9 @@
 # Notes to be use to write blog post 
 
-deployment script: rsync -av --delete /home/geir/Home-lab/ sma@sleeper-service:/tmp/home-lab-config/ and ssh sma@sleeper-service "cd /tmp/home-lab-config && sudo nixos-rebuild boot --flake .#sleeper-service"
 
-like the best approach maye we should add a todo for making scripts or research deploy-rs
+- research deploy-rs
+
+# Expansion
+## Hardware 
+- https://sipeed.com/nanocluster - ai cluster
+- https://www.bee-link.com/products/beelink-me-mini-n150?variant=47599172845810 - upgrade nas/storage

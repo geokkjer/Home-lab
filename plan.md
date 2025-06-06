@@ -515,7 +515,20 @@ Home-lab/
 - [ ] Configuration validation tests
 - [ ] Deployment automation
 - [ ] Monitoring and alerting
-### 6.3 Writeup
+
+### 6.3 Advanced Deployment Strategies
+- [ ] **Research deploy-rs**: Investigate deploy-rs as alternative to custom lab script
+  - Evaluate Rust-based deployment tool for NixOS flakes
+  - Compare features: parallel deployment, rollback capabilities, health checks
+  - Assess integration with existing SSH key management and Tailscale network
+  - Consider migration path from current rsync + SSH approach
+- [ ] **Convert lab script to Guile Scheme**: Explore functional deployment scripting
+  - Research Guile Scheme for system administration scripting
+  - Evaluate benefits: better error handling, functional composition, extensibility
+  - Design modular deployment pipeline with Scheme
+  - Consider integration with GNU Guix deployment patterns
+  - Plan migration strategy from current shell script implementation
+### 6.4 Writeup
 - [ ] Take all the knowledge we have amassed and make a blog post or a series of blog posts
 
 ### Phase 7: goin pro 
