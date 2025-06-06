@@ -96,6 +96,51 @@ Home-lab/
 
 ```
 
+## Deployment Status & Accomplishments ✅
+
+### sleeper-service Deployment (COMPLETED)
+**Date**: Recently completed  
+**Status**: ✅ Fully operational  
+**Machine**: Intel Xeon E3-1230 V2, 16GB RAM (formerly files.home)
+
+#### Key Achievements:
+- **Flake Migration**: Successfully deployed NixOS flake configuration on remote machine
+- **ZFS Stability**: Resolved ZFS mounting conflicts causing boot failures
+- **Data Preservation**: All 903GB of media data intact and accessible
+- **Network Integration**: Added Pi-hole DNS (10.0.0.14) for package resolution
+- **SSH Infrastructure**: Implemented centralized SSH key management
+- **Boot Performance**: Clean boot in ~1 minute with ZFS auto-mounting enabled
+- **Remote Deployment**: Established rsync + SSH deployment workflow
+
+#### Technical Solutions:
+- **ZFS Native Mounting**: Migrated from legacy mountpoints to ZFS native paths
+- **Hardware Configuration**: Removed conflicting ZFS filesystem entries
+- **Graphics Compatibility**: Added `nomodeset` kernel parameter, disabled NVIDIA drivers
+- **DNS Configuration**: Multi-tier DNS with Pi-hole primary, router and Google fallback
+- **Deployment Method**: Remote deployment via rsync + SSH instead of direct nixos-rebuild
+
+#### Data Verified:
+- **Storage Pool**: 903GB used, 896GB available
+- **Media Content**: Films (184GB), Series (612GB), Audiobooks (94GB), Music (9.1GB), Books (3.5GB)
+- **Mount Points**: `/mnt/storage` and `/mnt/storage/media` with proper ZFS auto-mounting
+
+#### Next Steps for sleeper-service:
+- [ ] Implement automated backup services
+- [ ] Add system monitoring and alerting
+- [ ] Configure additional NFS exports as needed
+- [ ] Plan storage expansion strategy
+
+#### Lessons Learned:
+1. **ZFS Mounting Strategy**: Native ZFS mountpoints are more reliable than legacy mounts in NixOS
+2. **Remote Deployment**: rsync + SSH approach avoids local machine conflicts during deployment
+3. **DNS Configuration**: Manual DNS configuration crucial during initial deployment phase
+4. **Graphics Compatibility**: `nomodeset` parameter essential for headless server deployment
+5. **Boot Troubleshooting**: ZFS auto-mounting conflicts can be resolved by removing hardware-configuration.nix ZFS entries
+6. **Data Migration**: ZFS dataset property changes can be done safely without data loss
+7. **Network Integration**: Pi-hole DNS integration significantly improves package resolution reliability
+
+---
+
 ## Phase 1: Flakes Migration (Priority: High)
 
 ### 1.1 Create Flake Foundation
@@ -250,14 +295,14 @@ Home-lab/
   - **DNS Server**: `10.0.0.14` (pi.hole - Pi-hole ad-blocker)
   - **Current File Server**: `10.0.0.8` (files.home - will be renamed to sleeper-service)
   - **Machine Migration**: sleeper-service is the existing files.home machine, not a new deployment
-- [x] **sleeper-service systemd-networkd migration**: Configured for existing file server (files.home → sleeper-service rename)
-  - **Current**: files.home at 10.0.0.8 (existing NFS server, will be renamed to sleeper-service)
-  - **Configuration**: Static IP 10.0.0.8/24 with gateway 10.0.0.138 (keeping existing IP)
-  - **Network Stack**: `networking.useNetworkd = true` with `networking.useDHCP = false`
-  - **Interface**: Configured `enp0s25` with static IPv4 addressing  
-  - **DNS**: Pi-hole primary (10.0.0.14), router fallback (10.0.0.138), Google DNS (8.8.8.8)
-  - **Firewall**: File server ports configured (NFS: 111,2049; SMB: 139,445; NetBIOS: 137,138)
-  - **Benefits**: More reliable networking for file server, better integration with NixOS declarative config
+- [x] **sleeper-service systemd-networkd migration**: ✅ **COMPLETED and DEPLOYED**
+  - [x] **Hostname transition**: Successfully renamed from files.home to sleeper-service
+  - [x] **Static IP preserved**: Maintained 10.0.0.8/24 with gateway 10.0.0.138
+  - [x] **DNS integration**: Pi-hole primary (10.0.0.14), router fallback (10.0.0.138), Google DNS (8.8.8.8)
+  - [x] **Network stack**: `networking.useNetworkd = true` with `networking.useDHCP = false`
+  - [x] **Interface configuration**: `enp0s25` configured with declarative static IPv4
+  - [x] **Service ports**: File server ports configured (NFS: 111,2049; SMB: 139,445; NetBIOS: 137,138)
+  - [x] **Production validation**: Network configuration tested and operational
 - [ ] **Network standardization**: Plan consistent networkd configuration across all server role machines workstation and laptop can use networkmanager
 - [x] **IP address allocation**: Document static IP assignments for each service
   - **Local Network (10.0.0.0/24)**:
@@ -342,11 +387,16 @@ Home-lab/
 - **Hostnames**: lowercase-with-hyphens (e.g., `congenital-optimist`, `sleeper-service`)
 - **User Names**: Culture character names in lowercase (e.g., `sma`, `geir`)
 
-- [ ] **SleeperService** file server (Intel Xeon E3-1230 V2, 16GB RAM):
-  - NFS server for network storage
-  - Automated backup services
-  - System monitoring and alerting
-  - ZFS or software RAID for data redundancy
+- [x] **SleeperService** file server (Intel Xeon E3-1230 V2, 16GB RAM): ✅ **COMPLETED**
+  - [x] NFS server for network storage (903GB ZFS pool operational)
+  - [x] ZFS storage with native mounting configuration
+  - [x] Flake-based NixOS deployment successful
+  - [x] SSH key management implemented
+  - [x] Network configuration with Pi-hole DNS integration
+  - [x] System boots cleanly in ~1 minute with ZFS auto-mounting
+  - [x] Data preservation verified (Films: 184GB, Series: 612GB, etc.)
+  - [ ] Automated backup services (future enhancement)
+  - [ ] System monitoring and alerting (future enhancement)
 - [ ] **reverse-proxy** edge server:
   - Nginx/Traefik/caddy reverse proxy
   - SSL/TLS termination with Let's Encrypt
@@ -378,13 +428,14 @@ Home-lab/
 
 ### 5.3 Security & Networking
 - [x] **systemd-networkd migration**: Completed for sleeper-service with static IP configuration
-- [x] **SSH key management centralization**: Implemented two-key strategy
-  - **Admin key** (`geir@geokkjer.eu-admin`): For sma user, server administration access
-  - **Development key** (`geir@geokkjer.eu-dev`): For geir user, git services, daily development
-  - **NixOS module**: `modules/security/ssh-keys.nix` centralizes key management
-  - **SSH client config**: Updated with role-based host patterns and key selection
-  - **Security benefits**: Principle of least privilege, limited blast radius if compromised
-  - **Usage examples**:
+- [x] **SSH key management centralization**: ✅ **IMPLEMENTED and DEPLOYED**
+  - [x] **Admin key** (`geir@geokkjer.eu-admin`): For sma user, server administration access
+  - [x] **Development key** (`geir@geokkjer.eu-dev`): For geir user, git services, daily development
+  - [x] **NixOS module**: `modules/security/ssh-keys.nix` centralizes key management
+  - [x] **SSH client config**: Updated with role-based host patterns and key selection
+  - [x] **Production deployment**: Successfully deployed on sleeper-service
+  - [x] **Security benefits**: Principle of least privilege, limited blast radius if compromised
+  - [x] **Usage examples**:
     - `ssh geir@sleeper-service.home` - Uses dev key automatically
     - `ssh admin-sleeper` - Uses admin key for sma user access
     - `git clone git@github.com:user/repo` - Uses dev key for git operations
