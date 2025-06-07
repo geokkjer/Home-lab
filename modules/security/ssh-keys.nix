@@ -51,11 +51,11 @@
         User geir
         IdentityFile ~/.ssh/id_ed25519_dev
         
-      Host grey-area grey-area.home 10.0.0.11
+      Host grey-area grey-area.home 10.0.0.12
         User geir
         IdentityFile ~/.ssh/id_ed25519_dev
         
-      Host reverse-proxy reverse-proxy.home 10.0.0.12
+      Host reverse-proxy reverse-proxy.home 46.226.104.98
         User geir
         IdentityFile ~/.ssh/id_ed25519_dev
         
@@ -66,12 +66,12 @@
         IdentityFile ~/.ssh/id_ed25519_admin
         
       Host admin-grey grey-area.admin
-        Hostname 10.0.0.11
+        Hostname 10.0.0.12
         User sma
         IdentityFile ~/.ssh/id_ed25519_admin
         
       Host admin-reverse reverse-proxy.admin
-        Hostname 10.0.0.12
+        Hostname 46.226.104.98
         User sma
         IdentityFile ~/.ssh/id_ed25519_admin
         

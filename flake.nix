@@ -60,6 +60,18 @@
           ./modules/common/tty.nix
         ];
       };
+
+      # grey-area - Services host (Forgejo, Jellyfin, etc.)
+      grey-area = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          ./machines/grey-area/configuration.nix
+          ./machines/grey-area/hardware-configuration.nix
+          ./modules/common/nix.nix
+          ./modules/common/base.nix
+          ./modules/common/tty.nix
+        ];
+      };
     };
 
     # Custom packages for the home lab
@@ -83,6 +95,7 @@
           echo "  - congenital-optimist (Threadripper workstation)"
           echo "  - sleeper-service (Xeon file server)"
           echo "  - reverse-proxy (VPS edge server)"
+          echo "  - grey-area (Services host: Forgejo, Jellyfin, etc.)"
           echo ""
           echo "Build with: nixos-rebuild build --flake .#<config>"
           echo "Switch with: nixos-rebuild switch --flake .#<config>"

@@ -19,8 +19,8 @@
   # DMZ-specific firewall configuration - very restrictive
   networking.firewall = {
     enable = true;
-    # Allow HTTP/HTTPS from external network and Git SSH on port 2222
-    allowedTCPPorts = [ 80 443 2222 ];
+    # Allow HTTP/HTTPS from external network and Git SSH on port 1337
+    allowedTCPPorts = [ 80 443 1337 ];
     allowedUDPPorts = [ ];
     # SSH only allowed from Tailscale network (100.64.0.0/10)
     extraCommands = ''
@@ -88,7 +88,7 @@
       }
       
       server {
-          listen 2222;
+          listen 1337;
           proxy_pass git_ssh_backend;
           proxy_timeout 300s;
           proxy_connect_timeout 10s;

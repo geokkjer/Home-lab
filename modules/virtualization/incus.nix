@@ -10,10 +10,6 @@
     incus
     lxc
   ];
-  users.users.geir = {
-    extraGroups = [ 
-      "incus-admin"
-    ];
-  };
+  
   networking.firewall.allowedTCPPorts = [ 8443 ];
 }

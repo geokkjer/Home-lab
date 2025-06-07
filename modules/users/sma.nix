@@ -7,6 +7,7 @@
   users.users.sma = {
     description = "Diziet Sma - System Administrator";
     isNormalUser = true;
+    group = "sma";  # Primary group
     
     # Admin privileges
     extraGroups = [
@@ -126,7 +127,10 @@
 
   # Admin user home directory permissions
   systemd.tmpfiles.rules = [
-    "d /home/sma 0755 sma users -"
-    "d /home/sma/.ssh 0700 sma users -"
+    "d /home/sma 0755 sma sma -"
+    "d /home/sma/.ssh 0700 sma sma -"
   ];
+
+  # Create the sma group
+  users.groups.sma = {};
 }

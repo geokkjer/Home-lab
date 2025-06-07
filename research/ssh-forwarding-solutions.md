@@ -248,7 +248,7 @@ Host git.geokkjer.eu
 
 **Configuration**:
 1. Enable nginx stream module
-2. Configure Git SSH on port 2222
+2. Configure Git SSH on port 1337
 3. Update Forgejo SSH_DOMAIN setting
 4. Test with alternative port
 

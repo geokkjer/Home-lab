@@ -1,21 +1,25 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./starship.nix
-      ./aliases.nix
-      ./podman.nix
-      ./libvirt.nix
-      ./incus.nix
-      ./jellyfin.nix
-      ./tailscale.nix
-      ./calibre-web.nix
-      ./audiobook.nix
-      #./ollama.nix
-      ./forgejo.nix
-    ];
+  imports = [
+    # Hardware configuration
+    ./hardware-configuration.nix
+    
+    # Shared modules
+    ../../modules/common/base.nix
+    ../../modules/network/common.nix
+    ../../modules/virtualization/podman.nix
+    ../../modules/virtualization/libvirt.nix
+    ../../modules/virtualization/incus.nix
+    ../../modules/users/sma.nix
+    
+    # Services
+    ./services/jellyfin.nix
+    ./services/calibre-web.nix
+    ./services/audiobook.nix
+    ./services/forgejo.nix
+    #./services/ollama.nix
+  ];
 
   # Swap zram
   zramSwap = {
@@ -36,7 +40,18 @@
   fileSystems."/mnt/remote/media" = {
     device = "sleeper-service:/mnt/storage";
     fsType = "nfs";
-    options = [ "x-systemd.automount" ];
+    options = [ 
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=60"
+      "x-systemd.device-timeout=10"
+      "x-systemd.mount-timeout=10"
+      "noauto"
+      "soft"
+      "intr"
+      "timeo=10"
+      "retrans=3"
+      "_netdev"
+    ];
   };
 
   # Enable all unfree hardware support.
@@ -48,29 +63,26 @@
 
   # Networking
   networking.hostName = "grey-area"; 
-  networking.networkmanager.enable = true;  
+  networking.networkmanager.enable = true;
+  
+  # Add hostname resolution for sleeper-service NFS server
+  networking.extraHosts = ''
+    10.0.0.8 sleeper-service
+  '';  
 
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
 
+  # Text mode configuration (headless server)
+  services.xserver.enable = false;
+  services.displayManager.defaultSession = "none";
+  boot.kernelParams = [ "systemd.unit=multi-user.target" ];
+  systemd.targets.graphical.enable = false;
 
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
     font = "Lat2-Terminus16";
     keyMap = "no";
-  };
-
-  users.users.geir = {
-    isNormalUser = true;
-    extraGroups = [ "wheel"
-                    "networkmanager"
-                    "libvirt"
-                    "podman"
-		    "incus-admin"
-                  ];
-    packages = with pkgs; [
-        bottom fastfetch nerdfetch
-    ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -84,12 +96,9 @@
   services.openssh.settings.PasswordAuthentication = true; 
 
 
-  # Enable Netdata
-  services.netdata.enable = true;
-
   # Firewall
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 19999 23231];
+  networking.firewall.allowedTCPPorts = [ 22 23231];
   networking.firewall.allowedUDPPorts = [ 22 23231 ];
   networking.nftables.enable = true;
   system.stateVersion = "23.05"; # Do not change this, it maintains data compatibility.
