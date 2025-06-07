@@ -76,6 +76,33 @@ writeShellScriptBin "lab" ''
     success "Successfully deployed $machine"
   }
   
+  # Update all machines function
+  update_all_machines() {
+    local mode="''${1:-boot}"  # boot, test, or switch
+    local machines=("sleeper-service" "grey-area" "reverse-proxy")
+    local failed_machines=()
+    
+    log "Starting update of all machines (mode: $mode)"
+    
+    for machine in "''${machines[@]}"; do
+      log "Updating $machine..."
+      if deploy_machine "$machine" "$mode"; then
+        success "✓ $machine updated successfully"
+      else
+        error "✗ Failed to update $machine"
+        failed_machines+=("$machine")
+      fi
+      echo ""  # Add spacing between machines
+    done
+    
+    if [[ ''${#failed_machines[@]} -eq 0 ]]; then
+      success "All machines updated successfully!"
+    else
+      error "Failed to update: ''${failed_machines[*]}"
+      exit 1
+    fi
+  }
+
   # Show deployment status
   show_status() {
     log "Home-lab infrastructure status:"
@@ -118,8 +145,24 @@ writeShellScriptBin "lab" ''
       deploy_machine "$machine" "$mode"
       ;;
       
+    "update-all")
+      mode="''${2:-boot}"
+      update_all_machines "$mode"
+      ;;
+      
     "status")
       show_status
+      ;;
+      
+    "update")
+      mode="''${2:-boot}"
+      
+      if [[ ! "$mode" =~ ^(boot|test|switch)$ ]]; then
+        error "Invalid mode: $mode. Use boot, test, or switch"
+        exit 1
+      fi
+      
+      update_all_machines "$mode"
       ;;
       
     *)
@@ -131,11 +174,15 @@ writeShellScriptBin "lab" ''
       echo "  deploy <machine> [mode]  - Deploy configuration to a machine"
       echo "                            Machines: sleeper-service, grey-area, reverse-proxy"  
       echo "                            Modes: boot (default), test, switch"
+      echo "  update [mode]            - Update all machines"
+      echo "                            Modes: boot (default), test, switch"
       echo "  status                   - Check infrastructure connectivity"
       echo ""
       echo "Examples:"
       echo "  lab deploy sleeper-service boot    # Deploy and set for next boot"
       echo "  lab deploy grey-area switch        # Deploy and switch immediately"
+      echo "  lab update boot                    # Update all machines for next boot"
+      echo "  lab update switch                  # Update all machines immediately"
       echo "  lab status                         # Check all machines"
       ;;
   esac
