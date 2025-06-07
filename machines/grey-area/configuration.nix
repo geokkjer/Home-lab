@@ -8,6 +8,7 @@
     # Shared modules
     ../../modules/common/base.nix
     ../../modules/network/common.nix
+    ../../modules/network/extraHosts.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/incus.nix
@@ -64,11 +65,6 @@
   # Networking
   networking.hostName = "grey-area"; 
   networking.networkmanager.enable = true;
-  
-  # Add hostname resolution for sleeper-service NFS server
-  networking.extraHosts = ''
-    10.0.0.8 sleeper-service
-  '';  
 
   # Set your time zone.
   time.timeZone = "Europe/Oslo";

@@ -12,6 +12,9 @@
     # Security modules
     ../../modules/security/ssh-keys.nix
     
+    # Network modules
+    ../../modules/network/extraHosts.nix
+    
     # Hardware modules
     ../../modules/hardware/amd-workstation.nix
     
@@ -45,8 +48,7 @@
         path = "/boot";
       }
     ];
-  };
-# ZFS services for this machine
+  };  # ZFS services for this machine
   services.zfs = {
     autoScrub.enable = true;
     trim.enable = true;

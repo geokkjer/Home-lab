@@ -4,6 +4,7 @@
   imports = [ 
     ./gandicloud.nix
     ../../modules/common/base.nix
+    ../../modules/network/extraHosts.nix
     ../../modules/users/sma.nix
     ../../modules/security/ssh-keys.nix
   ];

@@ -5,6 +5,7 @@
     ../../modules/security/ssh-keys.nix
     # Network configuration
     ./network-sleeper-service.nix
+    ../../modules/network/extraHosts.nix
     # Services
     ./nfs.nix
     ./services/transmission.nix
