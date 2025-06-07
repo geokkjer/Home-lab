@@ -7,7 +7,7 @@
     ./network-sleeper-service.nix
     # Services
     ./nfs.nix
-    ../../modules/system/transmission.nix
+    ./services/transmission.nix
 
     # User modules - server only needs sma user
     ../../modules/users/sma.nix

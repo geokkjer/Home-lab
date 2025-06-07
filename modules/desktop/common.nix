@@ -13,17 +13,8 @@
   
   # Common desktop packages
   environment.systemPackages = with pkgs; [
-    # Basic desktop tools
     firefox
-    alacritty
-    nautilus
-    
-    # Media and graphics
-    vlc
-    gimp
-    
-    # Utilities
-    gnome-tweaks
-    dconf-editor
   ];
+  # Flatpak support
+  services.flatpak.enable = true;
 }

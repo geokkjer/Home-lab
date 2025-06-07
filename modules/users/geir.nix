@@ -1,7 +1,10 @@
 # Primary User Configuration - geir
 # Main user account for development and desktop use
 { config, pkgs, ... }:
-
+let
+  # Import custom packages from the flake
+  homeLabPackages = import ../../packages { inherit pkgs; };
+in
 {
   users.users.geir = {
     description = "Geir Okkenhaug Jerstad - Primary User";
@@ -31,20 +34,33 @@
     
     # User-specific packages
     packages = with pkgs; [
-      # Browsers & Communication
-      chromium
-      vivaldi
-      vivaldi-ffmpeg-codecs
-      nyxt
-      firefox
-      vesktop
-      
-      # Terminal & Shell Enhancement
+      # Home lab management tools
+      homeLabPackages.lab
+
+      # Terminal applications & system monitoring
+      kitty
+      terminator
       starship
       fastfetch
       hyfetch
-      nerdfetch
       zellij
+      glances
+      htop
+      bottom
+      systemctl-tui
+
+      # Essential system tools
+      wget
+      curl
+      mc
+      
+      # Browsers & Communication
+      firefox
+      chromium
+      vesktop
+      
+      # Shell Enhancement & Fun
+      nerdfetch
       neo-cowsay
       fortune
       clolcat
@@ -53,42 +69,41 @@
       ncpamixer
       pavucontrol
       
-      # Creative & Productivity
-      gimp
-      obs-studio
-      koodo-reader
+      # Productivity
       libreoffice
+      koodo-reader
       
       # Development & System Management
+      neovim
+      vscode
+      git-credential-manager
+      github-cli
+      nodejs
+      nodePackages.npm
       virt-manager
-      gnome-tweaks
       
-      # Themes & Appearance
-      beauty-line-icon-theme
-      
-      # Emacs Integration
-      emacsPackages.vterm
-      
-      # Media & Entertainment
-      celluloid
+      # Creative Tools (optional - remove if not needed)
+      gimp
+      obs-studio
       
       # File Management
       nautilus
       file-roller
       
-      # Text Editors (alternatives to Emacs)
-      neovim
-      vscode
-      
-      # Development Tools
-      git-credential-manager
-      github-cli
-      nodejs
-      nodePackages.npm
-      
-      # Containers & Cloud
+      # Containers
       podman-compose
       podman-desktop
+      
+      # Media
+      celluloid
+      
+      # Emacs Integration
+      emacsPackages.vterm
+      
+      # Desktop integration (moved from system)
+      dbus
+      wayland
+      xdg-utils
     ];
   };
 

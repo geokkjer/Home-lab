@@ -12,10 +12,6 @@
     # Security modules
     ../../modules/security/ssh-keys.nix
     
-    # System modules
-    ../../modules/system/fonts.nix
-    ../../modules/system/applications.nix
-    
     # Hardware modules
     ../../modules/hardware/amd-workstation.nix
     
