@@ -1,8 +1,8 @@
-# 🌳 Git Branching Strategy for Home Lab Infrastructure
+# Git Branching Strategy for Infrastructure Management
 
 ## Branch Structure
 
-### 🚀 Main Branches
+### Main Branches
 
 #### `main`
 - **Purpose**: Production-ready configurations
@@ -16,7 +16,7 @@
 - **Merging**: Features merge here first
 - **Deployment**: Deployed to staging/test environments
 
-### 🔧 Supporting Branches
+### Supporting Branches
 
 #### Feature Branches: `feature/<description>`
 - **Purpose**: Development of new features or modules
@@ -43,7 +43,7 @@
 - **Scope**: Single module focus
 - **Testing**: Module-specific testing
 
-### 🏷️ Tagging Strategy
+### Tagging Strategy
 
 #### Version Tags: `v<major>.<minor>.<patch>`
 - **Purpose**: Mark stable releases
@@ -62,7 +62,7 @@
 - **Format**: `phase-1-complete`, `phase-2-complete`
 - **Documentation**: Link to plan.md milestones
 
-## 🔄 Workflow Examples
+## Workflow Examples
 
 ### Standard Feature Development
 ```bash
@@ -122,7 +122,7 @@ git checkout develop
 git merge hotfix/zfs-boot-failure
 ```
 
-## 📋 Commit Convention
+## Commit Convention
 
 ### Format
 ```
@@ -157,7 +157,7 @@ refactor(modules): reorganize desktop environment modules
 chore(ci): update GitHub Actions workflow
 ```
 
-## 🛡️ Branch Protection Rules
+## Branch Protection Rules
 
 ### Main Branch Protection
 - **Required Reviews**: 1 reviewer minimum
@@ -173,7 +173,7 @@ chore(ci): update GitHub Actions workflow
 - **Auto-merge**: Allow auto-merge after checks
 - **Force Push**: Disabled for others
 
-## 🔄 Merge Strategies
+## Merge Strategies
 
 ### Feature to Develop
 - **Strategy**: Squash and merge
@@ -190,7 +190,7 @@ chore(ci): update GitHub Actions workflow
 - **Reason**: Immediate deployment needed
 - **Testing**: Minimal but critical testing
 
-## 🚀 Deployment Strategy
+## Deployment Strategy
 
 ### Automatic Deployment
 - **main** → Production machines (congenital-optimist, sleeper-service)
@@ -213,7 +213,7 @@ git checkout v1.0.0
 sudo nixos-rebuild switch --flake .#congenital-optimist
 ```
 
-## 📊 Branch Lifecycle
+## Branch Lifecycle
 
 ### Weekly Maintenance
 - **Monday**: Review open feature branches
@@ -227,7 +227,7 @@ sudo nixos-rebuild switch --flake .#congenital-optimist
 - Update documentation
 - Security audit of configurations
 
-## 🎯 Best Practices
+## Best Practices
 
 ### Branch Naming
 - Use descriptive names: `feature/improve-zfs-performance`

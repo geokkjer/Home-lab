@@ -1,257 +1,217 @@
-# 🏠 NixOS Home Lab Adventures
+# NixOS Home Lab Infrastructure
 
 [![NixOS](https://img.shields.io/badge/NixOS-25.05-blue.svg)](https://nixos.org/)
 [![Flakes](https://img.shields.io/badge/Nix-Flakes-green.svg)](https://nixos.wiki/wiki/Flakes)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A personal journey into NixOS flakes and home lab tinkering. This is my playground for learning declarative system configuration and building a multi-machine setup that's both fun and functional.
+Modular NixOS flake configuration for multi-machine home lab infrastructure. Features declarative system configuration, centralized user management, and scalable service deployment across development workstations and server infrastructure.
 
-## 🚀 Getting Started
+# Vibe DevSecOpsing with claud-sonnet 4 and github-copilot
 
-Want to try this out? Here's how to get rolling:
+## Quick Start
 
 ```bash
-# Grab the repo
+# Clone repository
 git clone <repository-url> Home-lab
 cd Home-lab
 
-# Make sure everything looks good
+# Validate configuration
 nix flake check
 
-# Test it out (won't mess with your current setup)
-sudo nixos-rebuild test --flake .#congenital-optimist
+# Test configuration (temporary, reverts on reboot)
+sudo nixos-rebuild test --flake .#<machine-name>
 
-# If you're happy with it, make it permanent
-sudo nixos-rebuild switch --flake .#congenital-optimist
+# Apply configuration permanently
+sudo nixos-rebuild switch --flake .#<machine-name>
 ```
 
-## 🏗️ What We're Working With
+## Architecture Overview
 
-### The Machines
-- **`congenital-optimist`** - My main AMD Threadripper beast for development and experimentation
-- **`sleeper-service`** - Intel Xeon E3-1230 V2 running file server duties (the quiet workhorse)
+### Machine Types
+- **Development Workstation** - High-performance development environment with desktop environments
+- **File Server** - ZFS storage with NFS services and media management
+- **Application Server** - Containerized services (Git hosting, media server, web applications)
+- **Reverse Proxy** - External gateway with SSL termination and service routing
 
-### The Stack
-- **OS**: NixOS 25.05 (Warbler) - because reproducible builds are beautiful
-- **Configuration**: Nix Flakes with modular approach - keeping things organized
-- **Virtualization**: Incus, Libvirt/QEMU, Podman - gotta test stuff somewhere
-- **Desktop**: GNOME, Cosmic, Sway - variety is the spice of life
-- **Storage**: ZFS with snapshots and NFS - never lose data again
-- **Network**: Tailscale mesh - because VPNs should just work
+### Technology Stack
+- **Base OS**: NixOS 25.05 with Nix Flakes
+- **Configuration**: Modular, declarative system configuration
+- **Virtualization**: Incus containers, Libvirt/QEMU VMs, Podman containers
+- **Desktop**: GNOME, Cosmic, Sway window managers
+- **Storage**: ZFS with snapshots, automated mounting, NFS network storage
+- **Network**: Tailscale mesh VPN with centralized hostname resolution
 
-## 📁 How It's Organized
+## Project Structure
 
-Everything's broken down into logical chunks to keep things manageable:
+Modular configuration organized for scalability and maintainability:
 
 ```
 Home-lab/
 ├── flake.nix              # Main flake configuration
-├── flake.lock             # Locked dependency versions
+├── flake.lock             # Dependency lock file
 ├── machines/              # Machine-specific configurations
-│   ├── congenital-optimist/  # AMD workstation
-│   └── sleeper-service/      # Intel file server
+│   ├── workstation/       # Development machine config
+│   ├── file-server/       # NFS storage server
+│   ├── app-server/        # Containerized services
+│   └── reverse-proxy/     # External gateway
 ├── modules/               # Reusable NixOS modules
-│   ├── common/           # Shared system configuration
+│   ├── common/           # Base system configuration
 │   ├── desktop/          # Desktop environment modules
-│   ├── development/      # Development tools and editors
-│   ├── hardware/         # Hardware-specific configurations
+│   ├── development/      # Development tools
 │   ├── services/         # Service configurations
-│   ├── system/           # Core system modules
-│   ├── users/            # User configurations
+│   ├── users/            # User management
 │   └── virtualization/   # Container and VM setup
-├── users/                # User-specific configurations
-│   └── geir/            # Primary user configuration
-│       ├── dotfiles/    # Literate configuration with org-mode
-│       └── user.nix     # System-level user config
-├── overlays/             # Nix package overlays
-├── packages/             # Custom package definitions
-└── secrets/              # Encrypted secrets (future)
+├── packages/             # Custom packages and tools
+└── research/             # Documentation and analysis
 ```
 
-## 🔧 How I Manage This Chaos
+## Configuration Philosophy
 
-### Keeping Things Modular
-I've split everything into focused modules so I don't go insane:
+### Modular Design
+- **Single Responsibility**: Each module handles one aspect of system configuration
+- **Composable**: Modules can be mixed and matched per machine requirements
+- **Testable**: Individual modules can be validated independently
+- **Documented**: Clear documentation for module purpose and configuration
 
-- **Desktop Environments**: Each DE gets its own module - no more giant config files
-- **Virtualization**: Separate configs for Incus, Libvirt, and Podman - mix and match as needed
-- **Development**: Modular tool setups for different workflows - because context switching is real
-- **Hardware**: Hardware-specific tweaks and drivers - make the silicon sing
+### User Management Strategy
+- **Role-based Users**: Separate users for desktop vs server administration
+- **Centralized Configuration**: Consistent user setup across all machines
+- **Security Focus**: SSH key management and privilege separation
+- **Literate Dotfiles**: Org-mode documentation for complex configurations
 
-### Literate Programming (Because Documentation Matters)
-My user configs live in Emacs org-mode files - it's like having your documentation and code hold hands:
-- Configuration files that explain themselves
-- Automatic tangling from `.org` files to actual configs
-- Git tracks both the code and the reasoning behind it
+### Network Architecture
+- **Mesh VPN**: Tailscale for secure inter-machine communication
+- **Service Discovery**: Centralized hostname resolution
+- **Firewall Management**: Service-specific port configuration
+- **External Access**: Reverse proxy with SSL termination
 
-## 🚀 My Workflow
+## Development Workflow
 
-### Tinkering Locally
+### Local Testing
 ```bash
-# Check if I broke anything
+# Validate configuration syntax
 nix flake check
 
-# Test changes without committing to them
-sudo nixos-rebuild test --flake .#<machine-name>
+# Build without applying changes
+nix build .#nixosConfigurations.<machine>.config.system.build.toplevel
 
-# Build and see what happens
-sudo nixos-rebuild build --flake .#<machine-name>
+# Test configuration (temporary)
+sudo nixos-rebuild test --flake .#<machine>
 
-# Ship it!
-sudo nixos-rebuild switch --flake .#<machine-name>
+# Apply configuration permanently
+sudo nixos-rebuild switch --flake .#<machine>
 ```
 
-### Git-Driven Chaos (In a Good Way)
-1. **Feature Branch**: New idea? New branch.
-2. **Local Testing**: Break things safely with `nixos-rebuild test`
-3. **Pull Request**: Show off the changes
-4. **Review**: Someone sanity-checks my work
-5. **Deploy**: Either automated or "click the button"
+### Git Workflow
+1. **Feature Branch**: Create branch for configuration changes
+2. **Local Testing**: Validate changes with `nixos-rebuild test`
+3. **Pull Request**: Submit changes for review
+4. **Deploy**: Apply configuration to target machines
 
-## 🔐 Secrets and Security
+### Remote Deployment
+- **SSH-based**: Remote deployment via secure shell
+- **Atomic Updates**: Complete success or automatic rollback
+- **Health Checks**: Service validation after deployment
+- **Centralized Management**: Single repository for all infrastructure
 
-### Current Reality
-- No secrets in git (obviously)
-- Manual secret juggling during setup (it's fine, really)
-- ZFS encryption for the important stuff
+## Service Architecture
 
-### Future Dreams
-- **agenix** or **sops-nix** for proper secret management
-- **age** keys for encryption magic
-- **CI/CD** that doesn't leak passwords everywhere
+### Core Services
+- **Git Hosting**: Self-hosted Git with CI/CD capabilities
+- **Media Server**: Streaming with transcoding support
+- **File Storage**: NFS network storage with ZFS snapshots
+- **Web Gateway**: Reverse proxy with SSL and external access
+- **Container Platform**: Podman for containerized applications
 
-## 🎯 The Hardware
+### Service Discovery
+- **Internal DNS**: Tailscale for mesh network resolution
+- **External DNS**: Public domain with SSL certificates
+- **Service Mesh**: Inter-service communication via secure network
+- **Load Balancing**: Traffic distribution and failover
 
-### CongenitalOptimist (The Workstation)
-- **CPU**: AMD Threadripper (check hardware-configuration.nix for the gory details)
-- **GPU**: AMD (with proper drivers and GPU passthrough for VMs)
-- **Storage**: ZFS pools (zpool for system, stuffpool for data hoarding)
-- **Role**: Main development machine, VM playground, desktop environment testing ground
-- **Services**: Whatever I'm experimenting with this week
+### Data Management
+- **ZFS Storage**: Copy-on-write filesystem with snapshots
+- **Network Shares**: NFS for cross-machine file access
+- **Backup Strategy**: Automated snapshots and external backup
+- **Data Integrity**: Checksums and redundancy
 
-### SleeperService (The Quiet One)
-- **CPU**: Intel Xeon E3-1230 V2 @ 3.70GHz (4 cores, 8 threads - still plenty peppy)
-- **Memory**: 16GB RAM (enough for file serving duties)
-- **Storage**: ZFS with redundancy (because data loss is sadness)
-- **Role**: Network storage, file sharing, backup duties, monitoring the other machines
-- **Services**: NFS, Samba, automated backups, keeping an eye on things
+## Security Model
 
-## 🧪 Testing (The "Does It Work?" Phase)
+### Network Security
+- **VPN Mesh**: All inter-machine traffic via Tailscale
+- **Firewall Rules**: Service-specific port restrictions
+- **SSH Hardening**: Key-based authentication only
+- **Fail2ban**: Automated intrusion prevention
 
-### Automated Testing (Someday Soon)
-- **Configuration Validation**: `nix flake check` in CI - catch dumb mistakes early
-- **Build Testing**: Test builds for all machines - make sure nothing's broken
-- **Module Testing**: Individual module validation - each piece should work alone
-- **Integration Testing**: Full system builds - the moment of truth
+### User Security
+- **Role Separation**: Administrative vs daily-use accounts
+- **Key Management**: Centralized SSH key distribution
+- **Privilege Escalation**: Sudo access only where needed
+- **Service Accounts**: Dedicated accounts for automated services
 
-### My Manual Testing Ritual
-- [ ] System actually boots (surprisingly important)
-- [ ] Desktop environments don't crash immediately
-- [ ] VMs and containers start up
-- [ ] Network services respond
-- [ ] Development environment loads
-- [ ] Can actually get work done
+### Infrastructure Security
+- **Configuration as Code**: All changes tracked in version control
+- **Atomic Deployments**: Rollback capability for failed changes
+- **Secret Management**: Encrypted secrets with controlled access
+- **Security Updates**: Regular dependency updates
 
-## 📈 Keeping Things Running
+## Testing Strategy
 
-### Health Checks (The Boring But Important Stuff)
-- Generation switching (did the update work?)
-- Service status monitoring (what's broken now?)
-- ZFS pool health (happy disks = happy life)
-- Network connectivity (can I reach the internet?)
-- Resource usage (is something eating all my RAM?)
+### Automated Testing
+- **Syntax Validation**: Nix flake syntax checking
+- **Build Testing**: Configuration build verification
+- **Module Testing**: Individual component validation
+- **Integration Testing**: Full system deployment tests
 
-### Backup Strategy (Paranoia Pays Off)
-- **ZFS Snapshots**: Automatic filesystem snapshots - time travel for your data
-- **Configuration Backups**: Git repo with full history - every mistake preserved for posterity
-- **Data Backups**: Automated services on SleeperService - redundancy is key
-- **Recovery Procedures**: Documented rollback processes - for when everything goes sideways
+### Manual Testing
+- **Boot Validation**: System startup verification
+- **Service Health**: Application functionality checks
+- **Network Connectivity**: Inter-service communication tests
+- **User Environment**: Desktop and development tool validation
 
-## 🔄 CI/CD Dreams (Work in Progress)
+## Deployment Status
 
-### Validation Pipeline (The Plan)
-```yaml
-# What I want GitHub Actions to do
-- Syntax Check: nix flake check  # Catch the obvious stuff
-- Build Test: nix build .#nixosConfigurations.<machine>  # Does it actually build?
-- Security Scan: Nix security auditing  # Keep the bad guys out
-- Documentation: Update system docs  # Because future me will forget
-```
+### Infrastructure Maturity
+- ✅ **Multi-machine Configuration**: 4 machines deployed
+- ✅ **Service Integration**: Git hosting, media server, file storage
+- ✅ **Network Mesh**: Secure VPN with service discovery
+- ✅ **External Access**: Public services with SSL termination
+- ✅ **Centralized Management**: Single repository for all infrastructure
 
-### Deployment Pipeline (The Dream)
-```yaml
-# Automated deployment magic
-- Staging: Deploy to test environment  # Break things safely
-- Integration Tests: Automated system testing  # Does everything still work?
-- Production: Deploy to production machines  # The moment of truth
-- Rollback: Automatic rollback on failure  # When things go wrong (they will)
-```
+### Current Capabilities
+- **Development Environment**: Full IDE setup with multiple desktop options
+- **File Services**: Network storage with 900GB+ media library
+- **Git Hosting**: Self-hosted with external access
+- **Media Streaming**: Movie and TV series streaming with transcoding
+- **Container Platform**: Podman-based containerized services
 
-## 🤝 Want to Contribute?
+## Documentation
 
-### How to Jump In
-1. Fork or clone the repo
-2. Create a feature branch for your idea
-3. Make your changes
-4. Test locally with `nixos-rebuild test` (don't break my machine)
-5. Submit a pull request
-6. Chat about it in the review
-7. Merge when we're both happy
+- **[Migration Plan](plan.md)**: Detailed implementation roadmap
+- **[Development Workflow](DEVELOPMENT_WORKFLOW.md)**: Contribution guidelines
+- **[Branching Strategy](BRANCHING_STRATEGY.md)**: Git workflow and conventions
+- **[AI Instructions](instruction.md)**: Agent guidance for system management
 
-### Module Development Tips
-- Keep modules focused - one job, do it well
-- Document what your module does and how to use it
-- Test modules independently when you can
-- Use consistent naming (future you will thank you)
-- Include example configurations for others
+## Contributing
 
-## 📖 Documentation
+### Getting Started
+1. Fork the repository
+2. Create feature branch
+3. Test changes locally with `nixos-rebuild test`
+4. Submit pull request with detailed description
+5. Respond to review feedback
+6. Deploy after approval
 
-- **[Plan](plan.md)**: The grand vision and migration roadmap
-- **[Instructions](instruction.md)**: Step-by-step setup and AI agent guidance
-- **[Machine Documentation](machines/)**: Individual machine configs and notes
-- **[Module Documentation](modules/)**: How each module works
-- **[User Documentation](users/)**: User-specific configuration details
+### Module Development
+- **Focused Scope**: One responsibility per module
+- **Configuration Options**: Parameterize for flexibility
+- **Documentation**: Explain purpose and usage
+- **Examples**: Provide usage examples
 
-## 🎯 The Journey So Far
+## License
 
-### Phase 1: Flakes Migration ✅
-- [x] Converted to flake-based configuration (no more channels!)
-- [x] Modularized desktop environments (sanity preserved)
-- [x] Added comprehensive virtualization (all the containers)
-- [x] Set up GitOps foundation (git-driven everything)
-
-### Phase 2: Configuration Cleanup (In Progress)
-- [ ] Optimize modular structure (make it even better)
-- [ ] Enhance documentation (explain the magic)
-- [ ] Standardize module interfaces (consistency is king)
-
-### Phase 3: Multi-Machine Expansion (Coming Soon)
-- [ ] Add SleeperService configuration (wake up the sleeper)
-- [ ] Implement service modules (automate all the things)
-- [ ] Set up network storage (centralized data paradise)
-
-### Phase 4: Automation & CI/CD (The Dream)
-- [ ] Implement automated testing (catch problems early)
-- [ ] Set up deployment pipelines (one-click deploys)
-- [ ] Add monitoring and alerting (know when things break)
-
-### Phase 5: Advanced Features (Future Fun)
-- [ ] Secrets management (proper secret handling)
-- [ ] Advanced monitoring (graphs and dashboards)
-- [ ] Backup automation (paranoia made easy)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Feel free to steal ideas, improve things, or just poke around.
-
-## 🙏 Thanks
-
-- **NixOS Community** for excellent docs and endless patience with newbie questions
-- **Culture Ship Names** for inspiring machine nomenclature (because why not?)
-- **Emacs Community** for literate programming inspiration and org-mode magic
-- **Home Lab Community** for sharing knowledge, war stories, and "it works on my machine" solutions
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-*"The ship had decided to call itself the Arbitrary, presumably for much the same reason."*
+*Infrastructure designed for reliability, security, and maintainability.*
