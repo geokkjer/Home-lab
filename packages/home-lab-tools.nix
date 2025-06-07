@@ -41,6 +41,20 @@ writeShellScriptBin "lab" ''
     local mode="''${2:-boot}"  # boot, test, or switch
     
     case "$machine" in
+      "congenital-optimist")
+        # Local deployment - no SSH needed
+        log "Deploying $machine (mode: $mode) locally"
+        
+        # Deploy the configuration locally
+        log "Running nixos-rebuild $mode locally..."
+        if ! sudo nixos-rebuild $mode --flake "$HOMELAB_ROOT#$machine"; then
+          error "Failed to deploy configuration to $machine"
+          exit 1
+        fi
+        
+        success "Successfully deployed $machine"
+        return 0
+        ;;
       "sleeper-service")
         local target_host="sma@sleeper-service"
         ;;
@@ -52,7 +66,7 @@ writeShellScriptBin "lab" ''
         ;;
       *)
         error "Unknown machine: $machine"
-        error "Available machines: sleeper-service, grey-area, reverse-proxy"
+        error "Available machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"
         exit 1
         ;;
     esac
@@ -79,7 +93,7 @@ writeShellScriptBin "lab" ''
   # Update all machines function
   update_all_machines() {
     local mode="''${1:-boot}"  # boot, test, or switch
-    local machines=("sleeper-service" "grey-area" "reverse-proxy")
+    local machines=("congenital-optimist" "sleeper-service" "grey-area" "reverse-proxy")
     local failed_machines=()
     
     log "Starting update of all machines (mode: $mode)"
@@ -129,7 +143,7 @@ writeShellScriptBin "lab" ''
     "deploy")
       if [[ $# -lt 2 ]]; then
         error "Usage: lab deploy <machine> [mode]"
-        error "Machines: sleeper-service, grey-area, reverse-proxy"
+        error "Machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"
         error "Modes: boot (default), test, switch"
         exit 1
       fi
@@ -167,18 +181,19 @@ writeShellScriptBin "lab" ''
       echo ""
       echo "Available commands:"
       echo "  deploy <machine> [mode]  - Deploy configuration to a machine"
-      echo "                            Machines: sleeper-service, grey-area, reverse-proxy"  
+      echo "                            Machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"  
       echo "                            Modes: boot (default), test, switch"
       echo "  update [mode]            - Update all machines"
       echo "                            Modes: boot (default), test, switch"
       echo "  status                   - Check infrastructure connectivity"
       echo ""
       echo "Examples:"
-      echo "  lab deploy sleeper-service boot    # Deploy and set for next boot"
-      echo "  lab deploy grey-area switch        # Deploy and switch immediately"
-      echo "  lab update boot                    # Update all machines for next boot"
-      echo "  lab update switch                  # Update all machines immediately"
-      echo "  lab status                         # Check all machines"
+      echo "  lab deploy congenital-optimist boot   # Deploy workstation for next boot"
+      echo "  lab deploy sleeper-service boot       # Deploy and set for next boot"
+      echo "  lab deploy grey-area switch           # Deploy and switch immediately"
+      echo "  lab update boot                       # Update all machines for next boot"
+      echo "  lab update switch                     # Update all machines immediately"
+      echo "  lab status                            # Check all machines"
       ;;
   esac
 ''
