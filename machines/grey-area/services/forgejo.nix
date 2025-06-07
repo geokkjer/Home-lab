@@ -15,6 +15,7 @@
     server = {
       ROOT_URL = "http://apps:3000";
       SSH_DOMAIN = "git.geokkjer.eu";
+      SSH_PORT = 2222;
     };
     repository = {
       ENABLE_PUSH_CREATE_USER = true;

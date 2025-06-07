@@ -1,9 +1,8 @@
-{ pkgs, configs, lib, ... }:
-let
-  Host = "vps1.tail807ea.ts.net";
-in
+{ pkgs, config, lib, ... }:
+
 {
   imports = [ 
+    ./gandicloud.nix
     ../../modules/common/base.nix
     ../../modules/users/sma.nix
     ../../modules/security/ssh-keys.nix
@@ -20,11 +19,15 @@ in
   # DMZ-specific firewall configuration - very restrictive
   networking.firewall = {
     enable = true;
-    # Only allow HTTP/HTTPS from external network
-    allowedTCPPorts = [ 80 443 ];
+    # Allow HTTP/HTTPS from external network and Git SSH on port 2222
+    allowedTCPPorts = [ 80 443 2222 ];
     allowedUDPPorts = [ ];
-    # SSH only allowed on Tailscale interface (DMZ security)
-    interfaces.tailscale0.allowedTCPPorts = [ 22 ];
+    # SSH only allowed from Tailscale network (100.64.0.0/10)
+    extraCommands = ''
+      # Allow SSH only from Tailscale network
+      iptables -A nixos-fw -p tcp --dport 22 -s 100.64.0.0/10 -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 22 -j DROP
+    '';
     # Explicitly block all other traffic
     rejectPackets = true;
   };
@@ -52,12 +55,8 @@ in
       ClientAliveInterval = 300;
       ClientAliveCountMax = 2;
     };
-    listenAddresses = [
-      {
-        addr = "100.96.189.104";  # Tailscale IP only
-        port = 22;
-      }
-    ];
+    # Let SSH listen on default port, firewall restricts to Tailscale interface
+    # This allows Tailscale to assign IP dynamically based on hostname
   };
   
   # nginx reverse proxy
@@ -81,6 +80,21 @@ in
       #  locations."/".proxyPass = "/var/wwww/homepage/";
       #};
     };
+
+    # Stream configuration for SSH forwarding to Git server
+    streamConfig = ''
+      upstream git_ssh_backend {
+          server apps:22;
+      }
+      
+      server {
+          listen 2222;
+          proxy_pass git_ssh_backend;
+          proxy_timeout 300s;
+          proxy_connect_timeout 10s;
+          proxy_responses 1;
+      }
+    '';
   };
   # acme let's encrypt
   security.acme = {
