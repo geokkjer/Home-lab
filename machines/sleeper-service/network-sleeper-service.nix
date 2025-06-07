@@ -41,21 +41,26 @@
     # nameservers = [ "10.0.0.14" "10.0.0.138" "8.8.8.8" ];  # Pi-hole, router, Google DNS fallback
     
     # Additional firewall ports for file server services
-    firewall.allowedTCPPorts = [ 
-      22    # SSH
-      111   # NFS portmapper
-      2049  # NFS
-      445   # SMB/CIFS
-      139   # NetBIOS Session Service
-      # Add additional ports here as needed
-    ];
+    firewall = {
+      # Trust the Tailscale interface for mesh network access
+      trustedInterfaces = [ "tailscale0" ];
+      
+      allowedTCPPorts = [ 
+        22    # SSH
+        111   # NFS portmapper
+        2049  # NFS
+        445   # SMB/CIFS
+        139   # NetBIOS Session Service
+        # Add additional ports here as needed
+      ];
     
-    firewall.allowedUDPPorts = [
-      22    # SSH 
-      111   # NFS portmapper
-      2049  # NFS
-      137   # NetBIOS Name Service
-      138   # NetBIOS Datagram Service
-    ];
+      allowedUDPPorts = [
+        22    # SSH 
+        111   # NFS portmapper
+        2049  # NFS
+        137   # NetBIOS Name Service
+        138   # NetBIOS Datagram Service
+      ];
+    };
   };
 }

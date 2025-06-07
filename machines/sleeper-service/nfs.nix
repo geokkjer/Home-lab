@@ -7,8 +7,9 @@
   services.nfs.server = {
     enable = true;
     # Export the storage directory (ZFS dataset)
+    # Allow access from both local network and Tailscale network
     exports = ''
-      /mnt/storage    10.0.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+      /mnt/storage    10.0.0.0/24(rw,sync,no_subtree_check,no_root_squash) 100.64.0.0/10(rw,sync,no_subtree_check,no_root_squash)
     '';
     # Create exports on startup
     createMountPoints = true;
