@@ -68,8 +68,9 @@ Home-lab/
 
 ### Before Any NixOS Changes
 1. **Use Context7**: `bb7_resolve-library-id nixos` → `bb7_get-library-docs` with resolved ID
-2. **Check current state**: `nix flake check` and verify system health
-3. **Test build**: `nix build .#nixosConfigurations.<machine>.config.system.build.toplevel`
+2. **Stage changes in git**: `git add .` (ensures Nix can access all files)
+3. **Check current state**: `nix flake check` and verify system health
+4. **Test build**: `nix build .#nixosConfigurations.<machine>.config.system.build.toplevel`
 
 ### Configuration Best Practices
 - **Machine-specific configs**: Keep in `machines/<name>/` directory
