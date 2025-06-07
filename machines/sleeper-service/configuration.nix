@@ -58,10 +58,10 @@
   # ];
   
   # Create mount directories early in boot process
-  systemd.tmpfiles.rules = [
-    "d /mnt/storage 0755 root root -"
-    "d /mnt/storage/media 0755 root root -"
-  ];
+  # systemd.tmpfiles.rules = [
+  #   "d /mnt/storage 0755 root root -"
+  #   "d /mnt/storage/media 0755 root root -"
+  # ];
 
   # Network configuration - using working setup from old config
   # networking.hostName = "sleeper-service";

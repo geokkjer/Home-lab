@@ -7,6 +7,7 @@
   users.users.sma = {
     description = "Diziet Sma - System Administrator";
     isNormalUser = true;
+    uid = 1001;     # Fixed UID for consistency across machines
     group = "sma";  # Primary group
     
     # Admin privileges
@@ -132,5 +133,7 @@
   ];
 
   # Create the sma group
-  users.groups.sma = {};
+  users.groups.sma = {
+    gid = 992;  # Fixed GID for consistency across machines
+  };
 }

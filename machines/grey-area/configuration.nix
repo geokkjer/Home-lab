@@ -39,7 +39,7 @@
 
   # Mount remote filesystem
   fileSystems."/mnt/remote/media" = {
-    device = "sleeper-service:/mnt/storage";
+    device = "sleeper-service:/mnt/storage/media";
     fsType = "nfs";
     options = [ 
       "x-systemd.automount"
@@ -94,7 +94,7 @@
 
   # Firewall
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 23231];
+  networking.firewall.allowedTCPPorts = [ 22 3000 23231];
   networking.firewall.allowedUDPPorts = [ 22 23231 ];
   networking.nftables.enable = true;
   system.stateVersion = "23.05"; # Do not change this, it maintains data compatibility.

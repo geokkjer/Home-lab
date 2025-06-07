@@ -22,10 +22,7 @@
     { device = "/dev/disk/by-uuid/E251-F60A";
       fsType = "vfat";
     };
-  fileSystems."/mnt/remote/media" =
-    { device = "sleeper-service:/mnt/storage";
-      fsType = "nfs";
-    };
+
   swapDevices = [ ];
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

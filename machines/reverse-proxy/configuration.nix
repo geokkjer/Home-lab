@@ -72,7 +72,7 @@
       "git.geokkjer.eu" = {
         addSSL = true;
         enableACME = true;
-        locations."/".proxyPass = "http://apps:3000";
+        locations."/".proxyPass = "http://grey-area:3000";
       };
       #"geokkjer.eu" = {
       #  default = true;
@@ -85,7 +85,7 @@
     # Stream configuration for SSH forwarding to Git server
     streamConfig = ''
       upstream git_ssh_backend {
-          server apps:22;
+          server grey-area:22;
       }
       
       server {
