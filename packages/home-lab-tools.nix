@@ -145,11 +145,6 @@ writeShellScriptBin "lab" ''
       deploy_machine "$machine" "$mode"
       ;;
       
-    "update-all")
-      mode="''${2:-boot}"
-      update_all_machines "$mode"
-      ;;
-      
     "status")
       show_status
       ;;
