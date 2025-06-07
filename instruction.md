@@ -89,6 +89,19 @@ Home-lab/
 - **Status monitoring**: Use `lab status` to get overview of all lab machines
 - **Document Context7 findings** in commit messages
 
+### Git/Forgejo Configuration
+- **Primary repository**: Hosted on self-hosted Forgejo instance
+- **Forgejo URL**: `ssh://forgejo@git.geokkjer.eu:1337/geir/Home-lab.git`
+- **SSH port**: 1337 (proxied through reverse-proxy to grey-area:22)
+- **User**: Must use `forgejo` user, not `git` user
+- **GitHub mirror**: `git@github.com:geokkjer/Home-lab.git` (secondary/backup)
+- **Remote configuration**:
+  ```bash
+  git remote add origin ssh://forgejo@git.geokkjer.eu:1337/geir/Home-lab.git
+  git remote add github git@github.com:geokkjer/Home-lab.git
+  ```
+- **Pushing**: Primary pushes to Forgejo origin, manual sync to GitHub as needed
+
 ## Key Constraints
 - **No Home Manager**: Use org-mode literate dotfiles instead
 - **ZFS preservation**: Never change hostId or break ZFS mounts
