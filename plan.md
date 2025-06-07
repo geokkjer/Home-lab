@@ -793,6 +793,13 @@ deploy.nodes = {
   - [ ] Comprehensive blog post series documenting the full home lab journey
   - [ ] User guides for GNU Stow + literate Emacs configuration workflow
   - [ ] Deploy-rs migration guide and lessons learned
+- [ ] **SSH & Network Infrastructure Improvements**: Combined priority for related infrastructure upgrades
+  - [ ] SSH connection testing with original ed25519 key (already approved in Forgejo)
+  - [ ] Consider testing direct connection to forgejo@grey-area first to bypass proxy
+  - [ ] SSH debugging and key management refinement
+  - [ ] Migration from nginx streams to HAProxy for better SSH forwarding and load balancing
+  - [ ] Gradual re-hardening of SSH security (Tailscale-only access) after Git verification
+  - [ ] Deploy-rs migration for improved deployment automation and health checks
 - [ ] **Future Enhancements**
   - [ ] User ID consistency cleanup (sma user UID alignment across machines)
   - [ ] CI/CD integration with Forgejo for automated testing and deployment

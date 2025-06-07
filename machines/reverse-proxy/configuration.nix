@@ -17,18 +17,13 @@
   # Hostname configuration
   networking.hostName = "reverse-proxy";
 
-  # DMZ-specific firewall configuration - very restrictive
+  # DMZ-specific firewall configuration - simplified for testing
   networking.firewall = {
     enable = true;
     # Allow HTTP/HTTPS from external network and Git SSH on port 1337
-    allowedTCPPorts = [ 80 443 1337 ];
+    # Temporarily allow SSH from everywhere - rely on fail2ban for protection
+    allowedTCPPorts = [ 22 80 443 1337 ];
     allowedUDPPorts = [ ];
-    # SSH only allowed from Tailscale network (100.64.0.0/10)
-    extraCommands = ''
-      # Allow SSH only from Tailscale network
-      iptables -A nixos-fw -p tcp --dport 22 -s 100.64.0.0/10 -j ACCEPT
-      iptables -A nixos-fw -p tcp --dport 22 -j DROP
-    '';
     # Explicitly block all other traffic
     rejectPackets = true;
   };
@@ -44,7 +39,7 @@
   # Tailscale for secure management access
   services.tailscale.enable = true;
 
-  # SSH configuration - ONLY accessible via Tailscale (DMZ security)
+  # SSH configuration - temporarily simplified for testing
   services.openssh = {
     enable = true;
     settings = {
@@ -56,8 +51,6 @@
       ClientAliveInterval = 300;
       ClientAliveCountMax = 2;
     };
-    # Let SSH listen on default port, firewall restricts to Tailscale interface
-    # This allows Tailscale to assign IP dynamically based on hostname
   };
   
   # nginx reverse proxy
