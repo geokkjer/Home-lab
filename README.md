@@ -1,8 +1,12 @@
-# NixOS Home Lab Infrastructure
-
-[![NixOS](https://img.shields.io/badge/NixOS-25.05-blue.svg)](https://nixos.org/)
-[![Flakes](https://img.shields.io/badge/Nix-Flakes-green.svg)](https://nixos.wiki/wiki/Flakes)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<div align="center">
+  <img src="assets/nixos_logo.svg" alt="NixOS Logo" width="120" height="150">
+  
+  # NixOS Home Lab Infrastructure
+  
+  [![NixOS](https://img.shields.io/badge/NixOS-25.05-blue.svg)](https://nixos.org/)
+  [![Flakes](https://img.shields.io/badge/Nix-Flakes-green.svg)](https://nixos.wiki/wiki/Flakes)
+  [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+</div>
 
 Modular NixOS flake configuration for multi-machine home lab infrastructure. Features declarative system configuration, centralized user management, and scalable service deployment across development workstations and server infrastructure.
 
@@ -21,7 +25,7 @@ nix flake check
 # Test configuration (temporary, reverts on reboot)
 sudo nixos-rebuild test --flake .#<machine-name>
 
-# Apply configuration permanently
+# Apply configuration permanently  
 sudo nixos-rebuild switch --flake .#<machine-name>
 ```
 
@@ -34,7 +38,7 @@ sudo nixos-rebuild switch --flake .#<machine-name>
 - **Reverse Proxy** - External gateway with SSL termination and service routing
 
 ### Technology Stack
-- **Base OS**: NixOS 25.05 with Nix Flakes
+- **Base OS**: <img src="assets/nixos_logo.svg" alt="NixOS" width="20" height="25" style="vertical-align: middle; margin-right: 5px;">NixOS 25.05 with Nix Flakes
 - **Configuration**: Modular, declarative system configuration
 - **Virtualization**: Incus containers, Libvirt/QEMU VMs, Podman containers
 - **Desktop**: GNOME, Cosmic, Sway window managers
@@ -66,6 +70,8 @@ Home-lab/
 ```
 
 ## Configuration Philosophy
+
+<img src="assets/nixos_logo.svg" alt="NixOS" width="30" height="37" style="float: left; margin-right: 10px; margin-top: 5px;">
 
 ### Modular Design
 - **Single Responsibility**: Each module handles one aspect of system configuration
@@ -214,4 +220,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-*Infrastructure designed for reliability, security, and maintainability.*
+<div align="center">
+  <img src="assets/nixos_logo.svg" alt="NixOS Logo" width="40" height="50">
+  <br>
+  <em>Infrastructure designed for reliability, security, and maintainability.</em>
+</div>
