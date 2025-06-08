@@ -31,33 +31,19 @@
 
     # Essential admin packages
     packages = with pkgs; [
-      # System monitoring and diagnostics
-      htop
+      # System monitoring and diagnostics (htop, lsof, strace moved to base.nix)
       iotop
       nethogs
-      lsof
-      strace
       
-      # Network tools
-      nmap
+      # Network tools (nmap moved to base.nix)
       tcpdump
       wireshark-cli
-      curl
-      wget
       
-      # File and disk utilities
-      tree
-      fd
-      ripgrep
-      fzf
-      ncdu
+      # File and disk utilities (tree, fd, ripgrep, fzf, ncdu moved to base.nix)
       
-      # Text processing
-      jq
-      yq
+      # Text processing (jq, yq moved to base.nix)
       
-      # Version control (for system configs)
-      git
+      # Version control (git moved to base.nix)
       
       # Container management
       podman-compose

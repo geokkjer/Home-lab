@@ -10,8 +10,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    neovim curl htop bottom fastfetch
-    tailscale git 
+    neovim fastfetch tailscale
   ];
 
   # Hostname configuration

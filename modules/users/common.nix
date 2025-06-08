@@ -25,23 +25,14 @@
     
     # Common aliases for all users
     shellAliases = {
-      # Modern CLI tool replacements
-      "ls" = "eza --color=auto --group-directories-first";
+      # Modern CLI tool replacements (basic ones moved to base.nix)
       "ll" = "eza -l --color=auto --group-directories-first";
       "la" = "eza -la --color=auto --group-directories-first";
       "tree" = "eza --tree";
       
-      # Git shortcuts
-      "gs" = "git status";
-      "ga" = "git add";
-      "gc" = "git commit";
-      "gp" = "git push";
-      "gl" = "git log --oneline -10";
+      # Git shortcuts (basic ones moved to base.nix)
       
-      # System shortcuts
-      "grep" = "rg";
-      "find" = "fd";
-      "cat" = "bat";
+      # System shortcuts (some moved to base.nix)
       "top" = "btop";
       
       # Network
@@ -64,21 +55,14 @@
 
   # Common packages for all users
   environment.systemPackages = with pkgs; [
-    # Essential CLI tools (already configured in base.nix)
+    # Essential CLI tools moved to base.nix
     # Adding user-specific tools here
     
     # Communication
     firefox
     
-    # Development (basic)
-    git
-    curl
-    wget
-    
-    # Utilities
-    file
-    unzip
-    zip
+    # Development (basic tools moved to base.nix)
+    # Additional utilities not in base.nix
   ];
 
   # Common security settings

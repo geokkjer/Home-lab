@@ -82,8 +82,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    neovim emacs nano curl htop glances kitty 
-    wget git inxi nethogs fastfetch
+    
   ];
 
   # Enable the OpenSSH daemon.

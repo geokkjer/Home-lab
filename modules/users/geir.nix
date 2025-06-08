@@ -41,23 +41,15 @@ in
       kitty
       terminator
       starship
-      fastfetch
-      hyfetch
-      zellij
-      glances
-      htop
-      bottom
-      systemctl-tui
-
-      # Essential system tools
-      wget
-      curl
+     
+      # Essential system tools (moved duplicates to base.nix)
       mc
       
       # Browsers & Communication
       firefox
       chromium
       vesktop
+      vivaldi vivaldi-ffmpeg-codecs
       
       # Shell Enhancement & Fun
       nerdfetch
@@ -70,14 +62,12 @@ in
       pavucontrol
       
       # Productivity
-      libreoffice
       koodo-reader
       
       # Development & System Management
       neovim
       vscode
       git-credential-manager
-      github-cli
       nodejs
       nodePackages.npm
       virt-manager
@@ -85,12 +75,12 @@ in
       # Creative Tools (optional - remove if not needed)
       gimp
       obs-studio
-      
-      # File Management
-      nautilus
-      file-roller
-      
-      # Containers
+      inkscape
+
+      # AI Tools
+      opencode # AI code assistant
+
+      # Container tools
       podman-compose
       podman-desktop
       
@@ -143,8 +133,7 @@ in
       "collect" = "sudo nix-collect-garbage --d";
       "optimise" = "sudo nix-store --optimise";
 
-      # Git shortcuts for multi-remote workflow
-      "git-push-all" = "git push origin main && git push github main";
+      # Git shortcuts for multi-remote workflow  
       "git-status-all" = "git status && echo '--- Checking origin ---' && git log origin/main..HEAD --oneline && echo '--- Checking github ---' && git log github/main..HEAD --oneline";
 
       # Container shortcuts

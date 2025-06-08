@@ -7,10 +7,5 @@
   lab = pkgs.callPackage ./home-lab-tools.nix { };
   
   # Re-export commonly used packages with custom configurations
-  inherit (pkgs)
-    # Core utilities that might be customized
-    git
-    curl
-    wget
-    ;
+  # (Basic CLI tools moved to base.nix)
 }
