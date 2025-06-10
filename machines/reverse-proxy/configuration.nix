@@ -19,9 +19,9 @@
   # DMZ-specific firewall configuration - simplified for testing
   networking.firewall = {
     enable = true;
-    # Allow HTTP/HTTPS from external network and Git SSH on port 1337
+    # Allow HTTP/HTTPS from external network and Git SSH on port 2222
     # Temporarily allow SSH from everywhere - rely on fail2ban for protection
-    allowedTCPPorts = [ 22 80 443 1337 ];
+    allowedTCPPorts = [ 22 80 443 2222 ];
     allowedUDPPorts = [ ];
     # Explicitly block all other traffic
     rejectPackets = true;
@@ -81,7 +81,7 @@
       }
       
       server {
-          listen 1337;
+          listen 2222;
           proxy_pass git_ssh_backend;
           proxy_timeout 300s;
           proxy_connect_timeout 10s;

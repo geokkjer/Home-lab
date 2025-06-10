@@ -15,7 +15,7 @@
     server = {
       ROOT_URL = "https://git.geokkjer.eu";
       SSH_DOMAIN = "git.geokkjer.eu";
-      SSH_PORT = 1337;
+      SSH_PORT = 2222;
       # Use system SSH server instead of built-in
       DISABLE_SSH = false;
       START_SSH_SERVER = false;
