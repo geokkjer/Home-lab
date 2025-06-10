@@ -1,10 +1,26 @@
-{ pkgs, config, ... }:
 {
+  pkgs,
+  config,
+  ...
+}: {
+  # Create the git user before Forgejo tries to use it
+  users.users.git = {
+    isSystemUser = true;
+    group = "git";
+    shell = pkgs.bash;
+    home = "/var/lib/forgejo";
+    createHome = true;
+    description = "Forgejo Git Service";
+  };
+
+  users.groups.git = {};
+
   services.forgejo = {
     enable = true;
-    user = "git";  # Explicitly set to 'git' user for SSH compatibility
+    user = "git"; # Use the git user we created above
+    group = "git";
   };
-   
+
   services.forgejo.settings = {
     DEFAULT = {
       RUN_MODE = "prod";

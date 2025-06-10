@@ -1,7 +1,10 @@
-{ pkgs, config, lib, ... }:
-
 {
-  imports = [ 
+  pkgs,
+  config,
+  lib,
+  ...
+}: {
+  imports = [
     ./gandicloud.nix
     ../../modules/common/base.nix
     ../../modules/network/extraHosts.nix
@@ -10,7 +13,9 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    neovim fastfetch tailscale
+    neovim
+    fastfetch
+    tailscale
   ];
 
   # Hostname configuration
@@ -21,8 +26,8 @@
     enable = true;
     # Allow HTTP/HTTPS from external network and Git SSH on port 2222
     # Temporarily allow SSH from everywhere - rely on fail2ban for protection
-    allowedTCPPorts = [ 22 80 443 2222 ];
-    allowedUDPPorts = [ ];
+    allowedTCPPorts = [22 80 443 2222];
+    allowedUDPPorts = [];
     # Explicitly block all other traffic
     rejectPackets = true;
   };
@@ -51,7 +56,7 @@
       ClientAliveCountMax = 2;
     };
   };
-  
+
   # nginx reverse proxy
   services.nginx = {
     enable = true;
@@ -79,7 +84,7 @@
       upstream git_ssh_backend {
           server grey-area:22;
       }
-      
+
       server {
           listen 2222;
           proxy_pass git_ssh_backend;
@@ -93,7 +98,7 @@
   security.acme = {
     acceptTerms = true;
     defaults = {
-    email = "geir@geokkjer.eu";
+      email = "geir@geokkjer.eu";
     };
   };
 }
