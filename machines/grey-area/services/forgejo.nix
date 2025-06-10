@@ -2,7 +2,7 @@
 {
   services.forgejo = {
     enable = true;
-    # Use the default 'forgejo' user, not 'git'
+    user = "git";  # Explicitly set to 'git' user for SSH compatibility
   };
    
   services.forgejo.settings = {
@@ -16,9 +16,11 @@
       ROOT_URL = "https://git.geokkjer.eu";
       SSH_DOMAIN = "git.geokkjer.eu";
       SSH_PORT = 1337;
-      # Disable built-in SSH server, use system SSH instead
+      # Use system SSH server instead of built-in
       DISABLE_SSH = false;
       START_SSH_SERVER = false;
+      # Configure SSH user
+      SSH_USER = "git";
     };
     repository = {
       ENABLE_PUSH_CREATE_USER = true;
