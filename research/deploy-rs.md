@@ -72,6 +72,13 @@ Deploy-rs uses a declarative configuration format in your flake:
 }
 ```
 
+```sh
+  # This is highly advised by deploy-rs
+    checks = builtins.mapAttrs (
+      system: deployLib: deployLib.deployChecks inputs.self.deploy
+    ) inputs.deploy-rs.lib;    
+```
+
 ## Command Examples
 
 ```bash

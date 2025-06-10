@@ -23,6 +23,8 @@
     ../../modules/desktop/gnome.nix
     ../../modules/desktop/cosmic.nix
     ../../modules/desktop/sway.nix
+    ../../modules/desktop/niri.nix
+    
     
     # Development tools
     ../../modules/development/tools.nix

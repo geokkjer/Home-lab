@@ -11,7 +11,7 @@
 Modular NixOS flake configuration for multi-machine home lab infrastructure. Features declarative system configuration, centralized user management, and scalable service deployment across development workstations and server infrastructure.
 
 # Vibe DevSecOpsing with claude-sonnet 4 and github-copilot
-A project about handeling pets. If you want to handle sheep, look elsewhere :-) 
+A project about handling pets. If you want to handle sheep, look elsewhere :-) 
 
 ## Quick Start
 

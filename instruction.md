@@ -7,7 +7,7 @@ This part of the document provides general instructions for tha AI agent.
 - Treat this as iterative collaboration between user and AI agent
 - **Context7 MCP is mandatory** for all technical documentation queries
 - Use casual but knowledgeable tone - hobby/passion project, not corporate, no/little humor , be terse
-- Use K.I.S.S priciples in both code and written languageS
+- Use K.I.S.S priciples in both code and written language
 - Update documentation frequently as project evolves
 
 ## Language & Tool Preferences
