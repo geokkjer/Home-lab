@@ -11,6 +11,7 @@
 Modular NixOS flake configuration for multi-machine home lab infrastructure. Features declarative system configuration, centralized user management, and scalable service deployment across development workstations and server infrastructure.
 
 # Vibe DevSecOpsing with claude-sonnet 4 and github-copilot
+A project about handeling pets. If you want to handle sheep, look elsewhere :-) 
 
 ## Quick Start
 
@@ -198,21 +199,6 @@ sudo nixos-rebuild switch --flake .#<machine>
 - **[Branching Strategy](BRANCHING_STRATEGY.md)**: Git workflow and conventions
 - **[AI Instructions](instruction.md)**: Agent guidance for system management
 
-## Contributing
-
-### Getting Started
-1. Fork the repository
-2. Create feature branch
-3. Test changes locally with `nixos-rebuild test`
-4. Submit pull request with detailed description
-5. Respond to review feedback
-6. Deploy after approval
-
-### Module Development
-- **Focused Scope**: One responsibility per module
-- **Configuration Options**: Parameterize for flexibility
-- **Documentation**: Explain purpose and usage
-- **Examples**: Provide usage examples
 
 ## License
 

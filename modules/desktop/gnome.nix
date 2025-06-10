@@ -12,6 +12,8 @@
     gnome-shell-extensions
     dconf-editor
     gnome-tweaks
+    gnome-terminal
+    nautilus
   ];
   
   # GNOME services

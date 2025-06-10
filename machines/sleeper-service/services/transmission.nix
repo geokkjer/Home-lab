@@ -1,10 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  # Transmission temporarily disabled due to build issues
-  # Will re-enable once package is stable
   services.transmission = {
-    enable = false;
+    package = pkgs.transmission_4;
+    enable = true;
     user = "sma";  # Using admin user for server processes
     group = "users";
     settings.rpc-port = 9091;
@@ -13,7 +12,7 @@
     settings = {
       download-dir = "/mnt/storage/downloads";
       rpc-whitelist = "127.0.0.1,10.0.0.*,100.*.*.*";
-      rpc-host-whitelist = "sleeper-service,localhost";
+      rpc-host-whitelist = "sleeper-service,localhost,congenital-optimist";
     };
   };
   
