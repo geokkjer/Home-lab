@@ -92,13 +92,13 @@ Home-lab/
 
 ### Git/Forgejo Configuration
 - **Primary repository**: Hosted on self-hosted Forgejo instance
-- **Forgejo URL**: `ssh://forgejo@git.geokkjer.eu:1337/geir/Home-lab.git`
-- **SSH port**: 1337 (proxied through reverse-proxy to grey-area:22)
-- **User**: Must use `forgejo` user, not `git` user
+- **Forgejo URL**: `ssh://git@git.geokkjer.eu:2222/geir/Home-lab.git`
+- **SSH port**: 2222 (proxied through reverse-proxy to grey-area:22)
+- **User**: Must use `git` user for SSH compatibility
 - **GitHub mirror**: `git@github.com:geokkjer/Home-lab.git` (secondary/backup)
 - **Remote configuration**:
   ```bash
-  git remote add origin ssh://forgejo@git.geokkjer.eu:1337/geir/Home-lab.git
+  git remote add origin ssh://git@git.geokkjer.eu:2222/geir/Home-lab.git
   git remote add github git@github.com:geokkjer/Home-lab.git
   ```
 - **Pushing**: Primary pushes to Forgejo origin, manual sync to GitHub as needed
