@@ -8,27 +8,29 @@
   imports = [
     ./hardware-configuration.nix
     ./network-congenital-optimist.nix
-    
+
     # Security modules
     ../../modules/security/ssh-keys.nix
-    
+
     # Network modules
     ../../modules/network/extraHosts.nix
-    
+
     # Hardware modules
     ../../modules/hardware/amd-workstation.nix
-    
+
     # Desktop environments
     ../../modules/desktop/common.nix
     ../../modules/desktop/gnome.nix
     ../../modules/desktop/cosmic.nix
     ../../modules/desktop/sway.nix
     ../../modules/desktop/niri.nix
-    
-    
+
+    # Fonts
+    ../../modules/desktop/fonts.nix
+
     # Development tools
     ../../modules/development/tools.nix
-    
+
     # User configuration
     ../../modules/users/geir.nix
 
@@ -50,7 +52,7 @@
         path = "/boot";
       }
     ];
-  };  # ZFS services for this machine
+  }; # ZFS services for this machine
   services.zfs = {
     autoScrub.enable = true;
     trim.enable = true;
