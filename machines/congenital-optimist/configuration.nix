@@ -15,6 +15,9 @@
     # Network modules
     ../../modules/network/extraHosts.nix
 
+    # Services
+    ../../modules/services/nfs-client.nix
+
     # Hardware modules
     ../../modules/hardware/amd-workstation.nix
 

@@ -1,10 +1,12 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     # Hardware configuration
     ./hardware-configuration.nix
-    
+
     # Shared modules
     ../../modules/common/base.nix
     ../../modules/network/common.nix
@@ -13,7 +15,10 @@
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/incus.nix
     ../../modules/users/sma.nix
-    
+
+    # NFS client with ID mapping
+    ../../modules/services/nfs-client.nix
+
     # Services
     ./services/jellyfin.nix
     ./services/calibre-web.nix
@@ -32,7 +37,7 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.efiInstallAsRemovable = true;
   boot.loader.efi.efiSysMountPoint = "/boot/";
-  boot.loader.grub.device = "nodev"; 
+  boot.loader.grub.device = "nodev";
 
   # Disks and Updates
   services.fstrim.enable = true;
@@ -41,7 +46,7 @@
   fileSystems."/mnt/remote/media" = {
     device = "sleeper-service:/mnt/storage/media";
     fsType = "nfs";
-    options = [ 
+    options = [
       "x-systemd.automount"
       "x-systemd.idle-timeout=60"
       "x-systemd.device-timeout=10"
@@ -56,14 +61,14 @@
   };
 
   # Enable all unfree hardware support.
-  hardware.firmware = with pkgs; [ firmwareLinuxNonfree ];
+  hardware.firmware = with pkgs; [firmwareLinuxNonfree];
   hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
   nixpkgs.config.allowUnfree = true;
   services.fwupd.enable = true;
 
   # Networking
-  networking.hostName = "grey-area"; 
+  networking.hostName = "grey-area";
   networking.networkmanager.enable = true;
 
   # Set your time zone.
@@ -72,7 +77,7 @@
   # Text mode configuration (headless server)
   services.xserver.enable = false;
   services.displayManager.defaultSession = "none";
-  boot.kernelParams = [ "systemd.unit=multi-user.target" ];
+  boot.kernelParams = ["systemd.unit=multi-user.target"];
   systemd.targets.graphical.enable = false;
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -82,20 +87,17 @@
   };
 
   environment.systemPackages = with pkgs; [
-    
   ];
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "no";
-  services.openssh.settings.PasswordAuthentication = true; 
-
+  services.openssh.settings.PasswordAuthentication = true;
 
   # Firewall
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 3000 23231];
-  networking.firewall.allowedUDPPorts = [ 22 23231 ];
+  networking.firewall.allowedTCPPorts = [22 3000 23231];
+  networking.firewall.allowedUDPPorts = [22 23231];
   networking.nftables.enable = true;
   system.stateVersion = "23.05"; # Do not change this, it maintains data compatibility.
-
 }
