@@ -6,6 +6,10 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ./media-group.nix
+  ];
+
   users.users.sma = {
     description = "Diziet Sma - System Administrator";
     isNormalUser = true;
@@ -20,6 +24,7 @@
       "incus-admin" # container management
       "podman" # container runtime
       "docker" # docker compatibility (if needed)
+      "media" # shared media access for NFS shares
     ];
 
     # Security-focused shell setup

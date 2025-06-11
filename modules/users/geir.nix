@@ -8,6 +8,10 @@
   # Import custom packages from the flake
   homeLabPackages = import ../../packages {inherit pkgs;};
 in {
+  imports = [
+    ./media-group.nix
+  ];
+
   users.users.geir = {
     description = "Geir Okkenhaug Jerstad - Primary User";
     isNormalUser = true;
@@ -22,6 +26,7 @@ in {
       "audio" # audio devices
       "video" # video devices
       "render" # GPU access
+      "media" # shared media access for NFS shares
     ];
 
     shell = pkgs.zsh;

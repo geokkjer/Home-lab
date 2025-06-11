@@ -1,8 +1,14 @@
 # NFS Server Configuration
 # Network File System server for home lab storage
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [
+    ../../modules/users/media-group.nix
+  ];
+
   # NFS server configuration
   services.nfs.server = {
     enable = true;
@@ -16,13 +22,14 @@
     createMountPoints = true;
   };
 
-  # Ensure the storage subdirectories exist (ZFS dataset is mounted at /mnt/storage)
-  # systemd.tmpfiles.rules = [
-  #   "d /mnt/storage/media 0755 sma users -"
-  #   "d /mnt/storage/downloads 0755 sma users -"
-  #   "d /mnt/storage/backups 0755 sma users -"
-  #   "d /mnt/storage/shares 0755 sma users -"
-  # ];
+  # Ensure the storage subdirectories exist with proper ownership (ZFS dataset is mounted at /mnt/storage)
+  # Setting ownership to root:media with group write permissions for shared access
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage/media 0775 root media -"
+    "d /mnt/storage/downloads 0775 root media -"
+    "d /mnt/storage/backups 0775 root media -"
+    "d /mnt/storage/shares 0775 root media -"
+  ];
 
   # Required packages for NFS
   environment.systemPackages = with pkgs; [
