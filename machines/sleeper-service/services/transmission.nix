@@ -23,4 +23,3 @@
   # Downloads directory ownership will be handled by NFS module tmpfiles rules
   # Removed duplicate tmpfiles rule since NFS module already creates this directory
 }
-}
