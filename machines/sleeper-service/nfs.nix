@@ -10,7 +10,24 @@
   ];
 
   # Enable RPC services for NFS
-  services.rpcbind.enable = true; # NFS server configuration
+  services.rpcbind.enable = true;
+
+  # NFSv4 ID mapping service
+  services.nfs.idmapd = {
+    enable = true;
+    settings = {
+      General = {
+        Domain = "home.lab"; # Same domain on all machines
+        Verbosity = 0;
+      };
+      Mapping = {
+        Nobody-User = "nobody";
+        Nobody-Group = "nogroup";
+      };
+    };
+  };
+
+  # NFS server configuration
   services.nfs.server = {
     enable = true;
 
