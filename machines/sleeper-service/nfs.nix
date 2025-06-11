@@ -9,27 +9,10 @@
     ../../modules/users/media-group.nix
   ];
 
-  # NFSv4 ID mapping for consistent user/group mapping
-  services.rpcbind.enable = true;
-  services.nfs.idmapd = {
-    enable = true;
-    settings = {
-      General = {
-        Domain = "home.lab";
-        Verbosity = 0;
-      };
-      Mapping = {
-        Nobody-User = "nobody";
-        Nobody-Group = "nogroup";
-      };
-    };
-  };
-
-  # NFS server configuration
+  # Enable RPC services for NFS
+  services.rpcbind.enable = true; # NFS server configuration
   services.nfs.server = {
     enable = true;
-    # Increased thread count for better performance
-    threads = 16;
 
     # Export the storage directory (ZFS dataset)
     # Allow access from both local network and Tailscale network
@@ -50,17 +33,25 @@
       # Shares - public access via media group
       /mnt/storage/shares 10.0.0.0/24(rw,sync,no_subtree_check,all_squash,anonuid=993,anongid=993) 100.64.0.0/10(rw,sync,no_subtree_check,all_squash,anonuid=993,anongid=993)
     '';
-    # Create exports on startup
-    createMountPoints = true;
+    # Don't create mount points automatically since they already exist
+    createMountPoints = false;
   };
 
   # Ensure the storage subdirectories exist with proper ownership (ZFS dataset is mounted at /mnt/storage)
   # Using setgid bit (2xxx) for proper group inheritance on new files/directories
+  # Note: /mnt/storage/media is a ZFS dataset mount point, so we don't create it with tmpfiles
   systemd.tmpfiles.rules = [
-    "d /mnt/storage/media 2775 root media -" # Setgid for group inheritance
+    # /mnt/storage/media is handled by ZFS mounting, not tmpfiles
     "d /mnt/storage/downloads 2775 media media -" # Owned by media group
     "d /mnt/storage/backups 0750 root root -" # Admin only, restricted access
     "d /mnt/storage/shares 2775 media media -" # Public access via media group
+  ];
+
+  # Set permissions on the ZFS-mounted media dataset after it's mounted
+  # This ensures proper ownership even though it's a ZFS mount point
+  systemd.services.nfs-server.serviceConfig.ExecStartPost = [
+    "${pkgs.coreutils}/bin/chown root:media /mnt/storage/media"
+    "${pkgs.coreutils}/bin/chmod 2775 /mnt/storage/media"
   ];
 
   # Performance tuning for NFS

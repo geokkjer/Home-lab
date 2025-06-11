@@ -171,12 +171,19 @@ server:/mnt/storage/media /mnt/media nfs nosuid,nodev,rw,hard,timeo=600 0 0
   };
 
   # Directory permissions and ownership
+  # IMPORTANT: Only create directories that are NOT ZFS mount points with tmpfiles
+  # ZFS mount points must have their permissions set after mounting
   systemd.tmpfiles.rules = [
-    # Media group directories
-    "d /mnt/storage/media 2775 root media -"       # Setgid for group inheritance
+    # Only create non-ZFS directories - media is a ZFS dataset mount point
     "d /mnt/storage/downloads 2775 media media -"  # Owned by media group
     "d /mnt/storage/backups 0750 root root -"      # Admin only
     "d /mnt/storage/shares 2775 media media -"     # Public access via media group
+  ];
+
+  # Set permissions on ZFS-mounted datasets after they're mounted
+  systemd.services.nfs-server.serviceConfig.ExecStartPost = [
+    "${pkgs.coreutils}/bin/chown root:media /mnt/storage/media"
+    "${pkgs.coreutils}/bin/chmod 2775 /mnt/storage/media"
   ];
 
   # Performance tuning
@@ -225,157 +232,444 @@ services.nfs.idmapd = {
 # server:/mnt/storage/media /mnt/media nfs4 rw,hard,timeo=600,retrans=5,_netdev,nosuid 0 0
 ```
 
-## Troubleshooting Common Permission Issues
+## NixOS-Specific NFS Research
 
-### 1. "Permission Denied" Errors
+### NFS Service Configuration in NixOS
 
-**Symptoms**: Users cannot access files they should be able to access
+NixOS provides declarative configuration for both NFS servers and clients through the `services.nfs` module. The configuration is highly modular and allows for comprehensive setup of NFS services.
 
-**Diagnosis**:
-```bash
-# Check UID/GID mapping
-id username  # On both client and server
+#### Key NixOS NFS Modules and Options
 
-# Check export configuration
-exportfs -v
+Based on the nixpkgs documentation, NFS configuration in NixOS involves several key components:
 
-# Check mount options
-mount | grep nfs
+1. **Basic NFS Support**:
+   ```nix
+   boot.supportedFilesystems = [ "nfs" ];
+   services.rpcbind.enable = true;
+   ```
 
-# Check file permissions
-ls -la /mnt/storage/media
+2. **NFS Server Configuration**:
+   - `services.nfs.server.enable` - Enable NFS server
+   - `services.nfs.server.exports` - Define export configurations
+   - `services.nfs.server.createMountPoints` - Auto-create mount points
+   - `services.nfs.server.threads` - Number of NFS daemon threads
+
+3. **NFS Client Configuration**:
+   - `services.rpcbind.enable` - Required for NFS client operations
+   - `services.nfs.idmapd` - NFSv4 ID mapping service
+   - `fileSystems` - Declarative mount point definitions
+
+4. **NFSv4 ID Mapping**:
+   ```nix
+   services.nfs.idmapd = {
+     enable = true;
+     settings = {
+       General = {
+         Domain = "home.lab";
+         Verbosity = 0;
+       };
+       Mapping = {
+         Nobody-User = "nobody";
+         Nobody-Group = "nogroup";
+       };
+     };
+   };
+   ```
+
+#### NixOS Advantages for NFS
+
+1. **Declarative Configuration**: All NFS settings are defined in configuration files, making them reproducible and version-controlled.
+
+2. **Automatic Service Dependencies**: NixOS automatically handles service dependencies (rpcbind, nfsd, mountd, etc.).
+
+3. **Integrated Firewall Management**: Firewall rules can be declared alongside NFS configuration.
+
+4. **Atomic Updates**: Configuration changes are applied atomically, reducing the risk of service disruption.
+
+5. **Rollback Capability**: Previous configurations can be easily restored if issues occur.
+
+### NixOS NFS Implementation Patterns
+
+#### Pattern 1: Single-Host NFS Server
+```nix
+{
+  services.nfs.server = {
+    enable = true;
+    exports = ''
+      /mnt/storage 192.168.1.0/24(rw,sync,no_subtree_check)
+    '';
+    createMountPoints = true;
+  };
+  
+  networking.firewall.allowedTCPPorts = [ 111 2049 ];
+  networking.firewall.allowedUDPPorts = [ 111 2049 ];
+}
 ```
 
-**Solutions**:
-- Ensure UID/GID consistency
-- Check export options (root_squash, all_squash)
-- Verify group membership
-- Check directory setgid bit (2xxx permissions)
+#### Pattern 2: NFS Client with Declarative Mounts
+```nix
+{
+  boot.supportedFilesystems = [ "nfs" ];
+  services.rpcbind.enable = true;
+  
+  fileSystems."/mnt/nfs-share" = {
+    device = "server.local:/mnt/storage";
+    fsType = "nfs";
+    options = [ "rw" "hard" "timeo=600" "_netdev" ];
+  };
+}
+```
 
-### 2. "Operation Not Permitted" for File Operations
+#### Pattern 3: High-Security NFS with Kerberos
+```nix
+{
+  security.krb5 = {
+    enable = true;
+    package = pkgs.krb5;
+    settings = {
+      libdefaults.default_realm = "HOME.LAB";
+      realms."HOME.LAB" = {
+        kdc = "kerberos.home.lab";
+        admin_server = "kerberos.home.lab";
+      };
+    };
+  };
+  
+  services.nfs.server = {
+    enable = true;
+    exports = ''
+      /secure/data 192.168.1.0/24(rw,sync,sec=krb5p,no_subtree_check)
+    '';
+  };
+}
+```
 
-**Symptoms**: Can read files but cannot create/modify/delete
+## Implementation Plan
 
-**Solutions**:
-- Check write permissions in exports (`rw` vs `ro`)
-- Verify directory permissions (need write + execute)
-- Check if filesystem is mounted read-only
-- Ensure no conflicting mount options (`ro`, `nosuid`)
+### Phase 1: Basic NFS Server Setup (Week 1)
 
-### 3. Files Created with Wrong Ownership
+#### Objectives
+- Set up basic NFS server on `sleeper-service`
+- Configure secure exports with proper permission management
+- Establish client connectivity from other home lab machines
 
-**Symptoms**: New files appear with unexpected UID/GID
+#### Tasks
 
-**Solutions**:
-- Use setgid bit on directories (`chmod g+s /directory`)
-- Configure all_squash with appropriate anonuid/anongid
-- Set up proper ID mapping
-- Use ACLs for complex permission scenarios
+**1.1 Update sleeper-service NFS Configuration**
+- Location: `machines/sleeper-service/nfs.nix`
+- Actions:
+  - Enable NFSv4 ID mapping service
+  - Configure secure export options
+  - Set up proper directory permissions with systemd tmpfiles
+  - Add performance tuning parameters
 
-### 4. Root Access Issues
+**1.2 Create Media Group Module Enhancement**
+- Location: `modules/users/media-group.nix`
+- Actions:
+  - Ensure consistent GID (993) across all machines
+  - Add group-specific directory management
+  - Configure proper setgid permissions
 
-**Symptoms**: Root operations fail on NFS mounts
+**1.3 Client Configuration Module**
+- Location: `modules/services/nfs-client.nix` (new)
+- Actions:
+  - Create reusable NFS client configuration
+  - Include NFSv4 ID mapping setup
+  - Add common mount options and security settings
 
-**Solutions**:
-- Check if `root_squash` is intended behavior
-- Use `no_root_squash` only for trusted admin clients
-- Consider using `sudo` on the NFS server instead
+**1.4 Update Machine Configurations**
+- Locations: 
+  - `machines/congenital-optimist/configuration.nix`
+  - `machines/grey-area/configuration.nix`
+- Actions:
+  - Import NFS client module
+  - Add declarative mount points for shared storage
+  - Configure firewall rules
 
-## Performance Optimization
+#### Deliverables
+- [ ] Updated `sleeper-service/nfs.nix` with secure configuration
+- [ ] New `modules/services/nfs-client.nix` module
+- [ ] Enhanced `modules/users/media-group.nix`
+- [ ] Client configurations for all machines
+- [ ] Documentation updates in this file
 
-### Server Tuning
+### Phase 2: Security Hardening (Week 2)
+
+#### Objectives
+- Implement security best practices
+- Set up proper access controls
+- Configure monitoring and logging
+
+#### Tasks
+
+**2.1 Security Enhancement**
+- Actions:
+  - Implement root squashing by default
+  - Configure all_squash for public shares
+  - Set up proper anonymous user mapping
+  - Review and minimize export permissions
+
+**2.2 Network Security**
+- Actions:
+  - Configure UFW/iptables rules for NFS ports
+  - Set up VPN-only access for sensitive shares
+  - Implement port restrictions (secure option)
+
+**2.3 Monitoring Setup**
+- Location: `modules/services/nfs-monitoring.nix` (new)
+- Actions:
+  - Set up NFS statistics collection
+  - Configure log monitoring for access patterns
+  - Create alerting for failed mount attempts
+
+#### Deliverables
+- [ ] Security-hardened NFS configuration
+- [ ] Network security rules
+- [ ] Monitoring and alerting system
+- [ ] Security audit documentation
+
+### Phase 3: Performance Optimization (Week 3)
+
+#### Objectives
+- Optimize NFS performance for home lab workloads
+- Implement caching strategies
+- Tune network and filesystem parameters
+
+#### Tasks
+
+**3.1 Server Performance Tuning**
+- Actions:
+  - Increase NFS daemon threads
+  - Optimize kernel parameters for NFS
+  - Configure appropriate read/write sizes
+  - Set up async vs sync based on use case
+
+**3.2 Client Optimization**
+- Actions:
+  - Configure optimal mount options
+  - Set up client-side caching
+  - Tune timeout and retry parameters
+
+**3.3 Network Optimization**
+- Actions:
+  - Optimize TCP window sizes
+  - Configure jumbo frames if supported
+  - Set up link aggregation if available
+
+#### Deliverables
+- [ ] Performance-optimized server configuration
+- [ ] Client performance tuning
+- [ ] Network optimization settings
+- [ ] Performance benchmarking results
+
+### Phase 4: Advanced Features (Week 4)
+
+#### Objectives
+- Implement advanced NFS features
+- Set up backup and disaster recovery
+- Create automation and maintenance tools
+
+#### Tasks
+
+**4.1 NFSv4 Advanced Features**
+- Actions:
+  - Implement NFSv4 ACLs where appropriate
+  - Set up NFSv4 referrals for distributed storage
+  - Configure NFSv4 migration support
+
+**4.2 Backup Integration**
+- Actions:
+  - Set up NFS-aware backup procedures
+  - Configure snapshot-based backups for ZFS
+  - Implement cross-site backup replication
+
+**4.3 Automation and Maintenance**
+- Location: `scripts/nfs-maintenance.sh` (new)
+- Actions:
+  - Create automated health checks
+  - Set up export verification scripts
+  - Implement automatic client discovery
+
+#### Deliverables
+- [ ] Advanced NFSv4 features configuration
+- [ ] Integrated backup solution
+- [ ] Automation scripts and tools
+- [ ] Maintenance procedures documentation
+
+### Implementation Steps
+
+#### Step 1: Prepare the Environment
+```bash
+# Clone the repository and create feature branch
+cd /home/geir/Home-lab
+git checkout -b feature/nfs-implementation
+
+# Create new module directories
+mkdir -p modules/services
+```
+
+#### Step 2: Create Base NFS Client Module
+```nix
+# modules/services/nfs-client.nix
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+{
+  imports = [
+    ../users/media-group.nix
+  ];
+
+  config = {
+    boot.supportedFilesystems = [ "nfs" ];
+    
+    services.rpcbind.enable = true;
+    services.nfs.idmapd = {
+      enable = true;
+      settings = {
+        General = {
+          Domain = "home.lab";
+          Verbosity = 0;
+        };
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      nfs-utils
+    ];
+  };
+}
+```
+
+#### Step 3: Update sleeper-service Configuration
+Update the existing `machines/sleeper-service/nfs.nix` with the comprehensive configuration shown in the recommended section above.
+
+#### Step 4: Test and Validate
+```bash
+# Build and test the configuration
+sudo nixos-rebuild test
+
+# Verify NFS services
+systemctl status nfs-server
+exportfs -v
+
+# Test client connectivity
+showmount -e sleeper-service
+```
+
+#### Step 5: Deploy to Other Machines
+```bash
+# Update each machine configuration
+# Add imports and mount points
+# Test connectivity from each client
+```
+
+### Risk Mitigation
+
+#### Configuration Backup
+- Always backup working configurations before changes
+- Use git branches for experimental configurations
+- Test changes on non-production machines first
+
+#### Service Dependencies
+- Ensure proper service ordering in systemd
+- Handle network dependencies correctly
+- Plan for graceful degradation if NFS is unavailable
+
+#### Data Protection
+- Implement proper backup strategies before enabling NFS
+- Use read-only mounts for critical data initially
+- Set up monitoring for unauthorized access
+
+### Success Criteria
+
+#### Phase 1 Success Criteria
+- [ ] NFS server running on sleeper-service
+- [ ] All home lab machines can mount shared storage
+- [ ] Proper permissions for media group access
+- [ ] Basic security measures in place
+
+#### Phase 2 Success Criteria
+- [ ] Security audit passes with no critical issues
+- [ ] Monitoring system reports normal operations
+- [ ] Access controls prevent unauthorized access
+
+#### Phase 3 Success Criteria
+- [ ] Performance benchmarks show acceptable speeds
+- [ ] No timeout or connection issues under normal load
+- [ ] Network utilization optimized
+
+#### Phase 4 Success Criteria
+- [ ] Advanced features working as expected
+- [ ] Backup and recovery procedures tested
+- [ ] Automation reduces manual maintenance
+
+This implementation plan provides a structured approach to deploying NFS in your NixOS home lab environment, with proper security, performance, and maintainability considerations.
+
+## ZFS and NFS Integration
+
+### Important Considerations
+
+When using ZFS datasets as NFS export points, there are several important considerations:
+
+#### ZFS Mount Points vs tmpfiles.rules
+
+**Critical Issue**: Do not use `systemd.tmpfiles.rules` to create directories that are ZFS dataset mount points. This can cause conflicts and permission issues.
+
+**Example Problem**:
+```nix
+# WRONG - Don't do this if /mnt/storage/media is a ZFS dataset
+systemd.tmpfiles.rules = [
+  "d /mnt/storage/media 2775 root media -"  # This conflicts with ZFS mounting
+];
+```
+
+**Correct Approach**:
+```nix
+# Only create directories that are NOT ZFS mount points
+systemd.tmpfiles.rules = [
+  "d /mnt/storage/downloads 2775 media media -"  # Regular directory
+  "d /mnt/storage/backups 0750 root root -"      # Regular directory
+];
+
+# Set permissions on ZFS mount points after mounting
+systemd.services.nfs-server.serviceConfig.ExecStartPost = [
+  "${pkgs.coreutils}/bin/chown root:media /mnt/storage/media"
+  "${pkgs.coreutils}/bin/chmod 2775 /mnt/storage/media"
+];
+```
+
+#### ZFS Dataset Structure for NFS
+
+A typical ZFS layout for NFS exports might look like:
+
+```
+storage                    # Pool (mounted at /mnt/storage)
+├── storage/media         # Dataset (mounted at /mnt/storage/media)
+├── storage/backups       # Dataset (mounted at /mnt/storage/backups)
+└── Regular directories:  # Created with tmpfiles.rules
+    ├── downloads/
+    └── shares/
+```
+
+#### Service Dependencies
+
+Ensure NFS services start after ZFS mounting:
 
 ```nix
-# Increase NFS daemon threads
-services.nfs.server.threads = 16;
-
-# Kernel parameters for better NFS performance
-boot.kernel.sysctl = {
-  "net.core.rmem_max" = 134217728;
-  "net.core.wmem_max" = 134217728;
-  "net.ipv4.tcp_rmem" = "4096 65536 134217728";
-  "net.ipv4.tcp_wmem" = "4096 65536 134217728";
+systemd.services.nfs-server = {
+  after = [ "zfs-mount.service" ];
+  wants = [ "zfs-mount.service" ];
 };
 ```
 
-### Client Tuning
+#### ZFS Native NFS Sharing
+
+ZFS supports native NFS sharing, but NixOS typically uses the Linux kernel NFS server. For ZFS native sharing:
 
 ```bash
-# Mount with performance options
-mount -t nfs4 -o rsize=1048576,wsize=1048576,hard,timeo=600 server:/path /mount
+# Enable ZFS native NFS (alternative approach)
+zfs set sharenfs="rw=@10.0.0.0/24,root=10.0.0.100" storage/media
 ```
 
-## Security Considerations
-
-### 1. Network Security
-- Use VPN or firewall rules to restrict NFS access
-- Consider NFSv4 with Kerberos for authentication
-- Enable RPC-with-TLS for encryption (Linux 6.5+)
-
-### 2. File System Security
-- Use minimal necessary permissions
-- Regular security audits of export configurations
-- Monitor NFS access logs
-- Implement backup and recovery procedures
-
-### 3. Access Control
-```nix
-# Example of layered security approach
-exports = ''
-  # Development - developers only, root squashed
-  /srv/dev 192.168.1.0/24(rw,sync,root_squash,no_subtree_check)
-  
-  # Public - read-only, all users squashed
-  /srv/public *(ro,sync,all_squash,no_subtree_check)
-  
-  # Admin - restricted to specific hosts, root access
-  /srv/admin 192.168.1.10(rw,sync,no_root_squash,no_subtree_check)
-'';
-```
-
-## Monitoring and Maintenance
-
-### Server Monitoring
-```bash
-# Check NFS statistics
-cat /proc/net/rpc/nfsd
-
-# Monitor NFS threads
-cat /proc/fs/nfsd/threads
-
-# Check exports
-exportfs -v
-
-# Monitor client connections
-ss -tuln | grep :2049
-```
-
-### Client Monitoring
-```bash
-# Check mount status
-mount | grep nfs
-
-# Monitor NFS statistics
-nfsstat -c
-
-# Check for stale handles
-dmesg | grep -i nfs
-```
-
-## References
-
-- [Linux NFS-HOWTO](https://tldp.org/HOWTO/NFS-HOWTO/)
-- [exports(5) Manual Page](https://man7.org/linux/man-pages/man5/exports.5.html)
-- [Arch Linux NFS Wiki](https://wiki.archlinux.org/title/NFS)
-- [NFS Performance Tuning](https://nfs.sourceforge.net/)
-- [Red Hat NFS Documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_file_systems/)
-
-## Conclusion
-
-Proper NFS configuration requires careful attention to:
-1. User/group ID consistency
-2. Appropriate security settings
-3. Performance optimization
-4. Regular monitoring and maintenance
-
-The recommended configuration provides a good balance of security, performance, and usability for a home lab environment. Always test changes in a development environment before applying to production systems.
+However, the recommended approach for NixOS is to use the kernel NFS server with ZFS as the underlying filesystem.
