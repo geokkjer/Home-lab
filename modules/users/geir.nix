@@ -78,7 +78,6 @@ in {
       vscode
       git-credential-manager
       nodejs
-      nodePackages.npm
       virt-manager
 
       # Creative Tools (optional - remove if not needed)
@@ -104,6 +103,7 @@ in {
       dbus
       wayland
       xwayland
+      xwayland-satellite
       xdg-utils
     ];
   };

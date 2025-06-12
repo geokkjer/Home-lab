@@ -1,4 +1,8 @@
-{ config, pkgs, ... }: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   # AMD GPU configuration
   hardware.amdgpu.initrd.enable = true;
 
@@ -24,7 +28,4 @@
     alsa.enable = true;
     pulse.enable = true;
   };
-
-  # Gaming support
-  programs.steam.enable = true;
 }
