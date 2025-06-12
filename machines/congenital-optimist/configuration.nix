@@ -19,9 +19,6 @@
     # Services
     ../../modules/services/nfs-client.nix
 
-    # Hardware modules
-    ../../modules/hardware/amd-workstation.nix
-
     # Desktop environments
     ../../modules/desktop/common.nix
     ../../modules/desktop/gnome.nix
