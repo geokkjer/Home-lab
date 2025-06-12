@@ -130,8 +130,12 @@ writeShellScriptBin "lab" ''
     
     # Check remote machines
     for machine in sleeper-service grey-area reverse-proxy; do
-      if ${openssh}/bin/ssh -o ConnectTimeout=5 -o BatchMode=yes "sma@$machine" "echo OK" >/dev/null 2>&1; then
-        success "  $machine: ✓ Online"
+      # Try with normal SSH first (for LAN)
+      if ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "sma@$machine" "echo OK" >/dev/null 2>&1; then
+        success "  $machine: ✓ Online (LAN)"
+      # Try with Tailscale hostname as fallback
+      elif ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "sma@$machine.tailnet" "echo OK" >/dev/null 2>&1; then
+        success "  $machine: ✓ Online (Tailscale)"
       else
         warn "  $machine: ⚠ Unreachable"
       fi
