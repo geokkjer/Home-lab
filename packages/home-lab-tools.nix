@@ -140,10 +140,11 @@ writeShellScriptBin "lab" ''
       
       # Test SSH connectivity with debug info if in verbose mode
       if [[ $verbose -eq 1 ]]; then
-        log "Testing LAN connection to $machine..."
-        ${openssh}/bin/ssh -v -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine" "echo OK" || true
-        log "Testing Tailscale connection to $machine.tailnet..."
-        ${openssh}/bin/ssh -v -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine.tailnet" "echo OK" || true
+        log "Testing SSH connection to $machine (LAN)..."
+        ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@$machine" "echo ✓ SSH connection to $machine successful" 2>&1 | grep -E '(debug1|Authentication|Connection)'
+        
+        log "Testing SSH connection to $machine.tailnet (Tailscale)..."
+        ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@$machine.tailnet" "echo ✓ SSH connection to $machine.tailnet successful" 2>&1 | grep -E '(debug1|Authentication|Connection)'
       fi
 
       # Try with normal SSH first (for LAN)
