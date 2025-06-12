@@ -48,6 +48,7 @@ in {
       kitty
       terminator
       starship
+      ghostty
 
       # Essential system tools (moved duplicates to base.nix)
       mc
@@ -97,10 +98,12 @@ in {
 
       # Emacs Integration
       emacsPackages.vterm
-
+      # Gaming
+      steam
       # Desktop integration (moved from system)
       dbus
       wayland
+      xwayland
       xdg-utils
     ];
   };
