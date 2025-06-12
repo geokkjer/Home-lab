@@ -6,7 +6,8 @@
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware-co.nix
+    ./disk-ram-co.nix
     ./network-congenital-optimist.nix
 
     # Security modules

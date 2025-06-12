@@ -16,12 +16,8 @@
     powerOnBoot = true;
   };
 
-  # ZRAM swap configuration
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-  };
-
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   # Audio system (PipeWire)
   services.pipewire = {
     enable = true;

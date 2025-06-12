@@ -6,10 +6,14 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs: 
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-unstable,
+    ...
+  } @ inputs: let
     system = "x86_64-linux";
-    
+
     # Create unstable package set
     unstable = import nixpkgs-unstable {
       inherit system;
@@ -20,17 +24,15 @@
     specialArgs = {
       inherit inputs unstable;
     };
-
   in {
     # NixOS system configurations
     nixosConfigurations = {
-      
       # congenital-optimist - AMD Threadripper workstation
       congenital-optimist = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
           ./machines/congenital-optimist/configuration.nix
-          ./machines/congenital-optimist/hardware-configuration.nix
+          ./machines/congenital-optimist/hardware-co.nix
           ./modules/common/nix.nix
           ./modules/common/base.nix
           ./modules/common/tty.nix
@@ -75,8 +77,8 @@
     };
 
     # Custom packages for the home lab
-    packages.${system} = import ./packages { 
-      pkgs = nixpkgs.legacyPackages.${system}; 
+    packages.${system} = import ./packages {
+      pkgs = nixpkgs.legacyPackages.${system};
     };
 
     # Development shells for different projects
