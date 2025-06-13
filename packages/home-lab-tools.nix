@@ -236,6 +236,10 @@ writeShellScriptBin "lab" ''
       echo "                            Modes: boot (default), test, switch"
       echo "  status                   - Check infrastructure connectivity"
       echo ""
+      echo "Ollama AI Tools (when available):"
+      echo "  ollama-cli <command>     - Manage Ollama service and models"
+      echo "  monitor-ollama [opts]    - Monitor Ollama service health"
+      echo ""
       echo "Examples:"
       echo "  lab deploy congenital-optimist boot   # Deploy workstation for next boot"
       echo "  lab deploy sleeper-service boot       # Deploy and set for next boot"
@@ -243,6 +247,11 @@ writeShellScriptBin "lab" ''
       echo "  lab update boot                       # Update all machines for next boot"
       echo "  lab update switch                     # Update all machines immediately"
       echo "  lab status                            # Check all machines"
+      echo ""
+      echo "  ollama-cli status                     # Check Ollama service status"
+      echo "  ollama-cli models                     # List installed AI models"
+      echo "  ollama-cli pull llama3.3:8b          # Install a new model"
+      echo "  monitor-ollama --test-inference       # Full Ollama health check"
       ;;
   esac
 ''

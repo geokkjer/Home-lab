@@ -94,6 +94,7 @@ in {
 
       # Media
       celluloid
+      ytmdesktop
 
       # Emacs Integration
       emacsPackages.vterm

@@ -24,7 +24,7 @@
     ./services/calibre-web.nix
     ./services/audiobook.nix
     ./services/forgejo.nix
-    #./services/ollama.nix
+    ./services/ollama.nix
   ];
 
   # Swap zram
