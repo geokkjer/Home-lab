@@ -11,10 +11,12 @@ buildNpmPackage rec {
 
   src = fetchurl {
     url = "https://github.com/eyaltoledano/claude-task-master/archive/refs/tags/v${version}.tar.gz";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Will be replaced after first build attempt
+    hash = "sha256-hYXIvhXx1qJefnEbsllwm7TATPU8ihVV6XchaMjTACQ=";
   };
 
-  npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Will be replaced after first build attempt
+  npmDepsHash = "sha256-WjPFg/jYTbxrKNzTyqb6e0Z+PLPg6O2k8LBIELwozo8=";
+
+  dontNpmBuild = true;
 
   # buildInputs = [ nodejs ]; # buildNpmPackage usually brings in nodejs
 
