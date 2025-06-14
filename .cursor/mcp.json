@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "task-master-ai": {
+            "command": "/home/geir/Home-lab/result/bin/task-master-ai",
+            "args": [],
+            "env": {
+                "OPENAI_API_KEY": "fake-key-for-local-ollama",
+                "OPENAI_BASE_URL": "http://grey-area:11434/v1"
+            }
+        }
+    }
+}
