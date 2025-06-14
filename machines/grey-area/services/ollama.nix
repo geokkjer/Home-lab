@@ -9,13 +9,8 @@
   pkgs,
   ...
 }: {
-  # Import the home lab Ollama module
-  imports = [
-    ../../../modules/services/ollama.nix
-  ];
-
   # Enable Ollama service with appropriate configuration for grey-area
-  services.homelab-ollama = {
+  services.ollama = {
     enable = true;
 
     # Network configuration - localhost only for security by default
@@ -40,50 +35,19 @@
       OLLAMA_DEBUG = "1";
     };
 
-    # Automatically download essential models
-    models = [
-      # General purpose model - good balance of size and capability
-      "llama3.3:8b"
-
-      # Code-focused model for development assistance
-      "codellama:7b"
-
-      # Fast, efficient model for quick queries
-      "mistral:7b"
-    ];
-
-    # Resource limits to prevent impact on other services
-    resourceLimits = {
-      # Limit memory usage to prevent OOM issues with Jellyfin/other services
-      maxMemory = "12G";
-
-      # Limit CPU usage to maintain responsiveness for other services
-      maxCpuPercent = 75;
-    };
-
-    # Enable monitoring and health checks
-    monitoring = {
-      enable = true;
-      healthCheckInterval = "60s";
-    };
-
-    # Enable backup for custom models and configuration
-    backup = {
-      enable = true;
-      destination = "/var/backup/ollama";
-      schedule = "weekly"; # Weekly backup is sufficient for models
-    };
-
     openFirewall = true; # Set to true if you want to allow external access
 
     # GPU acceleration (enable if grey-area has a compatible GPU)
     #enableGpuAcceleration = false; # Set to true if NVIDIA/AMD GPU available
   };
 
-  # Create backup directory with proper permissions
-  systemd.tmpfiles.rules = [
-    "d /var/backup/ollama 0755 root root -"
-  ];
+  # Apply resource limits using systemd overrides
+  systemd.services.ollama = {
+    serviceConfig = {
+      MemoryMax = "12G";
+      CPUQuota = "75%";
+    };
+  };
 
   # Optional: Create a simple web interface using a lightweight tool
   # This could be added later if desired for easier model management
