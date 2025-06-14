@@ -32,7 +32,7 @@
       OLLAMA_MAX_QUEUE = "256";
 
       # Enable debug logging initially for troubleshooting
-      OLLAMA_DEBUG = "1";
+      OLLAMA_DEBUG = "0";
     };
 
     openFirewall = true; # Set to true if you want to allow external access
@@ -44,88 +44,15 @@
   # Apply resource limits using systemd overrides
   systemd.services.ollama = {
     serviceConfig = {
-      MemoryMax = "12G";
-      CPUQuota = "75%";
+      MemoryMax = "20G";
+      CPUQuota = "800%";
     };
   };
-
-  # Optional: Create a simple web interface using a lightweight tool
-  # This could be added later if desired for easier model management
 
   # Add useful packages for AI development
   environment.systemPackages = with pkgs; [
     # CLI clients for testing
     curl
     jq
-
-    # Python packages for AI development (optional)
-    (python3.withPackages (ps:
-      with ps; [
-        requests
-        openai # For OpenAI-compatible API testing
-      ]))
   ];
-
-  # Create a simple script for testing Ollama
-  environment.etc."ollama-test.sh" = {
-    text = ''
-      #!/usr/bin/env bash
-      # Simple test script for Ollama service
-
-      echo "Testing Ollama service..."
-
-      # Test basic connectivity
-      if curl -s http://localhost:11434/api/tags >/dev/null; then
-        echo "✓ Ollama API is responding"
-      else
-        echo "✗ Ollama API is not responding"
-        exit 1
-      fi
-
-      # List available models
-      echo "Available models:"
-      curl -s http://localhost:11434/api/tags | jq -r '.models[]?.name // "No models found"'
-
-      # Simple generation test if models are available
-      if curl -s http://localhost:11434/api/tags | jq -e '.models | length > 0' >/dev/null; then
-        echo "Testing text generation..."
-        model=$(curl -s http://localhost:11434/api/tags | jq -r '.models[0].name')
-        response=$(curl -s -X POST http://localhost:11434/api/generate \
-          -H "Content-Type: application/json" \
-          -d "{\"model\": \"$model\", \"prompt\": \"Hello, world!\", \"stream\": false}" | \
-          jq -r '.response // "No response"')
-        echo "Response from $model: $response"
-      else
-        echo "No models available for testing"
-      fi
-    '';
-    mode = "0755";
-  };
-
-  # Firewall rule comments for documentation
-  # To enable external access later, you would:
-  # 1. Set services.homelab-ollama.openFirewall = true;
-  # 2. Or configure a reverse proxy (recommended for production)
-
-  # Example reverse proxy configuration (commented out):
-  /*
-  services.nginx = {
-    enable = true;
-    virtualHosts."ollama.grey-area.lan" = {
-      listen = [
-        { addr = "0.0.0.0"; port = 8080; }
-      ];
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:11434";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        '';
-      };
-    };
-  };
-  */
 }
