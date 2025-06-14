@@ -25,6 +25,7 @@
     ./services/audiobook.nix
     ./services/forgejo.nix
     ./services/ollama.nix
+    ../../modules/services/open-webui.nix
   ];
 
   # Swap zram

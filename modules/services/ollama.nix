@@ -430,10 +430,4 @@ in {
       "d ${cfg.dataDir}/runners 0755 ${cfg.user} ${cfg.group} -"
     ];
   };
-
-  meta = {
-    maintainers = ["Geir Okkenhaug Jerstad"];
-    description = "NixOS module for Ollama local LLM service";
-    doc = ./ollama.md;
-  };
 }

@@ -19,7 +19,7 @@
     enable = true;
 
     # Network configuration - localhost only for security by default
-    host = "127.0.0.1";
+    host = "0.0.0.0";
     port = 11434;
 
     # Environment variables for optimal performance
@@ -74,11 +74,10 @@
       schedule = "weekly"; # Weekly backup is sufficient for models
     };
 
-    # Don't open firewall by default - use reverse proxy if external access needed
-    openFirewall = false;
+    openFirewall = true; # Set to true if you want to allow external access
 
     # GPU acceleration (enable if grey-area has a compatible GPU)
-    enableGpuAcceleration = false; # Set to true if NVIDIA/AMD GPU available
+    #enableGpuAcceleration = false; # Set to true if NVIDIA/AMD GPU available
   };
 
   # Create backup directory with proper permissions
@@ -138,13 +137,6 @@
     '';
     mode = "0755";
   };
-
-  # Add logging configuration to help with debugging
-  services.rsyslog.extraConfig = ''
-    # Ollama service logs
-    if $programname == 'ollama' then /var/log/ollama.log
-    & stop
-  '';
 
   # Firewall rule comments for documentation
   # To enable external access later, you would:
