@@ -45,7 +45,7 @@
   systemd.services.ollama = {
     serviceConfig = {
       MemoryMax = "20G";
-      CPUQuota = "1600%";
+      CPUQuota = "800%";
     };
   };
 
