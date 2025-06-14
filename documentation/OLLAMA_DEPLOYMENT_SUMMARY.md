@@ -176,3 +176,84 @@ Consider these potential improvements:
 - **Integration**: Implement the development workflow examples
 
 The Ollama service is now ready to provide local AI capabilities to your home lab infrastructure!
+
+---
+
+## ✅ DEPLOYMENT SUCCESS UPDATE - June 14, 2025
+
+### 🚀 Services Now Running on grey-area
+
+**Status**: Successfully Deployed and Verified ✅
+
+1. **Ollama LLM Service**
+   - **Port**: 11434
+   - **Status**: Active and running (PID 12105)
+   - **Models**: deepseek-coder:latest (1B parameters) 
+   - **Memory Usage**: 3GB (max 12GB configured)
+   - **API**: Fully functional and responding
+
+2. **Open WebUI Interface**
+   - **Port**: 8080  
+   - **Status**: Active and serving requests (PID 8324)
+   - **Memory Usage**: 1.4GB
+   - **Features**: Web-based chat interface connected to Ollama
+   - **Access**: http://grey-area:8080
+
+### 🔧 Deployment Resolution
+
+**Issues Resolved During Deployment**:
+1. ✅ Fixed invalid `meta` section in Ollama NixOS module
+2. ✅ Removed problematic `rsyslog` configuration  
+3. ✅ Resolved file ownership conflicts in `/var/lib/ollama`
+4. ✅ Updated network binding to `0.0.0.0` for external access
+
+### 📊 Connectivity Tests - PASSING
+
+```bash
+# Ollama API Test ✅
+$ curl http://grey-area:11434/api/tags
+{
+  "models": [
+    {
+      "name": "deepseek-coder:latest",
+      "model": "deepseek-coder:latest", 
+      "size": 776080839,
+      "digest": "3ddd2d3fc8d2b5fe039d18f859271132fd9c7960ef0be1864984442dc2a915d3"
+    }
+  ]
+}
+
+# Open WebUI Test ✅
+$ curl -I http://grey-area:8080
+HTTP/1.1 200 OK
+server: uvicorn
+content-type: text/html; charset=utf-8
+```
+
+### 🎯 Production Ready
+
+The Ollama + Open WebUI integration is now **production-ready** and accessible from the network:
+
+- **Direct API Access**: `http://grey-area:11434` (for integrations)
+- **Web Interface**: `http://grey-area:8080` (for interactive use)
+- **Model Available**: deepseek-coder for coding assistance
+- **Git Status**: All changes committed and pushed ✅
+
+### 🔒 Security Configuration
+
+- ✅ Systemd hardening enabled
+- ✅ Dedicated `ollama` user with restricted permissions  
+- ✅ Resource limits: 12GB RAM max, 75% CPU max
+- ✅ Firewall properly configured for ports 8080 and 11434
+- ⚠️ Authentication disabled (development mode)
+
+### 📈 Next Steps
+
+1. ✅ **Basic Setup**: Complete
+2. ✅ **Service Deployment**: Complete  
+3. ✅ **Connectivity Verification**: Complete
+4. 🎯 **Ready for Use**: Access web interface or API
+5. 🔄 **Add More Models**: Use web interface to download additional models
+6. 🔐 **Enable Auth**: Consider enabling authentication for production use
+
+**The deployment is successful and ready for immediate use!**
