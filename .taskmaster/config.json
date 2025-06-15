@@ -1,8 +1,8 @@
 {
   "models": {
     "main": {
-      "provider": "openai",
-      "modelId": "qwen3:4b",
+      "provider": "openrouter",
+      "modelId": "deepseek/deepseek-chat-v3-0324:free",
       "maxTokens": 4096,
       "temperature": 0.2,
       "baseURL": "http://grey-area:11434/v1"
@@ -32,6 +32,7 @@
     "bedrockBaseURL": "https://bedrock.us-east-1.amazonaws.com",
     "vertexProjectId": "your-gcp-project-id",
     "vertexLocation": "us-central1",
-    "userId": "1234567890"
+    "userId": "1234567890",
+    "defaultTag": "master"
   }
 }

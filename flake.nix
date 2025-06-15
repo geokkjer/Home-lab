@@ -4,12 +4,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
   outputs = {
     self,
     nixpkgs,
     nixpkgs-unstable,
+    deploy-rs,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -145,6 +147,68 @@
         ''}";
       };
     };
+
+    # Deploy-rs configuration for automated deployments
+    deploy.nodes = {
+      sleeper-service = {
+        hostname = "sleeper-service.tail807ea.ts.net";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sleeper-service;
+          sshUser = "sma";
+          sudo = "sudo -u";
+          autoRollback = true;
+          magicRollback = true;
+          activationTimeout = 180;
+          confirmTimeout = 30;
+        };
+      };
+
+      grey-area = {
+        hostname = "grey-area.tail807ea.ts.net";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.grey-area;
+          sshUser = "sma";
+          sudo = "sudo -u";
+          autoRollback = true;
+          magicRollback = true;
+          activationTimeout = 180;
+          confirmTimeout = 30;
+        };
+      };
+
+      reverse-proxy = {
+        hostname = "reverse-proxy.tail807ea.ts.net";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.reverse-proxy;
+          sshUser = "sma";
+          sudo = "sudo -u";
+          autoRollback = true;
+          magicRollback = true;
+          activationTimeout = 240; # VPS might be slower
+          confirmTimeout = 30;
+        };
+      };
+
+      congenital-optimist = {
+        hostname = "congenital-optimist.tail807ea.ts.net";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.congenital-optimist;
+          sshUser = "sma";
+          sudo = "sudo -u";
+          autoRollback = true;
+          magicRollback = true;
+          activationTimeout = 180;
+          confirmTimeout = 30;
+        };
+      };
+    };
+
+    # Deploy-rs checks (recommended by deploy-rs)
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     # Formatter for Nix files
     formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;

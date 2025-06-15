@@ -4,7 +4,6 @@
   fetchurl,
   nodejs,
 }:
-
 buildNpmPackage rec {
   pname = "task-master-ai";
   version = "0.16.2";
@@ -24,7 +23,7 @@ buildNpmPackage rec {
     description = "Claude Task Master AI - An intelligent task management and project breakdown tool";
     homepage = "https://github.com/eyaltoledano/claude-task-master";
     license = licenses.mit;
-    maintainers = [ ]; # Add your GitHub username if you want
+    maintainers = []; # Add your GitHub username if you want
     platforms = platforms.all;
     mainProgram = "task-master-ai";
   };
