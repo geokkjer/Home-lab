@@ -96,13 +96,102 @@ writeShellScriptBin "lab" ''
     success "Successfully deployed $machine"
   }
 
-  # Update all machines function
+  # Deploy with deploy-rs function
+  deploy_rs_machine() {
+    local machine="$1"
+    local dry_run="''${2:-false}"
+
+    log "Using deploy-rs for $machine deployment"
+    
+    cd "$HOMELAB_ROOT"
+    
+    if [[ "$dry_run" == "true" ]]; then
+      log "Running dry-run deployment..."
+      if ! nix run github:serokell/deploy-rs -- ".#$machine" --dry-activate; then
+        error "Deploy-rs dry-run failed for $machine"
+        return 1
+      fi
+      success "Deploy-rs dry-run completed for $machine"
+    else
+      log "Running actual deployment..."
+      if ! nix run github:serokell/deploy-rs -- ".#$machine"; then
+        error "Deploy-rs deployment failed for $machine"
+        return 1
+      fi
+      success "Deploy-rs deployment completed for $machine"
+    fi
+  }
+
+  # Update flake inputs function
+  update_flake() {
+    log "Updating flake inputs..."
+    cd "$HOMELAB_ROOT"
+    
+    if ! nix flake update; then
+      error "Failed to update flake inputs"
+      return 1
+    fi
+    
+    log "Checking updated flake configuration..."
+    if ! nix flake check; then
+      error "Flake check failed after update"
+      return 1
+    fi
+    
+    success "Flake inputs updated successfully"
+    
+    # Show what changed
+    log "Flake lock changes:"
+    git diff --no-index /dev/null flake.lock | grep "+" | head -10 || true
+  }
+
+  # Hybrid update: flake update + deploy-rs deployment
+  hybrid_update() {
+    local target="''${1:-all}"
+    local dry_run="''${2:-false}"
+    
+    log "Starting hybrid update process (target: $target, dry-run: $dry_run)"
+    
+    # Step 1: Update flake inputs
+    if ! update_flake; then
+      error "Failed to update flake - aborting hybrid update"
+      return 1
+    fi
+    
+    # Step 2: Deploy with deploy-rs
+    if [[ "$target" == "all" ]]; then
+      local machines=("sleeper-service" "grey-area" "reverse-proxy" "congenital-optimist")
+      local failed_machines=()
+      
+      for machine in "''${machines[@]}"; do
+        log "Deploying updated configuration to $machine..."
+        if deploy_rs_machine "$machine" "$dry_run"; then
+          success "✓ $machine updated successfully"
+        else
+          error "✗ Failed to update $machine"
+          failed_machines+=("$machine")
+        fi
+        echo ""
+      done
+      
+      if [[ ''${#failed_machines[@]} -eq 0 ]]; then
+        success "All machines updated successfully with hybrid approach!"
+      else
+        error "Failed to update: ''${failed_machines[*]}"
+        return 1
+      fi
+    else
+      deploy_rs_machine "$target" "$dry_run"
+    fi
+  }
+
+  # Update all machines function (legacy method)
   update_all_machines() {
     local mode="''${1:-boot}"  # boot, test, or switch
     local machines=("congenital-optimist" "sleeper-service" "grey-area" "reverse-proxy")
     local failed_machines=()
 
-    log "Starting update of all machines (mode: $mode)"
+    log "Starting update of all machines (mode: $mode) - using legacy method"
 
     for machine in "''${machines[@]}"; do
       log "Updating $machine..."
@@ -208,6 +297,38 @@ writeShellScriptBin "lab" ''
       deploy_machine "$machine" "$mode"
       ;;
 
+    "deploy-rs")
+      if [[ $# -lt 2 ]]; then
+        error "Usage: lab deploy-rs <machine> [--dry-run]"
+        error "Machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"
+        exit 1
+      fi
+
+      machine="$2"
+      dry_run="false"
+      
+      if [[ "''${3:-}" == "--dry-run" ]]; then
+        dry_run="true"
+      fi
+
+      deploy_rs_machine "$machine" "$dry_run"
+      ;;
+
+    "update-flake")
+      update_flake
+      ;;
+
+    "hybrid-update")
+      target="''${2:-all}"
+      dry_run="false"
+      
+      if [[ "''${3:-}" == "--dry-run" ]]; then
+        dry_run="true"
+      fi
+
+      hybrid_update "$target" "$dry_run"
+      ;;
+
     "status")
       show_status
       ;;
@@ -229,28 +350,49 @@ writeShellScriptBin "lab" ''
       echo "Usage: lab <command> [options]"
       echo ""
       echo "Available commands:"
-      echo "  deploy <machine> [mode]  - Deploy configuration to a machine"
-      echo "                            Machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"
-      echo "                            Modes: boot (default), test, switch"
-      echo "  update [mode]            - Update all machines"
-      echo "                            Modes: boot (default), test, switch"
-      echo "  status                   - Check infrastructure connectivity"
+      echo "  deploy <machine> [mode]     - Deploy configuration to a machine (legacy method)"
+      echo "                               Machines: congenital-optimist, sleeper-service, grey-area, reverse-proxy"
+      echo "                               Modes: boot (default), test, switch"
+      echo "  deploy-rs <machine> [opts]  - Deploy using deploy-rs (modern method)"
+      echo "                               Options: --dry-run"
+      echo "  update [mode]               - Update all machines (legacy method)"
+      echo "                               Modes: boot (default), test, switch"
+      echo "  update-flake                - Update flake inputs and check configuration"
+      echo "  hybrid-update [target] [opts] - Update flake + deploy with deploy-rs"
+      echo "                               Target: machine name or 'all' (default)"
+      echo "                               Options: --dry-run"
+      echo "  status                      - Check infrastructure connectivity"
+      echo ""
+      echo "Deployment Methods:"
+      echo "  Legacy (SSH + rsync):       Reliable, tested, slower"
+      echo "  Deploy-rs:                  Modern, automatic rollback, parallel deployment"
+      echo "  Hybrid:                     Combines flake updates with deploy-rs safety"
       echo ""
       echo "Ollama AI Tools (when available):"
-      echo "  ollama-cli <command>     - Manage Ollama service and models"
-      echo "  monitor-ollama [opts]    - Monitor Ollama service health"
+      echo "  ollama-cli <command>        - Manage Ollama service and models"
+      echo "  monitor-ollama [opts]       - Monitor Ollama service health"
       echo ""
       echo "Examples:"
-      echo "  lab deploy congenital-optimist boot   # Deploy workstation for next boot"
+      echo "  # Legacy deployment"
       echo "  lab deploy sleeper-service boot       # Deploy and set for next boot"
       echo "  lab deploy grey-area switch           # Deploy and switch immediately"
       echo "  lab update boot                       # Update all machines for next boot"
-      echo "  lab update switch                     # Update all machines immediately"
+      echo ""
+      echo "  # Modern deploy-rs deployment"
+      echo "  lab deploy-rs sleeper-service         # Deploy with automatic rollback"
+      echo "  lab deploy-rs grey-area --dry-run     # Test deployment without applying"
+      echo ""
+      echo "  # Hybrid approach (recommended for updates)"
+      echo "  lab hybrid-update sleeper-service     # Update flake + deploy specific machine"
+      echo "  lab hybrid-update all --dry-run       # Test update all machines"
+      echo "  lab update-flake                      # Just update flake inputs"
+      echo ""
+      echo "  # Status and monitoring"
       echo "  lab status                            # Check all machines"
       echo ""
+      echo "  # Ollama AI tools"
       echo "  ollama-cli status                     # Check Ollama service status"
       echo "  ollama-cli models                     # List installed AI models"
-      echo "  ollama-cli pull llama3.3:8b          # Install a new model"
       echo "  monitor-ollama --test-inference       # Full Ollama health check"
       ;;
   esac
