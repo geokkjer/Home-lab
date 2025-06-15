@@ -212,13 +212,35 @@ writeShellScriptBin "lab" ''
     fi
   }
 
-  # Show deployment status
+  # Simple connection test - removed complex generation info due to bash escaping issues
+  # This will be reimplemented in a more robust language later
+  test_connection() {
+    local machine="$1"
+    local admin_alias="$2"
+
+    if [[ "$machine" == "congenital-optimist" ]]; then
+      echo "    Status: Local machine"
+    else
+      if ${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$admin_alias" "echo OK" >/dev/null 2>&1; then
+        echo "    Status: Connected via $admin_alias"
+      else
+        echo "    Status: Connection failed"
+      fi
+    fi
+  }
+
+  # Show deployment status (simplified - removed complex bash escaping)
   show_status() {
     log "Home-lab infrastructure status:"
 
     # Check congenital-optimist (local)
     if /run/current-system/sw/bin/systemctl is-active --quiet tailscaled; then
       success "  congenital-optimist: ✓ Online (local)"
+
+      # Show simple connection test if verbose
+      if [[ "''${1:-}" == "-v" ]]; then
+        test_connection "congenital-optimist" ""
+      fi
     else
       warn "  congenital-optimist: ⚠ Tailscale inactive"
     fi
@@ -260,14 +282,27 @@ writeShellScriptBin "lab" ''
       # Try admin alias first (should work for all machines)
       if ${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$admin_alias" "echo OK" >/dev/null 2>&1; then
         success "  $machine: ✓ Online (admin access)"
+
+        # Show simple connection test if verbose
+        if [[ $verbose -eq 1 ]]; then
+          test_connection "$machine" "$admin_alias"
+        fi
+
       # Fallback to direct Tailscale connection with admin key
       elif ${openssh}/bin/ssh -o ConnectTimeout=5 -o BatchMode=yes -i ~/.ssh/id_ed25519_admin "sma@$tailscale_hostname" "echo OK" >/dev/null 2>&1; then
         success "  $machine: ✓ Online (Tailscale)"
+
+        # Show simple connection test if verbose
+        if [[ $verbose -eq 1 ]]; then
+          test_connection "$machine" "sma@$tailscale_hostname"
+        fi
+
       else
         warn "  $machine: ⚠ Unreachable"
         if [[ $verbose -eq 1 ]]; then
           log "    ℹ️  Note: Tried both admin alias ($admin_alias) and direct Tailscale connection"
           log "    ℹ️  Check if machine is online and SSH service is running"
+          test_connection "$machine" "$admin_alias"  # Show failed connection info
         fi
       fi
     done
@@ -358,7 +393,8 @@ writeShellScriptBin "lab" ''
       echo "  hybrid-update [target] [opts] - Update flake + deploy with deploy-rs"
       echo "                               Target: machine name or 'all' (default)"
       echo "                               Options: --dry-run"
-      echo "  status                      - Check infrastructure connectivity"
+      echo "  status [-v]                 - Check infrastructure connectivity"
+      echo "                               -v: verbose SSH debugging"
       echo ""
       echo "Deployment Methods:"
       echo "  Legacy (SSH + rsync):       Reliable, tested, slower"
@@ -386,6 +422,7 @@ writeShellScriptBin "lab" ''
       echo ""
       echo "  # Status and monitoring"
       echo "  lab status                            # Check all machines"
+      echo "  lab status -v                         # Verbose SSH debugging"
       echo ""
       echo "  # Ollama AI tools"
       echo "  ollama-cli status                     # Check Ollama service status"

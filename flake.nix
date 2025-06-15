@@ -193,7 +193,7 @@
       };
 
       congenital-optimist = {
-        hostname = "congenital-optimist.tail807ea.ts.net";
+        hostname = "localhost";
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.congenital-optimist;
