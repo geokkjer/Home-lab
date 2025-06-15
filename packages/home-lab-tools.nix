@@ -62,13 +62,13 @@ writeShellScriptBin "lab" ''
         return 0
         ;;
       "sleeper-service")
-        local target_host="sma@sleeper-service"
+        local target_host="admin-sleeper"
         ;;
       "grey-area")
-        local target_host="sma@grey-area"
+        local target_host="admin-grey"
         ;;
       "reverse-proxy")
-        local target_host="sma@reverse-proxy.tail807ea.ts.net"
+        local target_host="admin-reverse"
         ;;
       *)
         error "Unknown machine: $machine"
@@ -231,46 +231,43 @@ writeShellScriptBin "lab" ''
 
     # Check remote machines
     for machine in sleeper-service grey-area reverse-proxy; do
-      local ssh_user="sma"  # Using sma as the admin user for remote machines
+      # Set admin alias for SSH connection
+      local admin_alias
+      case "$machine" in
+        "sleeper-service")
+          admin_alias="admin-sleeper"
+          tailscale_hostname="sleeper-service.tail807ea.ts.net"
+          ;;
+        "grey-area")
+          admin_alias="admin-grey"
+          tailscale_hostname="grey-area.tail807ea.ts.net"
+          ;;
+        "reverse-proxy")
+          admin_alias="admin-reverse"
+          tailscale_hostname="reverse-proxy.tail807ea.ts.net"
+          ;;
+      esac
 
       # Test SSH connectivity with debug info if in verbose mode
       if [[ $verbose -eq 1 ]]; then
-        log "Testing SSH connection to $machine (LAN)..."
-        ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@$machine" "echo ✓ SSH connection to $machine successful" 2>&1
+        log "Testing SSH connection to $admin_alias (admin alias)..."
+        ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$admin_alias" "echo ✓ SSH connection to $admin_alias successful" 2>&1
 
-        # Use specific hostname for reverse-proxy
-        if [[ "$machine" == "reverse-proxy" ]]; then
-          log "Testing SSH connection to reverse-proxy.tail807ea.ts.net (Tailscale)..."
-          ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@reverse-proxy.tail807ea.ts.net" "echo ✓ SSH connection to reverse-proxy.tail807ea.ts.net successful" 2>&1
-        else
-          log "Testing SSH connection to $machine.tailnet (Tailscale)..."
-          ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@$machine.tailnet" "echo ✓ SSH connection to $machine.tailnet successful" 2>&1
-        fi
+        log "Testing SSH connection to sma@$tailscale_hostname (Tailscale direct)..."
+        ${openssh}/bin/ssh -v -o ConnectTimeout=5 -o BatchMode=yes -i ~/.ssh/id_ed25519_admin "sma@$tailscale_hostname" "echo ✓ SSH connection to $tailscale_hostname successful" 2>&1
       fi
 
-      # For reverse-proxy, try Tailscale first as it's likely only accessible that way
-      if [[ "$machine" == "reverse-proxy" ]]; then
-        # Use the specific Tailscale hostname for reverse-proxy
-        if ${openssh}/bin/ssh -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@reverse-proxy.tail807ea.ts.net" "echo OK" >/dev/null 2>&1; then
-          success "  $machine: ✓ Online (Tailscale)"
-        elif ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine" "echo OK" >/dev/null 2>&1; then
-          success "  $machine: ✓ Online (LAN)"
-        else
-          warn "  $machine: ⚠ Unreachable"
-          if [[ $verbose -eq 1 ]]; then
-            log "    ℹ️  Note: reverse-proxy is likely only accessible via Tailscale"
-            log "    ℹ️  Check if Tailscale is running on both machines and if the SSH service is active"
-          fi
-        fi
-      # For other machines, try LAN first then Tailscale as fallback
+      # Try admin alias first (should work for all machines)
+      if ${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$admin_alias" "echo OK" >/dev/null 2>&1; then
+        success "  $machine: ✓ Online (admin access)"
+      # Fallback to direct Tailscale connection with admin key
+      elif ${openssh}/bin/ssh -o ConnectTimeout=5 -o BatchMode=yes -i ~/.ssh/id_ed25519_admin "sma@$tailscale_hostname" "echo OK" >/dev/null 2>&1; then
+        success "  $machine: ✓ Online (Tailscale)"
       else
-        if ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine" "echo OK" >/dev/null 2>&1; then
-          success "  $machine: ✓ Online (LAN)"
-        # Try with Tailscale hostname as fallback
-        elif ${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$ssh_user@$machine.tailnet" "echo OK" >/dev/null 2>&1; then
-          success "  $machine: ✓ Online (Tailscale)"
-        else
-          warn "  $machine: ⚠ Unreachable"
+        warn "  $machine: ⚠ Unreachable"
+        if [[ $verbose -eq 1 ]]; then
+          log "    ℹ️  Note: Tried both admin alias ($admin_alias) and direct Tailscale connection"
+          log "    ℹ️  Check if machine is online and SSH service is running"
         fi
       fi
     done
@@ -330,7 +327,7 @@ writeShellScriptBin "lab" ''
       ;;
 
     "status")
-      show_status
+      show_status "''${2:-}"
       ;;
 
     "update")
