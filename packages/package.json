@@ -1,0 +1,131 @@
+{
+  "name": "vscode-homelab-mcp",
+  "displayName": "Home Lab MCP Integration",
+  "description": "VS Code extension for home lab management via Model Context Protocol",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/vscode-homelab-extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "homelab.connect",
+        "title": "Connect to MCP Server",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.disconnect", 
+        "title": "Disconnect from MCP Server",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.deploy",
+        "title": "Deploy Machine",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.status",
+        "title": "Show Infrastructure Status",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.generateConfig",
+        "title": "Generate NixOS Configuration",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.listTools",
+        "title": "List Available Tools",
+        "category": "Home Lab"
+      },
+      {
+        "command": "homelab.executeTool",
+        "title": "Execute Tool",
+        "category": "Home Lab"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "homelab.connect",
+          "when": "true"
+        },
+        {
+          "command": "homelab.disconnect",
+          "when": "true"
+        },
+        {
+          "command": "homelab.deploy",
+          "when": "true"
+        },
+        {
+          "command": "homelab.status",
+          "when": "true"
+        },
+        {
+          "command": "homelab.generateConfig",
+          "when": "true"
+        },
+        {
+          "command": "homelab.listTools",
+          "when": "true"
+        },
+        {
+          "command": "homelab.executeTool",
+          "when": "true"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Home Lab MCP",
+      "properties": {
+        "homelab.mcpServerPath": {
+          "type": "string",
+          "default": "guile",
+          "description": "Path to Guile executable for MCP server"
+        },
+        "homelab.mcpServerScript": {
+          "type": "string", 
+          "default": "guile-mcp-server.scm",
+          "description": "Path to MCP server script"
+        },
+        "homelab.autoConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically connect to MCP server on startup"
+        },
+        "homelab.workspaceContext": {
+          "type": "boolean",
+          "default": true,
+          "description": "Provide workspace context to Copilot"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
+    "eslint": "^8.47.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "json-rpc-2.0": "^1.7.0"
+  }
+}

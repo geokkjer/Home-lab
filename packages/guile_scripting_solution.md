@@ -8,23 +8,23 @@ GNU Guile is the official extension language for the GNU Project. It is an imple
 
 Key reasons for considering Guile:
 
-*   **Expressiveness and Power:** Scheme is a full-fledged programming language with features like first-class functions, macros, and a rich standard library. This allows for more elegant and maintainable solutions to complex problems.
-*   **Better Error Handling:** Guile provides robust error handling mechanisms (conditions and handlers) that are more sophisticated than Bash's `set -e` and trap.
-*   **Modularity:** Guile supports modules, making it easier to organize code into reusable components.
-*   **Data Manipulation:** Scheme excels at handling structured data, which can be beneficial for managing configurations or parsing output from commands.
-*   **Readability (for Lisp programmers):** While Lisp syntax can be initially unfamiliar, it can lead to very clear and concise code once learned.
-*   **Interoperability:** Guile can easily call external programs and libraries, and can be extended with C code if needed.
+* **Expressiveness and Power:** Scheme is a full-fledged programming language with features like first-class functions, macros, and a rich standard library. This allows for more elegant and maintainable solutions to complex problems.
+* **Better Error Handling:** Guile provides robust error handling mechanisms (conditions and handlers) that are more sophisticated than Bash's `set -e` and trap.
+* **Modularity:** Guile supports modules, making it easier to organize code into reusable components.
+* **Data Manipulation:** Scheme excels at handling structured data, which can be beneficial for managing configurations or parsing output from commands.
+* **Readability (for Lisp programmers):** While Lisp syntax can be initially unfamiliar, it can lead to very clear and concise code once learned.
+* **Interoperability:** Guile can easily call external programs and libraries, and can be extended with C code if needed.
 
 ## 2. Advantages over Bash for `home-lab-tools`
 
 Migrating `home-lab-tools` from Bash to Guile offers specific benefits:
 
-*   **Improved Logic Handling:** Complex conditional logic, loops, and function definitions are more naturally expressed in Guile. The current Bash script uses case statements and string comparisons extensively, which can become unwieldy.
-*   **Structured Data Management:** Machine definitions, deployment modes, and status information could be represented as Scheme data structures (lists, association lists, records), making them easier to manage and query.
-*   **Enhanced Error Reporting:** More descriptive error messages and better control over script termination in case of failures.
-*   **Code Reusability:** Functions for common tasks (e.g., SSHing to a machine, running `nixos-rebuild`) can be more cleanly defined and reused.
-*   **Easier Testing:** Guile's nature as a programming language makes it more amenable to unit testing individual functions or modules.
-*   **Future Extensibility:** Adding new commands, machines, or features will be simpler and less error-prone in a more structured language.
+* **Improved Logic Handling:** Complex conditional logic, loops, and function definitions are more naturally expressed in Guile. The current Bash script uses case statements and string comparisons extensively, which can become unwieldy.
+* **Structured Data Management:** Machine definitions, deployment modes, and status information could be represented as Scheme data structures (lists, association lists, records), making them easier to manage and query.
+* **Enhanced Error Reporting:** More descriptive error messages and better control over script termination in case of failures.
+* **Code Reusability:** Functions for common tasks (e.g., SSHing to a machine, running `nixos-rebuild`) can be more cleanly defined and reused.
+* **Easier Testing:** Guile's nature as a programming language makes it more amenable to unit testing individual functions or modules.
+* **Future Extensibility:** Adding new commands, machines, or features will be simpler and less error-prone in a more structured language.
 
 ## 3. Setting up Guile
 
@@ -46,28 +46,28 @@ The `!#` at the end is a Guile-specific convention that allows the script to be 
 
 ## 4. Basic Guile Scripting Concepts
 
-*   **S-expressions:** Code is written using S-expressions (Symbolic Expressions), which are lists enclosed in parentheses, e.g., `(function arg1 arg2)`.
-*   **Definitions:** `(define variable value)` and `(define (function-name arg1 arg2) ...body...)`.
-*   **Procedures (Functions):** Core of Guile programming.
-*   **Control Flow:** `(if condition then-expr else-expr)`, `(cond (test1 expr1) (test2 expr2) ... (else else-expr))`, `(case ...)`
-*   **Modules:** `(use-modules (ice-9 popen))` for using libraries.
+* **S-expressions:** Code is written using S-expressions (Symbolic Expressions), which are lists enclosed in parentheses, e.g., `(function arg1 arg2)`.
+* **Definitions:** `(define variable value)` and `(define (function-name arg1 arg2) ...body...)`.
+* **Procedures (Functions):** Core of Guile programming.
+* **Control Flow:** `(if condition then-expr else-expr)`, `(cond (test1 expr1) (test2 expr2) ... (else else-expr))`, `(case ...)`
+* **Modules:** `(use-modules (ice-9 popen))` for using libraries.
 
 ## 5. Interacting with the System
 
 Guile provides modules for system interaction:
 
-*   **(ice-9 popen):** For running external commands and capturing their output (similar to backticks or `$(...)` in Bash).
-    *   `open-pipe* command mode`: Opens a pipe to a command.
-    *   `get-string-all port`: Reads all output from a port.
-*   **(ice-9 rdelim):** For reading lines from ports.
-*   **(ice-9 filesys):** For file system operations (checking existence, deleting, etc.).
-    *   `file-exists? path`
-    *   `delete-file path`
-*   **(srfi srfi-1):** List processing utilities.
-*   **(srfi srfi-26):** `cut` for partial application, useful for creating specialized functions.
-*   **Environment Variables:** `(getenv "VAR_NAME")`, `(setenv "VAR_NAME" "value")`.
+* **(ice-9 popen):** For running external commands and capturing their output (similar to backticks or `$(...)` in Bash).
+  * `open-pipe* command mode`: Opens a pipe to a command.
+  * `get-string-all port`: Reads all output from a port.
+* **(ice-9 rdelim):** For reading lines from ports.
+* **(ice-9 filesys):** For file system operations (checking existence, deleting, etc.).
+  * `file-exists? path`
+  * `delete-file path`
+* **(srfi srfi-1):** List processing utilities.
+* **(srfi srfi-26):** `cut` for partial application, useful for creating specialized functions.
+* **Environment Variables:** `(getenv "VAR_NAME")`, `(setenv "VAR_NAME" "value")`.
 
-**Example: Running a command**
+## Example: Running a command**
 
 ```scheme
 (use-modules (ice-9 popen))
@@ -87,8 +87,8 @@ Guile provides modules for system interaction:
 
 Guile uses a condition system for error handling.
 
-*   `catch`: Allows you to catch specific types of errors.
-*   `throw`: Raises an error.
+* `catch`: Allows you to catch specific types of errors.
+* `throw`: Raises an error.
 
 ```scheme
 (use-modules (ice-9 exceptions))
@@ -113,11 +113,11 @@ For `home-lab-tools`, this means we can provide more specific feedback when a de
 
 Guile's module system allows splitting the code into logical units. For `home-lab-tools`, we could have modules for:
 
-*   `lab-config`: Machine definitions, paths.
-*   `lab-deploy`: Functions related to deploying configurations.
-*   `lab-ssh`: SSH interaction utilities.
-*   `lab-status`: Functions for checking machine status.
-*   `lab-utils`: General helper functions, logging.
+* `lab-config`: Machine definitions, paths.
+* `lab-deploy`: Functions related to deploying configurations.
+* `lab-ssh`: SSH interaction utilities.
+* `lab-status`: Functions for checking machine status.
+* `lab-utils`: General helper functions, logging.
 
 **Example module structure:**
 
@@ -275,20 +275,21 @@ For more interactive command-line tools, Guile Scheme can be used to create Text
 
 **Key Features:**
 
-*   **Windowing:** Create and manage multiple windows on the terminal.
-*   **Input Handling:** Process keyboard input, including special keys.
-*   **Text Attributes:** Control colors, bolding, underlining, and other text styles.
-*   **Forms, Panels, Menus:** Higher-level components for building complex interfaces.
+* **Windowing:** Create and manage multiple windows on the terminal.
+* **Input Handling:** Process keyboard input, including special keys.
+* **Text Attributes:** Control colors, bolding, underlining, and other text styles.
+* **Forms, Panels, Menus:** Higher-level components for building complex interfaces.
 
 **Getting Started with Guile-Ncurses:**
 
-1.  **Installation:** `guile-ncurses` would typically be installed via your system's package manager or built from source. If you are using NixOS, you would look for a Nix package for `guile-ncurses`.
+1. **Installation:** `guile-ncurses` would typically be installed via your system's package manager or built from source. If you are using NixOS, you would look for a Nix package for `guile-ncurses`.
+
     ```nix
     # Example: Adding guile-ncurses to a Nix shell (package name might vary)
     nix-shell -p guile guile-ncurses
     ```
 
-2.  **Using in Code:**
+2. **Using in Code:**
     You would use the `(ncurses curses)` module (and others like `(ncurses form)`, `(ncurses menu)`, `(ncurses panel)`) in your Guile script.
 
     ```scheme
@@ -312,8 +313,8 @@ For more interactive command-line tools, Guile Scheme can be used to create Text
 
 **Resources:**
 
-*   **Guile-Ncurses Project Page:** [https://www.nongnu.org/guile-ncurses/](https://www.nongnu.org/guile-ncurses/)
-*   **Guile-Ncurses Manual:** [https://www.gnu.org/software/guile-ncurses/manual/](https://www.gnu.org/software/guile-ncurses/manual/)
+* **Guile-Ncurses Project Page:** [https://www.nongnu.org/guile-ncurses/](https://www.nongnu.org/guile-ncurses/)
+* **Guile-Ncurses Manual:** [https://www.gnu.org/software/guile-ncurses/manual/](https://www.gnu.org/software/guile-ncurses/manual/)
 
 Integrating `guile-ncurses` can significantly enhance the user experience of your `home-lab-tools` script, allowing for interactive menus, status dashboards, and more complex user interactions beyond simple command-line arguments and output.
 
@@ -323,11 +324,11 @@ Migrating `home-lab-tools` to Guile Scheme offers a path to a more maintainable,
 
 **Next Steps:**
 
-1.  **Install Guile:** Ensure Guile is available in the development environment.
-2.  **Start Small:** Begin by porting one command or a set of utility functions (e.g., logging, SSH wrappers).
-3.  **Learn Guile Basics:** Familiarize with Scheme syntax, common procedures, and modules. The Guile Reference Manual is an excellent resource.
-4.  **Develop Incrementally:** Port functionality piece by piece, testing along the way.
-5.  **Explore Guile Libraries:** Investigate Guile libraries for argument parsing (e.g., `(gnu cmdline)`), file system operations, and other needs.
-6.  **Refactor and Organize:** Use Guile's module system to keep the codebase clean and organized.
+1. **Install Guile:** Ensure Guile is available in the development environment.
+2. **Start Small:** Begin by porting one command or a set of utility functions (e.g., logging, SSH wrappers).
+3. **Learn Guile Basics:** Familiarize with Scheme syntax, common procedures, and modules. The Guile Reference Manual is an excellent resource.
+4. **Develop Incrementally:** Port functionality piece by piece, testing along the way.
+5. **Explore Guile Libraries:** Investigate Guile libraries for argument parsing (e.g., `(gnu cmdline)`), file system operations, and other needs.
+6. **Refactor and Organize:** Use Guile's module system to keep the codebase clean and organized.
 
 This transition will require an initial investment in learning and development but promises a more powerful and sustainable tool for managing the home lab infrastructure.
