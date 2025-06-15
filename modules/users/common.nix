@@ -5,6 +5,9 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ./shell-aliases.nix
+  ];
   # Common user settings
   users = {
     # Use mutable users for flexibility
@@ -25,28 +28,6 @@
       eval "$(starship init zsh)"
       eval "$(direnv hook zsh)"
     '';
-
-    # Common aliases for all users
-    shellAliases = {
-      # Modern CLI tool replacements (basic ones moved to base.nix)
-      "ll" = "eza -l --color=auto --group-directories-first";
-      "la" = "eza -la --color=auto --group-directories-first";
-      "tree" = "eza --tree";
-
-      # Git shortcuts (basic ones moved to base.nix)
-
-      # System shortcuts (some moved to base.nix)
-      "top" = "btop";
-
-      # Network
-      "ping" = "ping -c 5";
-      "myip" = "curl -s ifconfig.me";
-
-      # Safety
-      "rm" = "rm -i";
-      "mv" = "mv -i";
-      "cp" = "cp -i";
-    };
 
     # Common environment variables
     sessionVariables = {

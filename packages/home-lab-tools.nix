@@ -216,22 +216,31 @@ writeShellScriptBin "lab" ''
   show_status() {
     log "Home-lab infrastructure status:"
 
+    # Check if -v (verbose) flag is passed for deploy-rs details
+    local verbose=0
+    local show_deploy_rs=0
+    for arg in "$@"; do
+      case "$arg" in
+        "-v"|"--verbose") verbose=1 ;;
+        "--deploy-rs") show_deploy_rs=1 ;;
+        "-vd"|"--verbose-deploy-rs") verbose=1; show_deploy_rs=1 ;;
+      esac
+    done
+
     # Check congenital-optimist (local)
     if /run/current-system/sw/bin/systemctl is-active --quiet tailscaled; then
       success "  congenital-optimist: ✓ Online (local)"
+      if [[ $show_deploy_rs -eq 1 ]]; then
+        show_machine_deploy_info "congenital-optimist" "local"
+      fi
     else
       warn "  congenital-optimist: ⚠ Tailscale inactive"
-    fi
-
-    # Check if -v (verbose) flag is passed
-    local verbose=0
-    if [[ "''${1:-}" == "-v" ]]; then
-      verbose=1
     fi
 
     # Check remote machines
     for machine in sleeper-service grey-area reverse-proxy; do
       local ssh_user="sma"  # Using sma as the admin user for remote machines
+      local connection_type=""
 
       # Test SSH connectivity with debug info if in verbose mode
       if [[ $verbose -eq 1 ]]; then
@@ -253,8 +262,10 @@ writeShellScriptBin "lab" ''
         # Use the specific Tailscale hostname for reverse-proxy
         if ${openssh}/bin/ssh -o ConnectTimeout=5 -o BatchMode=yes "$ssh_user@reverse-proxy.tail807ea.ts.net" "echo OK" >/dev/null 2>&1; then
           success "  $machine: ✓ Online (Tailscale)"
+          connection_type="reverse-proxy.tail807ea.ts.net"
         elif ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine" "echo OK" >/dev/null 2>&1; then
           success "  $machine: ✓ Online (LAN)"
+          connection_type="$machine"
         else
           warn "  $machine: ⚠ Unreachable"
           if [[ $verbose -eq 1 ]]; then
@@ -266,14 +277,70 @@ writeShellScriptBin "lab" ''
       else
         if ${openssh}/bin/ssh -o ConnectTimeout=2 -o BatchMode=yes "$ssh_user@$machine" "echo OK" >/dev/null 2>&1; then
           success "  $machine: ✓ Online (LAN)"
+          connection_type="$machine"
         # Try with Tailscale hostname as fallback
         elif ${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$ssh_user@$machine.tailnet" "echo OK" >/dev/null 2>&1; then
           success "  $machine: ✓ Online (Tailscale)"
+          connection_type="$machine.tailnet"
         else
           warn "  $machine: ⚠ Unreachable"
         fi
       fi
+
+      # Show deploy-rs information if requested and machine is reachable
+      if [[ $show_deploy_rs -eq 1 && -n "$connection_type" ]]; then
+        show_machine_deploy_info "$machine" "$connection_type"
+      fi
     done
+
+    if [[ $show_deploy_rs -eq 1 ]]; then
+      echo ""
+      log "💡 Use 'lab status --deploy-rs' to see deployment details"
+      log "💡 Use 'lab status -vd' for verbose deploy-rs information"
+    fi
+  }
+
+  # Show deploy-rs deployment information for a machine
+  show_machine_deploy_info() {
+    local machine="$1"
+    local connection="$2"
+    
+    if [[ "$connection" == "local" ]]; then
+      # Local machine - get info directly
+      local current_gen=$(readlink /nix/var/nix/profiles/system | sed 's/.*system-\([0-9]*\)-link/\1/')
+      local system_closure=$(readlink -f /run/current-system)
+      local build_date=$(stat -c %y "$system_closure" 2>/dev/null | cut -d' ' -f1 2>/dev/null || echo "unknown")
+      
+      echo "    📦 Generation: $current_gen"
+      echo "    📅 Build Date: $build_date"
+      echo "    📍 Store Path: $system_closure"
+    else
+      # Remote machine - get info via SSH
+      local ssh_user="sma"
+      local ssh_host="$connection"
+      
+      local remote_info=$(${openssh}/bin/ssh -o ConnectTimeout=3 -o BatchMode=yes "$ssh_user@$ssh_host" "
+        current_gen=\$(readlink /nix/var/nix/profiles/system 2>/dev/null | sed 's/.*system-\([0-9]*\)-link/\1/' 2>/dev/null || echo 'unknown')
+        system_closure=\$(readlink -f /run/current-system 2>/dev/null || echo 'unknown')
+        build_date=\$(stat -c %y \$system_closure 2>/dev/null | cut -d' ' -f1 2>/dev/null || echo 'unknown')
+        uptime=\$(uptime -s 2>/dev/null || echo 'unknown')
+        echo \"gen:\$current_gen|path:\$system_closure|date:\$build_date|uptime:\$uptime\"
+      " 2>/dev/null)
+      
+      if [[ -n "$remote_info" ]]; then
+        local gen=$(echo "$remote_info" | cut -d'|' -f1 | cut -d':' -f2)
+        local path=$(echo "$remote_info" | cut -d'|' -f2 | cut -d':' -f2)
+        local date=$(echo "$remote_info" | cut -d'|' -f3 | cut -d':' -f2)
+        local uptime=$(echo "$remote_info" | cut -d'|' -f4 | cut -d':' -f2)
+        
+        echo "    📦 Generation: $gen"
+        echo "    📅 Build Date: $date"
+        echo "    ⏰ Boot Time: $uptime"
+        echo "    📍 Store Path: $(basename "$path")"
+      else
+        echo "    ⚠️  Unable to retrieve deployment info"
+      fi
+    fi
   }
 
   # Main command handling
@@ -330,7 +397,8 @@ writeShellScriptBin "lab" ''
       ;;
 
     "status")
-      show_status
+      shift # Remove "status" from arguments
+      show_status "$@"  # Pass all remaining arguments to show_status
       ;;
 
     "update")
@@ -361,7 +429,9 @@ writeShellScriptBin "lab" ''
       echo "  hybrid-update [target] [opts] - Update flake + deploy with deploy-rs"
       echo "                               Target: machine name or 'all' (default)"
       echo "                               Options: --dry-run"
-      echo "  status                      - Check infrastructure connectivity"
+      echo "  status [options]            - Check infrastructure connectivity"
+      echo "                               Options: -v (verbose), --deploy-rs (show deployment info)"
+      echo "                                       -vd (verbose + deploy-rs info)"
       echo ""
       echo "Deployment Methods:"
       echo "  Legacy (SSH + rsync):       Reliable, tested, slower"
@@ -389,6 +459,8 @@ writeShellScriptBin "lab" ''
       echo ""
       echo "  # Status and monitoring"
       echo "  lab status                            # Check all machines"
+      echo "  lab status --deploy-rs                # Show deployment details"
+      echo "  lab status -vd                        # Verbose with deploy-rs info"
       echo ""
       echo "  # Ollama AI tools"
       echo "  ollama-cli status                     # Check Ollama service status"

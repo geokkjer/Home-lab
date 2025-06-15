@@ -76,33 +76,12 @@
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
 
-    # Admin-focused aliases
+    # Admin-specific aliases (common ones in shell-aliases.nix)
     shellAliases = {
-      # System management (use current system configuration)
-      "rebuild" = "sudo nixos-rebuild switch";
-      "rebuild-test" = "sudo nixos-rebuild test";
-      "rebuild-boot" = "sudo nixos-rebuild boot";
-      "rebuild-flake" = "cd /tmp/home-lab-config && sudo nixos-rebuild switch --flake .";
-      "rebuild-flake-test" = "cd /tmp/home-lab-config && sudo nixos-rebuild test --flake .";
-      "rebuild-flake-boot" = "cd /tmp/home-lab-config && sudo nixos-rebuild boot --flake .";
-
-      # Container management
-      "pods" = "podman ps -a";
-      "images" = "podman images";
-      "logs" = "podman logs";
-
-      # System monitoring
-      "disk-usage" = "df -h";
-      "mem-usage" = "free -h";
-      "processes" = "ps aux | head -20";
-
-      # Network
-      "ports" = "ss -tulpn";
-      "connections" = "ss -tuln";
-
-      # Security
-      "audit-users" = "cat /etc/passwd | grep -E '/bin/(bash|zsh|fish)'";
-      "audit-sudo" = "cat /etc/sudoers.d/*";
+      # Flake management from remote deployments (sma uses temp directory)
+      "rebuild-remote" = "cd /tmp/home-lab-config && sudo nixos-rebuild switch --flake .";
+      "rebuild-remote-test" = "cd /tmp/home-lab-config && sudo nixos-rebuild test --flake .";
+      "rebuild-remote-boot" = "cd /tmp/home-lab-config && sudo nixos-rebuild boot --flake .";
     };
     interactiveShellInit = ''
       # Emacs-style keybindings

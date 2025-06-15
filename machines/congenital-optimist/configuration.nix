@@ -35,6 +35,7 @@
 
     # User configuration
     ../../modules/users/geir.nix
+    ../../modules/users/sma.nix
 
     # Virtualization configuration
     ../../modules/virtualization/incus.nix

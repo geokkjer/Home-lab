@@ -132,28 +132,19 @@ in {
   programs.zsh = {
     enable = true;
 
-    # Shell aliases
+    # Shell aliases (user-specific only, common ones in shell-aliases.nix)
     shellAliases = {
-      # Development workflow
+      # Development workflow - geir specific
       "home-lab" = "z /home/geir/Home-lab";
       "configs" = "z /home/geir/Home-lab/user_configs/geir";
       "emacs-config" = "emacs /home/geir/Home-lab/user_configs/geir/emacs.org";
 
-      # Quick system management
-      "rebuild-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
-      "rebuild" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
-      "collect" = "sudo nix-collect-garbage --d";
-      "optimise" = "sudo nix-store --optimise";
+      # Flake-specific rebuilds (geir has access to local flake directory)
+      "rebuild-local" = "sudo nixos-rebuild switch --flake /home/geir/Home-lab";
+      "rebuild-local-test" = "sudo nixos-rebuild test --flake /home/geir/Home-lab";
 
       # Git shortcuts for multi-remote workflow
       "git-status-all" = "git status && echo '--- Checking origin ---' && git log origin/main..HEAD --oneline && echo '--- Checking github ---' && git log github/main..HEAD --oneline";
-
-      # Container shortcuts
-      "pdm" = "podman";
-      "pdc" = "podman-compose";
-
-      # Media shortcuts
-      "youtube-dl" = "yt-dlp";
     };
 
     # History configuration
