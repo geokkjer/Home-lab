@@ -12,7 +12,7 @@
       "ll" = "eza -l --color=auto --group-directories-first";
       "la" = "eza -la --color=auto --group-directories-first";
       "tree" = "eza --tree";
-      
+
       # Safety first
       "rm" = "rm -i";
       "mv" = "mv -i";
