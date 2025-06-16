@@ -1,7 +1,7 @@
 # AI Agent General Instructions
 
 ## Overview
-This part of the document provides general instructions for tha AI agent.
+This part of the document provides general instructions for the AI agent.
 
 ## General Instructions
 - Treat this as iterative collaboration between user and AI agent

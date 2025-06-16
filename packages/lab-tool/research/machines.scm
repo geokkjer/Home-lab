@@ -3,7 +3,7 @@
 (define-module (lab machines)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 call-with-values)
+
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (utils logging)

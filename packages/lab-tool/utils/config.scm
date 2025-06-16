@@ -3,9 +3,9 @@
 (define-module (utils config)
   #:use-module (ice-9 format)
   #:use-module (ice-9 textual-ports)
-  #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (utils logging)
+  #:use-module (utils json)
   #:export (load-config
             get-config-value
             machine-configs
@@ -60,7 +60,7 @@
           (catch #t
             (lambda ()
               (let ((json-data (call-with-input-file config-file get-string-all)))
-                (set! current-config (json-string->scm json-data))
+                (set! current-config (json-string->scm-safe json-data))
                 (log-info "Configuration loaded successfully")))
             (lambda (key . args)
               (log-warn "Failed to load config file, using defaults: ~a" key)

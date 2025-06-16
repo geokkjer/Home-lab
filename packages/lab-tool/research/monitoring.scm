@@ -5,7 +5,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 textual-ports)
-  #:use-module (ice-9 call-with-values)
+
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (utils logging)

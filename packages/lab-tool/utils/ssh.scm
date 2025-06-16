@@ -7,7 +7,7 @@
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 textual-ports)
-  #:use-module (ice-9 call-with-values)
+
   #:use-module (srfi srfi-1)
   #:use-module (utils logging)
   #:use-module (utils config)
@@ -113,15 +113,17 @@
 ;; Run command with retry logic
 (define (run-command-with-retry machine-name command max-retries . args)
   (let loop ((retries 0))
-    (call-with-values (success output) (apply run-remote-command machine-name command args)
-      (if success
-          (values #t output)
-          (if (< retries max-retries)
-              (begin
-                (log-warn "Command failed, retrying (~a/~a)..." (+ retries 1) max-retries)
-                (sleep 2)
-                (loop (+ retries 1)))
-              (values #f output))))))
+    (call-with-values 
+        (lambda () (apply run-remote-command machine-name command args))
+      (lambda (success output)
+        (if success
+            (values #t output)
+            (if (< retries max-retries)
+                (begin
+                  (log-warn "Command failed, retrying (~a/~a)..." (+ retries 1) max-retries)
+                  (sleep 2)
+                  (loop (+ retries 1)))
+                (values #f output)))))))
 
 ;; Execute a thunk with SSH connection context
 (define (with-ssh-connection machine-name thunk)

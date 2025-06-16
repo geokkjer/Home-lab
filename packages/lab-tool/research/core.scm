@@ -5,17 +5,85 @@
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 textual-ports)
-  #:use-module (ice-9 call-with-values)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
-  #:use-module (utils logging)
-  #:use-module (utils config)
-  #:use-module (utils ssh)
   #:export (get-infrastructure-status
             check-system-health
             update-flake
             validate-environment
-            execute-nixos-rebuild))
+            execute-nixos-rebuild
+            check-network-connectivity
+            option-ref))
+
+;; Simple option reference function
+(define (option-ref options key default)
+  "Get option value from options alist with default"
+  (let ((value (assoc-ref options key)))
+    (if value value default)))
+
+;; Stub logging functions (to be replaced with proper logging module)
+(define (log-info format-str . args)
+  "Log info message"
+  (apply format #t (string-append "[INFO] " format-str "~%") args))
+
+(define (log-debug format-str . args)
+  "Log debug message"
+  (apply format #t (string-append "[DEBUG] " format-str "~%") args))
+
+(define (log-success format-str . args)
+  "Log success message"
+  (apply format #t (string-append "[SUCCESS] " format-str "~%") args))
+
+(define (log-error format-str . args)
+  "Log error message"
+  (apply format #t (string-append "[ERROR] " format-str "~%") args))
+
+(define (log-warn format-str . args)
+  "Log warning message"
+  (apply format #t (string-append "[WARN] " format-str "~%") args))
+
+;; Stub configuration functions
+(define (get-all-machines)
+  "Get list of all machines"
+  '(grey-area sleeper-service congenital-optimist reverse-proxy))
+
+(define (get-machine-config machine-name)
+  "Get configuration for a machine"
+  `((services . (systemd ssh))
+    (type . server)))
+
+(define (get-ssh-config machine-name)
+  "Get SSH configuration for a machine"
+  `((hostname . ,(symbol->string machine-name))
+    (is-local . #f)))
+
+(define (get-homelab-root)
+  "Get home lab root directory"
+  "/home/geir/Home-lab")
+
+;; Stub SSH functions
+(define (test-ssh-connection machine-name)
+  "Test SSH connection to machine"
+  (zero? (system (format #f "ssh -o ConnectTimeout=5 -o BatchMode=yes ~a exit 2>/dev/null" machine-name))))
+
+(define (run-remote-command machine-name command . args)
+  "Run command on remote machine via SSH"
+  (let* ((full-command (if (null? args)
+                          command
+                          (string-join (cons command args) " ")))
+         (ssh-command (format #f "ssh ~a '~a'" machine-name full-command))
+         (port (open-input-pipe ssh-command))
+         (output (read-string port))
+         (status (close-pipe port)))
+    (values (zero? status) output)))
+
+;; Utility function for spinner (stub)
+(define (with-spinner message proc)
+  "Execute procedure with spinner (stub implementation)"
+  (display (format #f "~a..." message))
+  (let ((result (proc)))
+    (display " done.\n")
+    result))
 
 ;; Get comprehensive infrastructure status
 (define (get-infrastructure-status . args)
@@ -58,13 +126,14 @@
         (let ((services (assoc-ref machine-config 'services)))
           (if services
               (map (lambda (service)
-                     (call-with-values (success output) 
-                                  (run-remote-command machine-name 
-                                                     "systemctl is-active" 
-                                                     (symbol->string service)))
-                       `(,service . ,(if success 
-                                        (string-trim-right output)
-                                        "unknown"))))
+                     (call-with-values 
+                         (lambda () (run-remote-command machine-name 
+                                                       "systemctl is-active" 
+                                                       (symbol->string service)))
+                       (lambda (success output)
+                         `(,service . ,(if success 
+                                          (string-trim-right output)
+                                          "unknown")))))
                    services)
               '()))
         '())))
@@ -82,11 +151,12 @@
     (fold (lambda (cmd-pair acc)
             (let ((key (car cmd-pair))
                   (command (cadr cmd-pair)))
-              (call-with-values (((success output) 
-                           (run-remote-command machine-name command)))
-                (if success
-                    (assoc-set! acc (string->symbol key) (string-trim-right output))
-                    acc))))
+              (call-with-values 
+                  (lambda () (run-remote-command machine-name command))
+                (lambda (success output)
+                  (if success
+                      (assoc-set! acc (string->symbol key) (string-trim-right output))
+                      acc)))))
           '()
           info-commands)))
 
@@ -120,36 +190,40 @@
 ;; Individual health check functions
 (define (check-disk-space machine-name)
   "Check if disk space is below critical threshold"
-  (call-with-values (((success output) 
-               (run-remote-command machine-name "df / | tail -1 | awk '{print $5}' | sed 's/%//'")))
-    (if success
-        (let ((usage (string->number (string-trim-right output))))
-          (< usage 90)) ; Pass if usage < 90%
-        #f)))
+  (call-with-values 
+      (lambda () (run-remote-command machine-name "df / | tail -1 | awk '{print $5}' | sed 's/%//'"))
+    (lambda (success output)
+      (if success
+          (let ((usage (string->number (string-trim-right output))))
+            (< usage 90)) ; Pass if usage < 90%
+          #f))))
 
 (define (check-system-load machine-name)
   "Check if system load is reasonable"
-  (call-with-values (((success output) 
-               (run-remote-command machine-name "cat /proc/loadavg | cut -d' ' -f1")))
-    (if success
-        (let ((load (string->number (string-trim-right output))))
-          (< load 5.0)) ; Pass if load < 5.0
-        #f)))
+  (call-with-values 
+      (lambda () (run-remote-command machine-name "cat /proc/loadavg | cut -d' ' -f1"))
+    (lambda (success output)
+      (if success
+          (let ((load (string->number (string-trim-right output))))
+            (< load 5.0)) ; Pass if load < 5.0
+          #f))))
 
 (define (check-critical-services machine-name)
   "Check that critical services are running"
   (let ((critical-services '("sshd")))
     (every (lambda (service)
-             (call-with-values (((success output) 
-                          (run-remote-command machine-name "systemctl is-active" service)))
-               (and success (string=? (string-trim-right output) "active"))))
+             (call-with-values 
+                 (lambda () (run-remote-command machine-name "systemctl is-active" service))
+               (lambda (success output)
+                 (and success (string=? (string-trim-right output) "active")))))
            critical-services)))
 
 (define (check-network-connectivity machine-name)
   "Check basic network connectivity"
-  (call-with-values (((success output) 
-               (run-remote-command machine-name "ping -c 1 -W 5 8.8.8.8 > /dev/null 2>&1; echo $?")))
-    (and success (string=? (string-trim-right output) "0"))))
+  (call-with-values 
+      (lambda () (run-remote-command machine-name "ping -c 1 -W 5 8.8.8.8 > /dev/null 2>&1; echo $?"))
+    (lambda (success output)
+      (and success (string=? (string-trim-right output) "0")))))
 
 ;; Update flake inputs
 (define (update-flake options)
@@ -249,4 +323,4 @@
                         (begin
                           (log-error "nixos-rebuild failed for ~a (exit: ~a)" machine-name status)
                           (log-error "Error output: ~a" output)
-                          #f)))))))))))
+                          #f))))))))))
