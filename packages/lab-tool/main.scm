@@ -28,6 +28,9 @@ COMMANDS:
   status              Show infrastructure status
   machines            List all machines  
   deploy <machine>    Deploy configuration to machine
+  deploy-all          Deploy to all machines
+  update              Update flake inputs
+  health [machine]    Check machine health (all if no machine specified)
   ssh <machine>       SSH to machine
   test-modules        Test modular implementation
   help                Show this help
@@ -36,6 +39,10 @@ EXAMPLES:
   lab status
   lab machines
   lab deploy congenital-optimist
+  lab deploy-all
+  lab update
+  lab health
+  lab health sleeper-service
   lab ssh sleeper-service
   lab test-modules
 
@@ -96,10 +103,10 @@ Home lab root: ~a
   "Deploy configuration to machine"
   (log-info "Deploying to machine: ~a" machine-name)
   (if (validate-machine-name machine-name)
-      (begin
-        (log-info "Machine ~a is valid" machine-name)
-        (log-info "Deployment simulation complete (no actual deployment)")
-        (log-success "Deployment to ~a complete" machine-name))
+      (let ((result (deploy-machine machine-name "boot" '())))
+        (if result
+            (log-success "Deployment to ~a complete" machine-name)
+            (log-error "Deployment to ~a failed" machine-name)))
       (begin
         (log-error "Invalid machine: ~a" machine-name)
         (log-info "Available machines: ~a" (string-join (get-all-machines) ", ")))))
@@ -126,8 +133,7 @@ Home lab root: ~a
   (log-info "Testing modular implementation...")
   
   ;; Test pure functions
-  (use-modules (utils config accessor)
-               (utils logging format))
+  (use-modules (utils config accessor))
   
   (let* ((config (get-current-config))
          (machines (get-all-machines-pure config))
@@ -139,6 +145,51 @@ Home lab root: ~a
     (format #t "\n✅ All pure functions working correctly!\n\n")
     
     (log-success "Modular implementation test complete")))
+
+(define (cmd-update)
+  "Update flake inputs"
+  (log-info "Updating flake inputs...")
+  (let ((result (update-flake '())))
+    (if result
+        (log-success "Flake update complete")
+        (log-error "Flake update failed"))))
+
+(define (cmd-deploy-all)
+  "Deploy to all machines"
+  (log-info "Deploying to all machines...")
+  (let* ((machines (list-machines))
+         (results (map (lambda (machine)
+                         (log-info "Deploying to ~a..." machine)
+                         (let ((result (deploy-machine machine "boot" '())))
+                           (if result
+                               (log-success "✓ ~a deployed" machine)
+                               (log-error "✗ ~a failed" machine))
+                           result))
+                       machines))
+         (successful (filter identity results)))
+    (log-info "Deployment summary: ~a/~a successful" 
+              (length successful) (length machines))))
+
+(define (cmd-health args)
+  "Check machine health"
+  (let ((machine-name (if (null? args) #f (car args))))
+    (if machine-name
+        ;; Check specific machine
+        (if (validate-machine-name machine-name)
+            (let ((health (check-machine-health machine-name)))
+              (format #t "Health check for ~a:\n" machine-name)
+              (format #t "  SSH: ~a\n" (assoc-ref health 'ssh-connectivity))
+              (format #t "  Status: ~a\n" (assoc-ref health 'status))
+              (format #t "  Services: ~a configured\n" (assoc-ref health 'services-configured)))
+            (log-error "Invalid machine: ~a" machine-name))
+        ;; Check all machines
+        (let ((results (discover-machines)))
+          (format #t "Health Summary:\n")
+          (for-each (lambda (health)
+                      (let ((machine (assoc-ref health 'machine))
+                            (status (assoc-ref health 'status)))
+                        (format #t "  ~a: ~a\n" machine status)))
+                    results)))))
 
 ;; Main command dispatcher
 (define (dispatch-command command args)
@@ -160,6 +211,15 @@ Home lab root: ~a
            (format #t "Usage: lab deploy <machine>\n"))
          (cmd-deploy (car args))))
     
+    ('deploy-all
+     (cmd-deploy-all))
+    
+    ('update
+     (cmd-update))
+    
+    ('health
+     (cmd-health args))
+    
     ('ssh
      (if (null? args)
          (begin
@@ -172,7 +232,8 @@ Home lab root: ~a
     
     (_
      (log-error "Unknown command: ~a" command)
-     (format #t "Use 'lab help' for available commands\n"))))
+     (format #t "Use 'lab help' for available commands\n")
+     (exit 1))))
 
 ;; Main entry point
 (define (main args)

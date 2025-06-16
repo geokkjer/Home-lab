@@ -10,6 +10,7 @@
             log-error
             log-success
             set-log-level!
+            get-color
             with-spinner))
 
 ;; ANSI color codes
