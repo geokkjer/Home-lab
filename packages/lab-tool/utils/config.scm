@@ -13,7 +13,8 @@
             get-all-machines
             validate-machine-name
             get-homelab-root
-            get-ssh-config))
+            get-ssh-config
+            get-current-config))
 
 ;; Default configuration
 (define default-config
@@ -124,6 +125,11 @@
             (ssh-alias . ,ssh-alias)
             (is-local . ,(eq? type 'local))))
         #f)))
+
+;; Get current configuration
+(define (get-current-config)
+  "Get current loaded configuration"
+  current-config)
 
 ;; Initialize configuration on module load
 (load-config)

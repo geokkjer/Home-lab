@@ -9,7 +9,10 @@
 (use-modules (ice-9 match)
              (ice-9 format)
              (utils config)
-             (utils logging))
+             (utils logging)
+             (lab core)
+             (lab machines)
+             (lab deployment))
 
 ;; Initialize logging
 (set-log-level! 'info)
@@ -68,17 +71,23 @@ Home lab root: ~a
 (define (cmd-status)
   "Show infrastructure status"
   (log-info "Checking infrastructure status...")
-  (let* ((machines (get-all-machines))
+  (let* ((machines (list-machines))
+         (status (get-infrastructure-status))
          (config (get-current-config))
          (status-text (format-status-info machines config)))
     (display status-text)
     (newline)
+    (for-each (lambda (machine-status)
+                (let ((machine (assoc-ref machine-status 'machine))
+                      (status (assoc-ref machine-status 'status)))
+                  (format #t "  ~a: ~a\n" machine status)))
+              status)
     (log-success "Status check complete")))
 
 (define (cmd-machines)
   "List all configured machines"
   (log-info "Listing configured machines...")
-  (let* ((machines (get-all-machines))
+  (let* ((machines (list-machines))
          (machine-list (format-machine-list machines)))
     (format #t "Configured Machines:\n~a\n" machine-list)
     (log-success "Machine list complete")))

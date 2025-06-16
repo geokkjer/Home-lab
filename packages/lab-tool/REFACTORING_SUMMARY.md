@@ -3,11 +3,13 @@
 ## Applied Principles
 
 ### 1. Modularization (Keep It Simple, Keep It Small)
+
 - **Before**: Large monolithic modules (138+ lines)
 - **After**: Small focused modules (each under 50 lines)
 - **Example**: SSH module split into 5 specialized modules
 
 ### 2. Single Responsibility Principle (UNIX Philosophy: Do One Thing Well)
+
 - **connection-test.scm**: Only SSH connectivity testing
 - **remote-command.scm**: Only remote command execution  
 - **file-copy.scm**: Only file transfer operations
@@ -15,12 +17,15 @@
 - **context.scm**: Only connection context management
 
 ### 3. Functional Programming Patterns
+
 - **Pure Functions First**: All core logic implemented as pure functions
 - **Immutable Data**: Configuration and data structures remain immutable
 - **Separation of Concerns**: Pure functions separated from side effects
 
 ### 4. Function-Level Modularity
+
 Each module exports both:
+
 - **Pure functions**: For testing, composition, and functional programming
 - **Impure wrappers**: For convenience and logging
 
@@ -58,21 +63,25 @@ utils/
 ## Benefits Achieved
 
 ### 1. Testability
+
 - Pure functions can be tested in isolation
 - No side effects to mock or manage
 - Clear input/output contracts
 
 ### 2. Composability  
+
 - Small functions can be easily combined
 - Pure functions enable functional composition
 - Reusable building blocks
 
 ### 3. Maintainability
+
 - Single responsibility makes modules easy to understand
 - Changes are localized to specific modules
 - Clear separation between pure and impure code
 
 ### 4. Code Reuse
+
 - Pure functions can be reused across different contexts
 - Both pure and impure versions available
 - Facade modules provide convenient interfaces
@@ -80,6 +89,7 @@ utils/
 ## Usage Examples
 
 ### Pure Function Composition
+
 ```scheme
 ;; Test connection and get config in one go
 (let ((ssh-config (get-ssh-config-pure config "machine-name")))
@@ -89,6 +99,7 @@ utils/
 ```
 
 ### Convenient Impure Wrappers
+
 ```scheme
 ;; Same operation with logging and error handling
 (with-ssh-connection "machine-name"
@@ -96,6 +107,7 @@ utils/
 ```
 
 ### Functional Pipeline
+
 ```scheme
 ;; Pure validation pipeline
 (let* ((config (load-config-from-file "config.json"))
