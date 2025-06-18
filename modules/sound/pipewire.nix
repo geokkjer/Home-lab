@@ -15,10 +15,10 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
-    
+
     # Enable WirePlumber session manager
     wireplumber.enable = true;
-    
+
     # Extra configuration for noise suppression
     extraConfig.pipewire."10-noise-suppression" = {
       "context.properties" = {
@@ -27,7 +27,7 @@
         "default.clock.min-quantum" = 32;
         "default.clock.max-quantum" = 2048;
       };
-      
+
       "context.modules" = [
         {
           name = "libpipewire-module-filter-chain";
@@ -69,7 +69,7 @@
   environment.systemPackages = with pkgs; [
     # Noise suppression plugin
     rnnoise-plugin # RNNoise LADSPA plugin
-    
+
     # Audio control and monitoring
     pavucontrol # PulseAudio volume control (works with PipeWire)
     helvum # Graphical patchbay for PipeWire
@@ -102,14 +102,6 @@
     PIPEWIRE_LATENCY = "1024/48000";
     # Ensure applications use PipeWire
     PULSE_RUNTIME_PATH = "/run/user/$UID/pulse";
-  };
-
-  # Enable additional audio-related services
-  services = {
-    # Enable udev rules for audio devices
-    udev.packages = with pkgs; [
-      alsa-utils
-    ];
   };
 
   # User session configuration for audio
