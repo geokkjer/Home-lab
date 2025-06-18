@@ -61,8 +61,8 @@
       MemoryHigh = "16G";
       MemorySwapMax = "4G";
 
-      # CPU optimization
-      CPUQuota = "800%";
+      # CPU optimization - utilize most of the 24 threads available
+      CPUQuota = "2000%"; # 20 cores out of 24 threads (leave 4 for system)
       CPUWeight = "100";
 
       # I/O optimization for model loading
@@ -75,23 +75,23 @@
       LimitNPROC = "8192";
 
       # Enable CPU affinity if needed (comment out if not beneficial)
-      # CPUAffinity = "0-7";
+      # CPUAffinity = "0-19"; # Use first 20 threads, reserve last 4 for system
     };
 
     # Additional environment variables for CPU optimization
     environment = {
-      # OpenMP threading
-      OMP_NUM_THREADS = "8";
+      # OpenMP threading - utilize more cores for better performance
+      OMP_NUM_THREADS = "20"; # Use 20 threads, reserve 4 for system
       OMP_PROC_BIND = "close";
       OMP_PLACES = "cores";
 
       # MKL optimizations (if available)
-      MKL_NUM_THREADS = "8";
+      MKL_NUM_THREADS = "20";
       MKL_DYNAMIC = "false";
 
       # BLAS threading
-      OPENBLAS_NUM_THREADS = "8";
-      VECLIB_MAXIMUM_THREADS = "8";
+      OPENBLAS_NUM_THREADS = "20";
+      VECLIB_MAXIMUM_THREADS = "20";
     };
   };
 
