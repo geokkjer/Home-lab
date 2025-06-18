@@ -1,38 +1,34 @@
 {
   "models": {
     "main": {
-      "provider": "openrouter",
-      "modelId": "deepseek/deepseek-chat-v3-0324:free",
-      "maxTokens": 4096,
-      "temperature": 0.2,
-      "baseURL": "http://grey-area:11434/v1"
+      "provider": "openai",
+      "model": "qwen2.5-coder:7b",
+      "baseUrl": "http://grey-area:11434/v1",
+      "description": "Primary model optimized for coding and task management"
     },
     "research": {
-      "provider": "openai",
-      "modelId": "deepseek-r1:1.5b",
-      "maxTokens": 4096,
-      "temperature": 0.1,
-      "baseURL": "http://grey-area:11434/v1"
+      "provider": "openai", 
+      "model": "deepseek-r1:7b",
+      "baseUrl": "http://grey-area:11434/v1",
+      "description": "Enhanced research and reasoning model"
     },
     "fallback": {
       "provider": "openai",
-      "modelId": "gemma3:4b-it-qat",
-      "maxTokens": 4096,
-      "temperature": 0.3,
-      "baseURL": "http://grey-area:11434/v1"
+      "model": "llama3.3:8b", 
+      "baseUrl": "http://grey-area:11434/v1",
+      "description": "Reliable fallback model for general tasks"
     }
   },
-  "global": {
-    "logLevel": "info",
-    "debug": false,
-    "defaultSubtasks": 5,
-    "defaultPriority": "medium",
-    "projectName": "Home Lab Infrastructure",
-    "ollamaBaseURL": "http://grey-area:11434/v1",
-    "bedrockBaseURL": "https://bedrock.us-east-1.amazonaws.com",
-    "vertexProjectId": "your-gcp-project-id",
-    "vertexLocation": "us-central1",
-    "userId": "1234567890",
-    "defaultTag": "master"
+  "performance": {
+    "contextWindow": 8192,
+    "temperature": 0.3,
+    "maxTokens": 4096,
+    "streamResponses": true
+  },
+  "ollama": {
+    "host": "grey-area",
+    "port": 11434,
+    "timeout": 60000,
+    "retries": 3
   }
 }

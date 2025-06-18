@@ -1,13 +1,11 @@
 ;; utils/ssh.scm - SSH operations for Home Lab Tool
+;; Fallback implementation using shell commands instead of guile-ssh
 
 (define-module (utils ssh)
-  #:use-module (ssh session)
-  #:use-module (ssh channel)
-  #:use-module (ssh popen)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 textual-ports)
-
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (utils logging)
   #:use-module (utils config)

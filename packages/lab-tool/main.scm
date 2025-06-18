@@ -4,7 +4,8 @@
 ;; Home Lab Tool - Main Entry Point
 ;; K.I.S.S Refactored Implementation
 
-(add-to-load-path (dirname (current-filename)))
+;; Load path is set by the wrapper script in default.nix
+;; No need to add current directory when running from Nix
 
 (use-modules (ice-9 match)
              (ice-9 format)
