@@ -24,8 +24,8 @@
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 2048;
+        "default.clock.min-quantum" = 64;
+        "default.clock.max-quantum" = 8192;
       };
 
       "context.modules" = [
@@ -40,10 +40,10 @@
                   type = "ladspa";
                   name = "rnnoise";
                   plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
-                  label = "noise_suppressor_stereo";
+                  label = "noise_suppressor_mono";
                   control = {
-                    "VAD Threshold (%)" = 50.0;
-                    "VAD Grace Period (ms)" = 200;
+                    "VAD Threshold (%)" = 95.0;
+                    "VAD Grace Period (ms)" = 100;
                     "Retroactive VAD Grace (ms)" = 0;
                   };
                 }
@@ -84,6 +84,9 @@
 
     # Validation script
     (writeShellScriptBin "validate-audio" (builtins.readFile ./validate-audio.sh))
+    
+    # Troubleshoot script for voice distortion
+    (writeShellScriptBin "troubleshoot-voice-distortion" (builtins.readFile ./troubleshoot-voice-distortion.sh))
 
     # Optional: Professional audio tools
     # qjackctl          # JACK control GUI (for JACK applications)
