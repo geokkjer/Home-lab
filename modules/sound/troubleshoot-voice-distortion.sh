@@ -3,7 +3,8 @@
 # Voice Distortion Troubleshoot Script
 # This script helps diagnose and fix voice distortion issues in PipeWire
 
-set -euo pipefail
+# Use safer error handling - don't exit on all errors
+set -uo pipefail
 
 echo "🎤 Voice Distortion Troubleshoot Tool"
 echo "===================================="
@@ -72,24 +73,40 @@ echo "2. Distortion Diagnosis"
 echo "======================"
 
 # Check if using RNNoise filter
-if pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source")' | grep -q "rnnoise"; then
-    warning "You're using the RNNoise filter chain - this might be causing distortion"
-    echo "   The automatic filter chain can sometimes cause artifacts"
+if command -v pw-dump >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    if pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source")' 2>/dev/null | grep -q "rnnoise" 2>/dev/null; then
+        warning "You're using the RNNoise filter chain - this might be causing distortion"
+        echo "   The automatic filter chain can sometimes cause artifacts"
+    else
+        info "Not using automatic RNNoise filter"
+    fi
 else
-    info "Not using automatic RNNoise filter"
+    warning "Cannot check RNNoise filter status (pw-dump or jq not available)"
 fi
 
 # Check for high CPU usage
 if command -v pw-top >/dev/null 2>&1; then
     highlight "Checking PipeWire performance (5 seconds)..."
-    timeout 5 pw-top --batch-mode 2>/dev/null | tail -10 || warning "Could not check performance"
+    if timeout 5 pw-top --batch-mode 2>/dev/null | tail -10 2>/dev/null; then
+        info "Performance check completed"
+    else
+        warning "Could not check performance - pw-top failed"
+    fi
+else
+    info "pw-top not available for performance checking"
 fi
 
 # Check input levels
 if command -v wpctl >/dev/null 2>&1; then
     echo ""
     echo "Current microphone volume levels:"
-    wpctl get-volume @DEFAULT_AUDIO_SOURCE@ || warning "Could not get volume info"
+    if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null; then
+        info "Volume check completed"
+    else
+        warning "Could not get volume info - no default audio source?"
+    fi
+else
+    warning "wpctl not available for volume checking"
 fi
 
 echo ""
@@ -117,14 +134,24 @@ case $choice in
     A|a)
         echo ""
         highlight "Disabling automatic RNNoise filter..."
-        if pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source") | .id' | while read id; do
-            echo "Removing filter node $id"
-            pw-cli destroy "$id" 2>/dev/null || warning "Could not remove filter $id"
-        done; then
-            success "RNNoise filter disabled"
+        if command -v pw-dump >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && command -v pw-cli >/dev/null 2>&1; then
+            # Find and remove RNNoise filter nodes
+            FILTER_IDS=$(pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source") | .id' 2>/dev/null || echo "")
+            if [ -n "$FILTER_IDS" ]; then
+                echo "$FILTER_IDS" | while read -r id; do
+                    if [ -n "$id" ]; then
+                        echo "Removing filter node $id"
+                        pw-cli destroy "$id" 2>/dev/null || warning "Could not remove filter $id"
+                    fi
+                done
+                success "RNNoise filter removal attempted"
+            else
+                info "No RNNoise filter found to remove"
+            fi
             echo "Try speaking now. If distortion is gone, use EasyEffects for noise suppression instead."
         else
-            warning "Could not disable RNNoise filter automatically"
+            warning "Required tools not available (pw-dump, jq, pw-cli)"
+            echo "Try manually: systemctl --user restart pipewire"
         fi
         ;;
         
@@ -226,22 +253,29 @@ case $choice in
         
         # Step 1: Disable RNNoise filter
         echo "1/6: Disabling automatic RNNoise filter..."
-        pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source") | .id' | while read id; do
-            pw-cli destroy "$id" 2>/dev/null || true
-        done
+        if command -v pw-dump >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+            FILTER_IDS=$(pw-dump 2>/dev/null | jq -r '.[] | select(.info.props."node.name" == "rnnoise_source") | .id' 2>/dev/null || echo "")
+            if [ -n "$FILTER_IDS" ]; then
+                echo "$FILTER_IDS" | while read -r id; do
+                    if [ -n "$id" ]; then
+                        pw-cli destroy "$id" 2>/dev/null || true
+                    fi
+                done
+            fi
+        fi
         
         # Step 2: Reset audio settings
         echo "2/6: Resetting audio settings..."
-        pw-metadata -n settings 0 clock.force-quantum 0
-        pw-metadata -n settings 0 clock.force-rate 0
+        pw-metadata -n settings 0 clock.force-quantum 0 2>/dev/null || true
+        pw-metadata -n settings 0 clock.force-rate 0 2>/dev/null || true
         
         # Step 3: Set conservative volume
         echo "3/6: Setting conservative microphone gain..."
-        wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 60%
+        wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 60% 2>/dev/null || warning "Could not set volume"
         
         # Step 4: Restart services
         echo "4/6: Restarting audio services..."
-        systemctl --user restart pipewire pipewire-pulse wireplumber
+        systemctl --user restart pipewire pipewire-pulse wireplumber 2>/dev/null || warning "Could not restart services"
         
         # Step 5: Wait for restart
         echo "5/6: Waiting for services to stabilize..."
@@ -283,3 +317,6 @@ echo "• Avoid stacking multiple noise reduction effects"
 echo ""
 
 echo "Run this script again anytime with: troubleshoot-voice-distortion"
+echo ""
+echo "✅ Script completed successfully!"
+exit 0
