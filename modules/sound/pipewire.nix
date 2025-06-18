@@ -79,7 +79,6 @@
 
     # Audio utilities
     wireplumber # WirePlumber session manager
-    pipewire-pulse # PulseAudio compatibility
     pipecontrol # PipeWire control utility
     alsa-utils # ALSA utilities for testing
 
