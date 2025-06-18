@@ -3,6 +3,10 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ../sound/pipewire.nix
+  ];
+
   # Common desktop configuration shared across all environments
 
   # XDG Portal configuration for Wayland/X11 compatibility

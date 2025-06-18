@@ -69,13 +69,6 @@
         X11Forwarding = true; # For GUI applications over SSH
       };
     };
-
-    # Enable sound
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      pulse.enable = true;
-    };
   };
 
   # XDG portal for desktop integration
