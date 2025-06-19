@@ -5,7 +5,9 @@ This directory contains per-user configurations and dotfiles for the Home-lab in
 ## Directory Organization
 
 ### `geir/`
+
 Primary user configuration for geir:
+
 - `user.nix` - NixOS user configuration (packages, groups, shell)
 - `dotfiles/` - Literate programming dotfiles using org-mode
   - `README.org` - Main literate configuration file
@@ -14,7 +16,9 @@ Primary user configuration for geir:
   - `editors/` - Editor configurations (neovim, vscode)
 
 ### Future Users
+
 Additional user directories will follow the same pattern:
+
 - `admin/` - Administrative user for system management
 - `service/` - Service accounts for automation
 - `guest/` - Temporary/guest user configurations
@@ -22,21 +26,27 @@ Additional user directories will follow the same pattern:
 ## User Configuration Philosophy
 
 ### NixOS Integration
+
 Each user has a `user.nix` file that defines:
+
 - User account settings (shell, groups, home directory)
 - User-specific packages
 - System-level user configurations
 - Integration with home lab services
 
 ### Literate Dotfiles
+
 Each user's `dotfiles/README.org` serves as:
+
 - Single source of truth for all user configurations
 - Self-documenting setup with rationale
 - Auto-tangling to generate actual dotfiles
 - Version-controlled configuration history
 
 ### Multi-Machine Consistency
+
 User configurations are designed to work across machines:
+
 - congenital-optimist: Full development environment
 - sleeper-service: Minimal server access
 - Future machines: Consistent user experience
@@ -44,7 +54,9 @@ User configurations are designed to work across machines:
 ## Dotfiles Structure
 
 ### `dotfiles/README.org`
+
 Main literate configuration file containing:
+
 - Shell configuration (zsh, starship, aliases)
 - Editor configurations (emacs, neovim)
 - Development tool settings
@@ -52,6 +64,7 @@ Main literate configuration file containing:
 - Machine-specific customizations
 
 ### Subdirectories
+
 - `emacs/` - Generated Emacs configuration files
 - `shell/` - Generated shell configuration files
 - `editors/` - Generated editor configuration files
@@ -59,6 +72,7 @@ Main literate configuration file containing:
 ## Usage Examples
 
 ### Importing User Configuration
+
 ```nix
 # In machine configuration
 imports = [
@@ -67,12 +81,14 @@ imports = [
 ```
 
 ### Adding New User
+
 1. Create user directory: `users/newuser/`
 2. Copy and adapt `user.nix` template
 3. Create `dotfiles/README.org` with user-specific configs
 4. Import in machine configurations as needed
 
 ### Tangling Dotfiles
+
 ```bash
 # From user's dotfiles directory
 cd users/geir/dotfiles

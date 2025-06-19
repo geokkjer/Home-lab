@@ -6,7 +6,7 @@
 }: {
   # Optional configuration to disable automatic RNNoise filter
   # This can be imported if the automatic filter causes distortion
-  
+
   services.pipewire = {
     extraConfig.pipewire."15-disable-auto-rnnoise" = {
       "context.modules" = [

@@ -84,7 +84,7 @@
 
     # Validation script
     (writeShellScriptBin "validate-audio" (builtins.readFile ./validate-audio.sh))
-    
+
     # Troubleshoot script for voice distortion
     (writeShellScriptBin "troubleshoot-voice-distortion" (builtins.readFile ./troubleshoot-voice-distortion.sh))
 
