@@ -325,6 +325,7 @@ Netdata provides a comprehensive REST API that makes it perfect for integrating 
 **Base URL**: `http://localhost:19999/api/v1/`
 
 **Primary Endpoints**:
+
 - `/api/v1/data` - Query time-series data
 - `/api/v1/charts` - Get available charts
 - `/api/v1/allmetrics` - Get all metrics in shell-friendly format
@@ -354,6 +355,7 @@ Netdata provides a comprehensive REST API that makes it perfect for integrating 
 ### API Query Examples
 
 #### Basic Data Query
+
 ```bash
 # Get CPU system data for the last 60 seconds
 curl "http://localhost:19999/api/v1/data?chart=system.cpu&after=-60&dimensions=system"
@@ -386,6 +388,7 @@ curl "http://localhost:19999/api/v1/data?chart=system.cpu&after=-60&dimensions=s
 ```
 
 #### Available Charts Discovery
+
 ```bash
 # Get all available charts
 curl "http://localhost:19999/api/v1/charts"
@@ -398,18 +401,21 @@ curl "http://localhost:19999/api/v1/charts"
 ```
 
 #### Memory Usage Example
+
 ```bash
 # Get memory usage data with specific grouping
 curl "http://localhost:19999/api/v1/data?chart=system.ram&after=-300&points=60&group=average"
 ```
 
 #### Network Interface Metrics
+
 ```bash
 # Get network traffic for specific interface
 curl "http://localhost:19999/api/v1/data?chart=net.eth0&after=-60&dimensions=received,sent"
 ```
 
 #### All Metrics in Shell Format
+
 ```bash
 # Perfect for scripting and automation
 curl "http://localhost:19999/api/v1/allmetrics"
@@ -438,6 +444,7 @@ NETDATA_SYSTEM_RAM_USED=4096
 ### Web Dashboard Integration Strategies
 
 #### 1. Direct AJAX Calls
+
 ```javascript
 // Fetch CPU data for dashboard widget
 fetch('http://localhost:19999/api/v1/data?chart=system.cpu&after=-60&points=60')
@@ -449,6 +456,7 @@ fetch('http://localhost:19999/api/v1/data?chart=system.cpu&after=-60&points=60')
 ```
 
 #### 2. Server-Side Proxy
+
 ```javascript
 // Proxy through your web server to avoid CORS issues
 fetch('/api/netdata/system.cpu?after=-60')
@@ -457,6 +465,7 @@ fetch('/api/netdata/system.cpu?after=-60')
 ```
 
 #### 3. Real-Time Updates
+
 ```javascript
 // Poll for updates every second
 setInterval(() => {
@@ -537,23 +546,27 @@ setInterval(() => {
 ### Integration Considerations
 
 #### 1. **CORS Handling**
+
 - Netdata allows cross-origin requests by default
 - For production, consider proxying through your web server
 - Use server-side API calls for sensitive environments
 
 #### 2. **Performance Optimization**
+
 - Cache frequently accessed chart definitions
 - Use appropriate `points` parameter to limit data transfer
 - Implement efficient polling strategies
 - Consider WebSocket connections for real-time updates
 
 #### 3. **Data Processing**
+
 - Netdata returns timestamps and values as arrays
 - Convert to your chart library's expected format
 - Handle missing data points gracefully
 - Implement data aggregation for longer time ranges
 
 #### 4. **Error Handling**
+
 ```javascript
 async function safeNetdataFetch(endpoint) {
     try {
@@ -589,9 +602,9 @@ class MultiNodeDashboard {
 
 ### API Documentation Resources
 
-- **Swagger Documentation**: https://learn.netdata.cloud/api
-- **OpenAPI Spec**: https://raw.githubusercontent.com/netdata/netdata/master/src/web/api/netdata-swagger.yaml
-- **Query Documentation**: https://learn.netdata.cloud/docs/developer-and-contributor-corner/rest-api/queries/
+- **Swagger Documentation**: <https://learn.netdata.cloud/api>
+- **OpenAPI Spec**: <https://raw.githubusercontent.com/netdata/netdata/master/src/web/api/netdata-swagger.yaml>
+- **Query Documentation**: <https://learn.netdata.cloud/docs/developer-and-contributor-corner/rest-api/queries/>
 
 ### Conclusion
 

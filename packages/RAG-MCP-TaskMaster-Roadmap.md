@@ -12,6 +12,7 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 ### ✅ **Completed Components**
 
 #### Task Master AI Core
+
 - **Installation**: Claude Task Master AI successfully packaged for NixOS
 - **Local Binary**: Available at `/home/geir/Home-lab/result/bin/task-master-ai`
 - **Ollama Integration**: Configured to use local models (qwen3:4b, deepseek-r1:1.5b, gemma3:4b-it-qat)
@@ -19,8 +20,9 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 - **VS Code Integration**: Configured for Cursor/VS Code with MCP protocol
 
 #### Infrastructure Components  
+
 - **NixOS Service Module**: `rag-taskmaster.nix` implemented with full configuration options
-- **Active Projects**: 
+- **Active Projects**:
   - Home lab (deploy-rs integration): 90% complete (9/10 tasks done)
   - Guile tooling migration: 12% complete (3/25 tasks done)
 - **Documentation**: Comprehensive technical documentation in `/research/`
@@ -28,23 +30,27 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 ### 🔄 **In Progress**
 
 #### RAG System Implementation
+
 - **Status**: Planned but not yet deployed
 - **Dependencies**: Need to implement RAG core components
 - **Module Ready**: NixOS service module exists but needs RAG implementation
 
 #### MCP Integration for RAG
+
 - **Status**: Bridge architecture designed
 - **Requirements**: Need to implement RAG MCP server alongside existing Task Master MCP
 
 ### 📋 **Outstanding Requirements**
 
 #### Phase 1-3 Implementation Needed
+
 1. **RAG Foundation** - Core RAG system with document indexing
 2. **MCP RAG Server** - Separate MCP server for document queries  
 3. **Production Deployment** - Deploy services to grey-area server
 4. **Cross-Service Integration** - Connect RAG and Task Master systems
 
 ### 🎯 **Current Active Focus**
+
 - Deploy-rs integration project (nearly complete)
 - Guile home lab tooling migration (early phase)
 
@@ -55,6 +61,7 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 ### ✅ **Completed Components**
 
 #### Task Master AI Core
+
 - **Installation**: Claude Task Master AI successfully packaged for NixOS
 - **Local Binary**: Available at `/home/geir/Home-lab/result/bin/task-master-ai`
 - **Ollama Integration**: Configured to use local models (qwen3:4b, deepseek-r1:1.5b, gemma3:4b-it-qat)
@@ -62,8 +69,9 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 - **VS Code Integration**: Configured for Cursor/VS Code with MCP protocol
 
 #### Infrastructure Components  
+
 - **NixOS Service Module**: `rag-taskmaster.nix` implemented with full configuration options
-- **Active Projects**: 
+- **Active Projects**:
   - Home lab (deploy-rs integration): 90% complete (9/10 tasks done)
   - Guile tooling migration: 12% complete (3/25 tasks done)
 - **Documentation**: Comprehensive technical documentation in `/research/`
@@ -71,23 +79,27 @@ This roadmap outlines the complete integration of Retrieval Augmented Generation
 ### 🔄 **In Progress**
 
 #### RAG System Implementation
+
 - **Status**: Planned but not yet deployed
 - **Dependencies**: Need to implement RAG core components
 - **Module Ready**: NixOS service module exists but needs RAG implementation
 
 #### MCP Integration for RAG
+
 - **Status**: Bridge architecture designed
 - **Requirements**: Need to implement RAG MCP server alongside existing Task Master MCP
 
 ### 📋 **Outstanding Requirements**
 
 #### Phase 1-3 Implementation Needed
+
 1. **RAG Foundation** - Core RAG system with document indexing
 2. **MCP RAG Server** - Separate MCP server for document queries  
 3. **Production Deployment** - Deploy services to grey-area server
 4. **Cross-Service Integration** - Connect RAG and Task Master systems
 
 ### 🎯 **Current Active Focus**
+
 - Deploy-rs integration project (nearly complete)
 - Guile home lab tooling migration (early phase)
 
@@ -256,6 +268,7 @@ graph TB
 **Status**: NixOS module exists, needs deployment and testing
 
 **Completed Tasks**:
+
 - ✅ NixOS module development (`rag-taskmaster.nix`)
 - ✅ Service configuration templates
 - ✅ User isolation and security configuration
@@ -294,6 +307,7 @@ graph TB
 **Status**: Core functionality complete, bridge integration needed
 
 **Completed Tasks**:
+
 - ✅ Task Master installation and packaging
 - ✅ Ollama integration configuration
 - ✅ MCP server with 25+ tools
