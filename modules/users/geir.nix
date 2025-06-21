@@ -10,23 +10,23 @@
 in {
   imports = [
     ./media-group.nix
+    ../ai/aider-chat.nix
   ];
 
   users.users.geir = {
     description = "Geir Okkenhaug Jerstad - Primary User";
     isNormalUser = true;
 
-    # User groups for development and desktop use
     extraGroups = [
-      "wheel" # sudo access
-      "networkmanager" # network management
-      "libvirt" # virtualization
-      "incus-admin" # container management
-      "podman" # container runtime
-      "audio" # audio devices
-      "video" # video devices
-      "render" # GPU access
-      "media" # shared media access for NFS shares
+      "wheel"
+      "networkmanager"
+      "libvirt"
+      "incus-admin"
+      "podman"
+      "audio"
+      "video"
+      "render"
+      "media"
     ];
 
     shell = pkgs.zsh;

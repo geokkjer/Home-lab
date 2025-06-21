@@ -1,0 +1,52 @@
+# AiderChat configuration file
+
+# General settings
+project_name: Home Lab
+language: guile
+description: >
+  This is the configuration for AiderChat, tailored for managing and orchestrating
+  the Home Lab project. The project uses Guile for scripting and NixOS for system
+  configuration.
+
+# File inclusion/exclusion
+include:
+  - "**/*.scm"  # Include all Guile Scheme files
+  - "**/*.nix"  # Include all NixOS configuration files
+  - "**/*.yml"  # Include YAML configuration files
+  - "**/*.md"   # Include Markdown documentation files
+exclude:
+  - "**/node_modules/**"  # Exclude Node.js dependencies
+  - "**/.git/**"          # Exclude Git metadata
+  - "**/tmp/**"           # Exclude temporary files
+
+# Chat settings
+chat:
+  model: ollama
+  endpoint: http://grey-area:11434  # Ollama service running on grey-area
+  temperature: 0.7
+  max_tokens: 2048
+  system_prompt: >
+    You are an assistant helping with the Home Lab project. Focus on Guile scripting,
+    NixOS configuration, and infrastructure orchestration.
+
+# Workflow settings
+workflow:
+  auto_save: true
+  auto_commit: false
+  branch_name: aiderchat-updates
+  commit_message_template: >
+    [AiderChat] {description}
+
+# Logging
+logging:
+  level: info
+  file: aiderchat.log
+
+# Extensions
+extensions:
+  - name: nixos-helper
+    description: >
+      Provides additional support for NixOS configuration and orchestration tasks.
+  - name: guile-helper
+    description: >
+      Adds syntax highlighting and linting for Guile Scheme files.
