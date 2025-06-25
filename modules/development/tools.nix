@@ -1,4 +1,8 @@
-{ config, pkgs, ... }: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   # Development editors and tools
   environment.systemPackages = with pkgs; [
     # Editors
@@ -31,6 +35,8 @@
     direnv
     gh
     github-copilot-cli
+    # ai
+    claude-code
   ];
 
   # System-wide Emacs daemon
