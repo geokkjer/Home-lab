@@ -28,7 +28,8 @@ USAGE: lab <command> [args...]
 COMMANDS:
   status              Show infrastructure status
   machines            List all machines  
-  deploy <machine>    Deploy configuration to machine
+  deploy <machine> [mode]  Deploy configuration to machine
+                      Available modes: boot (default), test, switch
   deploy-all          Deploy to all machines
   update              Update flake inputs
   health [machine]    Check machine health (all if no machine specified)
@@ -39,7 +40,9 @@ COMMANDS:
 EXAMPLES:
   lab status
   lab machines
-  lab deploy congenital-optimist
+  lab deploy congenital-optimist          # Deploy with boot mode (default)
+  lab deploy congenital-optimist switch   # Deploy and activate immediately
+  lab deploy congenital-optimist test     # Deploy temporarily for testing
   lab deploy-all
   lab update
   lab health
@@ -100,17 +103,24 @@ Home lab root: ~a
     (format #t "Configured Machines:\n~a\n" machine-list)
     (log-success "Machine list complete")))
 
-(define (cmd-deploy machine-name)
+(define (cmd-deploy machine-name . args)
   "Deploy configuration to machine"
-  (log-info "Deploying to machine: ~a" machine-name)
-  (if (validate-machine-name machine-name)
-      (let ((result (deploy-machine machine-name "boot" '())))
-        (if result
-            (log-success "Deployment to ~a complete" machine-name)
-            (log-error "Deployment to ~a failed" machine-name)))
-      (begin
-        (log-error "Invalid machine: ~a" machine-name)
-        (log-info "Available machines: ~a" (string-join (get-all-machines) ", ")))))
+  (let* ((mode (if (null? args) "boot" (car args)))
+         (valid-modes '("boot" "test" "switch")))
+    (log-info "Deploying to machine: ~a (mode: ~a)" machine-name mode)
+    (if (not (member mode valid-modes))
+        (begin
+          (log-error "Invalid deployment mode: ~a" mode)
+          (log-error "Valid modes: ~a" (string-join valid-modes ", "))
+          (format #t "Usage: lab deploy <machine> [boot|test|switch]\n"))
+        (if (validate-machine-name machine-name)
+            (let ((result (deploy-machine machine-name mode '())))
+              (if result
+                  (log-success "Deployment to ~a complete (mode: ~a)" machine-name mode)
+                  (log-error "Deployment to ~a failed" machine-name)))
+            (begin
+              (log-error "Invalid machine: ~a" machine-name)
+              (log-info "Available machines: ~a" (string-join (get-all-machines) ", ")))))))
 
 (define (cmd-ssh machine-name)
   "SSH to machine"
@@ -209,8 +219,8 @@ Home lab root: ~a
      (if (null? args)
          (begin
            (log-error "deploy command requires machine name")
-           (format #t "Usage: lab deploy <machine>\n"))
-         (cmd-deploy (car args))))
+           (format #t "Usage: lab deploy <machine> [boot|test|switch]\n"))
+         (apply cmd-deploy args)))
     
     ('deploy-all
      (cmd-deploy-all))
