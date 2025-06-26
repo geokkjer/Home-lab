@@ -1,5 +1,5 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
-    claude-code
+    pkgs.unstable.claude-code
   ];
 }

@@ -10,7 +10,6 @@
 in {
   imports = [
     ./media-group.nix
-    ../ai/aider-chat.nix
   ];
 
   users.users.geir = {
