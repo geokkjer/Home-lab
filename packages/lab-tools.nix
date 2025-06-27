@@ -13,7 +13,10 @@
     src = ./lab;
 
     nativeBuildInputs = [makeWrapper];
-    buildInputs = [guile];
+    buildInputs = [
+      guile
+      # Runtime dependencies for auto-update functionality will be in PATH
+    ];
 
     installPhase = ''
             mkdir -p $out/share/lab-tool
@@ -104,6 +107,7 @@ in {
       echo "  lab status           # Show infrastructure status"
       echo "  lab machines         # List all machines"
       echo "  lab deploy machine   # Deploy to machine"
+      echo "  lab auto-update      # Automatic system update"
       echo "  mcp-server          # Start MCP server"
       echo "  rag-system          # Start RAG system"
       echo ""

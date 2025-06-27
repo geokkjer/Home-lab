@@ -160,7 +160,7 @@ task-master update-subtask --id=<id> --prompt="implementation notes..."
 
 # Complete tasks
 task-master set-status --id=<id> --status=done
-```
+```yo
 
 #### 3. Multi-Claude Workflows
 

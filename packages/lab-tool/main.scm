@@ -13,7 +13,8 @@
              (utils logging)
              (lab core)
              (lab machines)
-             (lab deployment))
+             (lab deployment)
+             (lab auto-update))
 
 ;; Initialize logging
 (set-log-level! 'info)
@@ -32,6 +33,8 @@ COMMANDS:
                       Available modes: boot (default), test, switch
   deploy-all          Deploy to all machines
   update              Update flake inputs
+  auto-update         Perform automatic system update with health checks
+  auto-update-status  Show auto-update service status and logs
   health [machine]    Check machine health (all if no machine specified)
   ssh <machine>       SSH to machine
   test-modules        Test modular implementation
@@ -45,6 +48,8 @@ EXAMPLES:
   lab deploy congenital-optimist test     # Deploy temporarily for testing
   lab deploy-all
   lab update
+  lab auto-update                         # Perform automatic update with reboot
+  lab auto-update-status                  # Show auto-update logs and status
   lab health
   lab health sleeper-service
   lab ssh sleeper-service
@@ -202,6 +207,18 @@ Home lab root: ~a
                         (format #t "  ~a: ~a\n" machine status)))
                     results)))))
 
+(define (cmd-auto-update)
+  "Perform automatic system update"
+  (log-info "Starting automatic system update...")
+  (let ((result (auto-update-system '((auto-reboot . #t)))))
+    (if result
+        (log-success "Automatic update completed successfully")
+        (log-error "Automatic update failed"))))
+
+(define (cmd-auto-update-status)
+  "Show auto-update status and logs"
+  (auto-update-status))
+
 ;; Main command dispatcher
 (define (dispatch-command command args)
   "Dispatch command with appropriate handler"
@@ -227,6 +244,12 @@ Home lab root: ~a
     
     ('update
      (cmd-update))
+    
+    ('auto-update
+     (cmd-auto-update))
+    
+    ('auto-update-status
+     (cmd-auto-update-status))
     
     ('health
      (cmd-health args))

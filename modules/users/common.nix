@@ -29,12 +29,7 @@
       eval "$(direnv hook zsh)"
     '';
 
-    # Common environment variables
-    sessionVariables = {
-      EDITOR = "emacs";
-      BROWSER = "firefox";
-      TERMINAL = "kitty";
-    };
+    # Removed sessionVariables - moved to environment.sessionVariables
   };
 
   # Common packages for all users

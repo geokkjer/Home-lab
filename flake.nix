@@ -76,6 +76,18 @@
           ./modules/common/tty.nix
         ];
       };
+
+      # little-rascal - Development laptop with Niri + CLI login
+      little-rascal = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          ./machines/little-rascal/configuration.nix
+          ./machines/little-rascal/hardware-configuration.nix
+          ./modules/common/nix.nix
+          ./modules/common/base.nix
+          ./modules/common/tty.nix
+        ];
+      };
     };
 
     # Custom packages for the home lab
@@ -100,6 +112,7 @@
           echo "  - sleeper-service (Xeon file server)"
           echo "  - reverse-proxy (VPS edge server)"
           echo "  - grey-area (Services host: Forgejo, Jellyfin, etc.)"
+          echo "  - little-rascal (Development laptop with Niri)"
           echo ""
           echo "Build with: nixos-rebuild build --flake .#<config>"
           echo "Switch with: nixos-rebuild switch --flake .#<config>"
@@ -198,6 +211,20 @@
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.congenital-optimist;
           sshUser = "sma";
+          sudo = "sudo -u";
+          autoRollback = true;
+          magicRollback = true;
+          activationTimeout = 180;
+          confirmTimeout = 30;
+        };
+      };
+
+      little-rascal = {
+        hostname = "little-rascal.tail807ea.ts.net";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.little-rascal;
+          sshUser = "geir";
           sudo = "sudo -u";
           autoRollback = true;
           magicRollback = true;
