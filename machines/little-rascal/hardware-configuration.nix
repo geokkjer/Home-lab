@@ -39,10 +39,10 @@
       "hid_input"
       "evdev"
     ];
-    
-    # Use LTS kernel for better hardware compatibility  
+
+    # Use LTS kernel for better hardware compatibility
     kernelPackages = pkgs.linuxPackages_6_1;
-    
+
     extraModulePackages = [];
   };
 
@@ -96,17 +96,6 @@
       powerOnBoot = true;
     };
   };
-
-  # Additional services for touchpad support
-  services.udev.extraRules = ''
-    # ITE8353 touchpad support - try to force proper driver binding
-    SUBSYSTEM=="i2c", KERNEL=="i2c-ITE8353:00", MODE="0664", GROUP="input"
-    SUBSYSTEM=="input", ATTRS{name}=="ITE8353:00*", MODE="0664", GROUP="input"
-    # Additional HID rules for touchpads
-    KERNEL=="hidraw*", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="8353", MODE="0664", GROUP="input"
-    # Force unbind from hid_sensor_hub and rebind to hid_multitouch for ITE8353
-    ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="8353", ATTR{bInterfaceClass}=="03", ATTR{bInterfaceSubClass}=="01", ATTR{bInterfaceProtocol}=="02", RUN+="/bin/sh -c 'echo $kernel > /sys/bus/hid/drivers/hid-sensor-hub/unbind; echo $kernel > /sys/bus/hid/drivers/hid-multitouch/bind'"
-  '';
 
   # Power management for AMD Ryzen 7 4700U
   powerManagement = {
