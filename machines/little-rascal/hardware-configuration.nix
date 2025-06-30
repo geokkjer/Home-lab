@@ -40,14 +40,7 @@
       "evdev"
     ];
     
-    # Blacklist modules that interfere with touchpad
-    blacklistedKernelModules = [
-      "amd_sfh"          # AMD Sensor Fusion Hub - causes touchpad to be misidentified
-      "hid_sensor_hub"   # Prevents touchpad from being properly recognized
-    ];
-    
-    # Use LTS kernel for better hardware compatibility
-    # The laptop worked with older kernels, current 6.12.x may have regressions
+    # Use LTS kernel for better hardware compatibility  
     kernelPackages = pkgs.linuxPackages_6_1;
     
     extraModulePackages = [];
