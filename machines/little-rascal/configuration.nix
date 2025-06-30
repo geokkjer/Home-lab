@@ -106,6 +106,9 @@
     blueman.enable = true;
     printing.enable = true;
 
+    # Firmware updates
+    fwupd.enable = true;
+
     # Location services for time zone
     geoclue2.enable = true;
   };
