@@ -20,11 +20,22 @@
         "usb_storage"
         "sd_mod"
         "sdhci_pci"
+        # I2C modules for touchpad support
+        "i2c_hid"
+        "i2c_hid_acpi"
+        "i2c_piix4"
       ];
       kernelModules = [];
     };
 
-    kernelModules = ["kvm-amd"]; # AMD Ryzen system
+    kernelModules = [
+      "kvm-amd" # AMD Ryzen system
+      # HID and input modules for touchpad
+      "hid_generic"
+      "hid_multitouch"
+      "i2c_hid"
+      "i2c_hid_acpi"
+    ];
     extraModulePackages = [];
   };
 
@@ -58,20 +69,18 @@
     enableRedistributableFirmware = true;
 
     # Graphics configuration - AMD Radeon Vega (integrated)
+    # Using open source driver without ROCm and 32-bit support
     graphics = {
       enable = true;
-      enable32Bit = true;
+      enable32Bit = false; # Disabled 32-bit support
 
-      # AMD integrated graphics drivers
+      # AMD open source graphics drivers only
       extraPackages = with pkgs; [
         amdvlk # AMD Vulkan driver
-        rocmPackages.clr.icd # OpenCL support
+        # Removed ROCm packages for simpler configuration
       ];
 
-      # 32-bit support for compatibility
-      extraPackages32 = with pkgs.driversi686Linux; [
-        amdvlk
-      ];
+      # No 32-bit support packages needed
     };
 
     # Bluetooth support for Intel AX200
@@ -80,6 +89,15 @@
       powerOnBoot = true;
     };
   };
+
+  # Additional services for touchpad support
+  services.udev.extraRules = ''
+    # ITE8353 touchpad support
+    SUBSYSTEM=="i2c", KERNEL=="i2c-ITE8353:00", MODE="0664", GROUP="input"
+    SUBSYSTEM=="input", ATTRS{name}=="ITE8353:00*", MODE="0664", GROUP="input"
+    # Additional HID rules for touchpads
+    KERNEL=="hidraw*", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="8353", MODE="0664", GROUP="input"
+  '';
 
   # Power management for AMD Ryzen 7 4700U
   powerManagement = {
@@ -106,6 +124,10 @@
   boot.kernelParams = [
     # Enable AMD graphics performance
     "amdgpu.ppfeaturemask=0xffffffff"
+    # I2C HID touchpad parameters
+    "i2c_hid.debug=1"
+    # Ensure ACPI devices are properly detected
+    "acpi_enforce_resources=lax"
   ];
 
   # TLP for better power management (alternative to power-profiles-daemon)

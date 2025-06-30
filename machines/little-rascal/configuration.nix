@@ -21,6 +21,7 @@
     ../../modules/desktop/niri.nix
     ../../modules/desktop/cosmic.nix
     ../../modules/desktop/fonts.nix
+    ../../modules/desktop/input.nix
 
     # Development
     ../../modules/development/tools.nix
