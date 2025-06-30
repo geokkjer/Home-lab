@@ -43,6 +43,10 @@
       "hid_sensor_hub"   # Prevents touchpad from being properly recognized
     ];
     
+    # Use LTS kernel for better hardware compatibility
+    # The laptop worked with older kernels, current 6.12.x may have regressions
+    kernelPackages = pkgs.linuxPackages_6_1;
+    
     extraModulePackages = [];
   };
 
