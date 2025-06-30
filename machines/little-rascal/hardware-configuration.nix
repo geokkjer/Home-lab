@@ -37,9 +37,10 @@
       "i2c_hid_acpi"
     ];
     
-    # Blacklist AMD SFH which interferes with touchpad
+    # Blacklist modules that interfere with touchpad
     blacklistedKernelModules = [
-      "amd_sfh"  # AMD Sensor Fusion Hub - causes touchpad to be misidentified
+      "amd_sfh"          # AMD Sensor Fusion Hub - causes touchpad to be misidentified
+      "hid_sensor_hub"   # Prevents touchpad from being properly recognized
     ];
     
     extraModulePackages = [];
