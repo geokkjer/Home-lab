@@ -104,6 +104,7 @@
           nixpkgs-fmt
           git
           emacs
+          unstable.claude-code # Claude Code CLI for AI assistance
         ];
         shellHook = ''
           echo "Home-lab development environment"
@@ -116,6 +117,11 @@
           echo ""
           echo "Build with: nixos-rebuild build --flake .#<config>"
           echo "Switch with: nixos-rebuild switch --flake .#<config>"
+          echo ""
+          echo "Available tools:"
+          echo "  - claude-code: Claude AI CLI assistant"
+          echo "  - nixd: Nix language server"
+          echo "  - alejandra: Nix formatter"
         '';
       };
 
@@ -131,6 +137,37 @@
         shellHook = ''
           echo "Literate dotfiles development environment"
           echo "Tangle dotfiles with: emacs --batch -l org --eval \"(org-babel-tangle-file \\\"README.org\\\")\""
+        '';
+      };
+
+      # AI development shell with Claude Code and related tools
+      ai = nixpkgs.legacyPackages.${system}.mkShell {
+        buildInputs = with nixpkgs.legacyPackages.${system}; [
+          unstable.claude-code
+          git
+          emacs
+          nixd
+          alejandra
+          curl
+          jq
+          tree
+        ];
+        shellHook = ''
+          echo "AI Development Environment"
+          echo "Available tools:"
+          echo "  - claude-code: Claude AI CLI assistant"
+          echo "  - git: Version control"
+          echo "  - emacs: Text editor"
+          echo "  - curl/jq: API testing tools"
+          echo "  - tree: Directory structure visualization"
+          echo ""
+          echo "Claude Code usage:"
+          echo "  claude-code --help    # Show help"
+          echo "  claude-code chat      # Start interactive chat"
+          echo "  claude-code apply     # Apply code suggestions"
+          echo ""
+          echo "Configure Claude Code with your API key:"
+          echo "  claude-code config set api-key YOUR_API_KEY"
         '';
       };
     };

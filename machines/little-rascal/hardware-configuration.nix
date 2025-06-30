@@ -1,9 +1,12 @@
 # Hardware Configuration for Little Rascal
 # Lenovo Yoga Slim 7 14ARE05 - AMD Ryzen 7 4700U
-
-{ config, lib, pkgs, modulesPath, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
@@ -18,25 +21,25 @@
         "sd_mod"
         "sdhci_pci"
       ];
-      kernelModules = [ ];
+      kernelModules = [];
     };
-    
-    kernelModules = [ "kvm-amd" ]; # AMD Ryzen system
-    extraModulePackages = [ ];
+
+    kernelModules = ["kvm-amd"]; # AMD Ryzen system
+    extraModulePackages = [];
   };
 
   # Filesystem configuration - TEMPLATE
   # Update these paths and UUIDs after running nixos-generate-config
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-uuid/REPLACE-WITH-ROOT-UUID";
+      device = "/dev/disk/by-label/nixos";
       fsType = "ext4";
     };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/REPLACE-WITH-BOOT-UUID";
+      device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
+      options = ["fmask=0022" "dmask=0022"];
     };
   };
 
@@ -50,27 +53,27 @@
   hardware = {
     # CPU configuration - AMD Ryzen 7 4700U
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    
+
     # Enable firmware updates
     enableRedistributableFirmware = true;
-    
+
     # Graphics configuration - AMD Radeon Vega (integrated)
     graphics = {
       enable = true;
       enable32Bit = true;
-      
+
       # AMD integrated graphics drivers
       extraPackages = with pkgs; [
-        amdvlk          # AMD Vulkan driver
-        rocmPackages.clr.icd  # OpenCL support
+        amdvlk # AMD Vulkan driver
+        rocmPackages.clr.icd # OpenCL support
       ];
-      
+
       # 32-bit support for compatibility
       extraPackages32 = with pkgs.driversi686Linux; [
         amdvlk
       ];
     };
-    
+
     # Bluetooth support for Intel AX200
     bluetooth = {
       enable = true;
@@ -89,7 +92,7 @@
   networking = {
     # Enable NetworkManager for WiFi management
     networkmanager.enable = true;
-    
+
     # Disable wpa_supplicant (using NetworkManager)
     wireless.enable = false;
   };
