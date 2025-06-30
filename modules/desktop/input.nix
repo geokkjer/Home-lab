@@ -42,7 +42,7 @@
     # Input device utilities
     libinput-gestures # For custom touchpad gestures
     evtest # For testing input devices
-    xinput # X11 input device utility (still useful in Wayland)
+    xorg.xinput # X11 input device utility (still useful in Wayland)
   ];
 
   # Enable support for additional input methods if needed
