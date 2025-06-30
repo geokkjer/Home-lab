@@ -41,7 +41,7 @@
     ];
 
     # Use LTS kernel for better hardware compatibility
-    kernelPackages = pkgs.linuxPackages_6_1;
+    kernelPackages = pkgs.linuxPackages_5_15;
 
     extraModulePackages = [];
   };
