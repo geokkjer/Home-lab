@@ -1,19 +1,11 @@
 # Common Emacs Configuration
 # Shared Emacs setup for all machines
-
 {
   config,
   pkgs,
   ...
 }: {
-  # System-wide Emacs configuration
-  programs.emacs = {
-    enable = true;
-    package = pkgs.emacs;
-    defaultEditor = true;
-  };
-
-  # Emacs packages and configuration
+  # System-wide Emacs installation
   environment.systemPackages = with pkgs; [
     emacs
     # Basic Emacs utilities

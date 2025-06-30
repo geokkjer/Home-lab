@@ -33,6 +33,9 @@
     # Development tools
     ../../modules/development/tools.nix
 
+    # AI tools
+    ../../modules/ai/claude-code.nix
+
     # User configuration
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
