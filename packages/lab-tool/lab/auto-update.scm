@@ -13,7 +13,15 @@
   #:export (auto-update-system
             schedule-auto-update
             check-update-health
-            auto-update-status))
+            auto-update-status
+            get-update-order
+            update-single-machine))
+
+;; Helper function for option handling (duplicated from deployment module)
+(define (option-ref options key default)
+  "Get option value with default fallback"
+  (let ((value (assoc-ref options key)))
+    (if value value default)))
 
 ;; Pure function: Generate update log entry
 (define (format-update-log-entry timestamp operation status details)
@@ -102,24 +110,80 @@
       (lambda (key . args)
         (log-error "Failed to write update log: ~a" args)))))
 
-;; Impure function: Main auto-update routine
+;; Pure function: Determine update order for machines
+(define (get-update-order)
+  "Get machines in update order - orchestrator last"
+  (let* ((all-machines (get-all-machines))
+         (current-machine (get-hostname))
+         (remote-machines (filter (lambda (machine)
+                                   (let* ((machine-str (if (symbol? machine) 
+                                                          (symbol->string machine) 
+                                                          machine))
+                                          (config (get-machine-config machine)))
+                                     (and config
+                                          (not (equal? machine-str current-machine))
+                                          (not (eq? 'local (assoc-ref config 'type))))))
+                                 all-machines))
+         (local-machines (filter (lambda (machine)
+                                  (let* ((machine-str (if (symbol? machine) 
+                                                         (symbol->string machine) 
+                                                         machine))
+                                         (config (get-machine-config machine)))
+                                    (or (equal? machine-str current-machine)
+                                        (eq? 'local (assoc-ref config 'type)))))
+                                all-machines)))
+    ;; Return remote machines first, then local/orchestrator machines
+    (append remote-machines local-machines)))
+
+;; Impure function: Update a single machine with error handling
+(define (update-single-machine machine-name options)
+  "Update a single machine with proper error handling"
+  (let* ((machine-str (if (symbol? machine-name) 
+                         (symbol->string machine-name) 
+                         machine-name))
+         (is-local (equal? machine-str (get-hostname))))
+    
+    (log-info "Updating machine: ~a" machine-str)
+    (write-update-log "machine-update" "started" machine-str)
+    
+    (catch #t
+      (lambda ()
+        (let ((deploy-result (deploy-machine machine-str "switch" options)))
+          (if deploy-result
+              (begin
+                (log-success "Successfully updated ~a" machine-str)
+                (write-update-log "machine-update" "success" machine-str)
+                #t)
+              (begin
+                (log-error "Failed to update ~a" machine-str)
+                (write-update-log "machine-update" "failed" machine-str)
+                #f))))
+      (lambda (key . args)
+        (log-error "Exception updating ~a: ~a ~a" machine-str key args)
+        (write-update-log "machine-update" "error" (format #f "~a: ~a" machine-str key))
+        #f))))
+
+;; Impure function: Orchestrated auto-update routine
 (define (auto-update-system . args)
-  "Perform automatic system update (impure - modifies system)"
+  "Perform orchestrated automatic system update (impure - modifies system)"
   (let* ((options (if (null? args) '() (car args)))
          (auto-reboot (option-ref options 'auto-reboot #t))
          (dry-run (option-ref options 'dry-run #f))
-         (machine-name (get-hostname)))
+         (parallel (option-ref options 'parallel #f))
+         (current-machine (get-hostname))
+         (update-order (get-update-order)))
     
-    (log-info "Starting auto-update for machine: ~a" machine-name)
-    (write-update-log "auto-update" "started" machine-name)
+    (log-info "Starting orchestrated auto-update from: ~a" current-machine)
+    (log-info "Update order: ~a" (map (lambda (m) (if (symbol? m) (symbol->string m) m)) update-order))
+    (write-update-log "orchestrated-update" "started" current-machine)
     
     (if (not (check-update-health))
         (begin
           (log-error "System health check failed - aborting update")
-          (write-update-log "auto-update" "aborted" "health check failed")
+          (write-update-log "orchestrated-update" "aborted" "health check failed")
           #f)
         (begin
-          ;; Update flake inputs
+          ;; Update flake inputs first
           (log-info "Updating flake inputs...")
           (let ((flake-result (update-flake options)))
             (if flake-result
@@ -127,29 +191,44 @@
                   (log-success "Flake update completed")
                   (write-update-log "flake-update" "success" "")
                   
-                  ;; Deploy configuration
-                  (log-info "Deploying updated configuration...")
-                  (let ((deploy-result (deploy-machine machine-name "switch" options)))
-                    (if deploy-result
-                        (begin
-                          (log-success "Configuration deployment completed")
-                          (write-update-log "deployment" "success" "switch mode")
-                          
-                          ;; Schedule reboot if enabled
-                          (if (and auto-reboot (not dry-run))
-                              (begin
-                                (log-info "Scheduling system reboot in 2 minutes...")
-                                (write-update-log "reboot" "scheduled" "2 minutes")
-                                (system "shutdown -r +2 'Auto-update completed - rebooting'")
-                                #t)
-                              (begin
-                                (log-info "Auto-reboot disabled - update complete")
-                                (write-update-log "auto-update" "completed" "no reboot")
-                                #t)))
-                        (begin
-                          (log-error "Configuration deployment failed")
-                          (write-update-log "deployment" "failed" "switch mode")
-                          #f))))
+                  ;; Update machines in order
+                  (let ((update-results (map (lambda (machine)
+                                              (update-single-machine machine options))
+                                            update-order)))
+                    
+                    (let* ((successful-updates (filter identity update-results))
+                           (failed-updates (- (length update-results) (length successful-updates)))
+                           (all-success (= failed-updates 0)))
+                      
+                      (log-info "Update summary: ~a successful, ~a failed" 
+                               (length successful-updates) failed-updates)
+                      
+                      (if all-success
+                          (begin
+                            (log-success "All machines updated successfully")
+                            (write-update-log "orchestrated-update" "success" 
+                                            (format #f "~a machines" (length successful-updates)))
+                            
+                            ;; Schedule reboot of orchestrator if enabled and it was updated
+                            (if (and auto-reboot (not dry-run)
+                                    (member current-machine 
+                                           (map (lambda (m) (if (symbol? m) (symbol->string m) m)) 
+                                                update-order)))
+                                (begin
+                                  (log-info "Scheduling orchestrator reboot in 2 minutes...")
+                                  (write-update-log "reboot" "scheduled" "orchestrator - 2 minutes")
+                                  (system "shutdown -r +2 'Orchestrated auto-update completed - rebooting'")
+                                  #t)
+                                (begin
+                                  (log-info "Orchestrated update complete - no reboot needed")
+                                  (write-update-log "orchestrated-update" "completed" "no reboot")
+                                  #t)))
+                          (begin
+                            (log-warn "Some machines failed to update (~a failures)" failed-updates)
+                            (write-update-log "orchestrated-update" "partial-failure" 
+                                            (format #f "~a failures" failed-updates))
+                            ;; Don't reboot orchestrator if there were failures
+                            #f)))))
                 (begin
                   (log-error "Flake update failed")
                   (write-update-log "flake-update" "failed" "")

@@ -28,6 +28,7 @@
 
     # Users
     ../../modules/users/geir.nix
+    ../../modules/users/sma.nix
     ../../modules/users/common.nix
     ../../modules/users/shell-aliases.nix
 

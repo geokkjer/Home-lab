@@ -58,7 +58,20 @@
         path = "/boot";
       }
     ];
-  }; # ZFS services for this machine
+  };
+
+  # Display manager - use greetd instead of cosmic-greeter
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd ${pkgs.zsh}/bin/zsh";
+        user = "greeter";
+      };
+    };
+  };
+
+  # ZFS services for this machine
   services.zfs = {
     autoScrub.enable = true;
     trim.enable = true;
