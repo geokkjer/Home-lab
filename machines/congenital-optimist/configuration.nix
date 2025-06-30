@@ -18,6 +18,7 @@
 
     # Services
     ../../modules/services/nfs-client.nix
+    ../../modules/services/seatd.nix
 
     # Desktop environments
     ../../modules/desktop/common.nix
@@ -60,16 +61,8 @@
     ];
   };
 
-  # Display manager - use greetd instead of cosmic-greeter
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd ${pkgs.zsh}/bin/zsh";
-        user = "greeter";
-      };
-    };
-  };
+  # Enable clean seatd/greetd login
+  services.seatd-clean.enable = true;
 
   # ZFS services for this machine
   services.zfs = {

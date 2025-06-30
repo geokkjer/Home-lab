@@ -46,6 +46,9 @@
 
     # Security
     ../../modules/security/ssh-keys.nix
+
+    # Services
+    ../../modules/services/seatd.nix
   ];
 
   networking = {
@@ -90,20 +93,12 @@
 
   # Laptop-specific services
   services = {
+    # Enable clean seatd/greetd login
+    seatd-clean.enable = true;
+
     # Power management for laptop
     power-profiles-daemon.enable = true;
     upower.enable = true;
-
-    # Display manager
-    greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd ${pkgs.zsh}/bin/zsh";
-          user = "greeter";
-        };
-      };
-    };
 
     # Essential services
     tailscale.enable = true;
