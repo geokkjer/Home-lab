@@ -35,6 +35,9 @@
       "hid_multitouch"
       "i2c_hid"
       "i2c_hid_acpi"
+      # Additional HID drivers that might help
+      "hid_input"
+      "evdev"
     ];
     
     # Blacklist modules that interfere with touchpad
