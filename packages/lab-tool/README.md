@@ -224,6 +224,21 @@ Provides structured configuration handling:
                   (hostname . "sleeper-service.tail807ea.ts.net")
                   (ssh-alias . "admin-sleeper")
                   (services . (nfs zfs storage)))
+                 (grey-area
+                  (type . remote)
+                  (hostname . "grey-area.tail807ea.ts.net")
+                  (ssh-alias . "admin-grey")
+                  (services . (ollama forgejo git)))
+                 (reverse-proxy
+                  (type . remote)
+                  (hostname . "reverse-proxy.tail807ea.ts.net")
+                  (ssh-alias . "admin-reverse")
+                  (services . (nginx proxy ssl)))
+                 (little-rascal
+                  (type . remote)
+                  (hostname . "little-rascal.tail807ea.ts.net")
+                  (ssh-alias . "little-rascal")
+                  (services . (development niri desktop ai-tools)))
                  ;; Additional machines...
                  ))))
 ```
@@ -332,8 +347,12 @@ guile -c "(use-modules (lab core)) (display \"Lab package loaded successfully\\n
       ;; Update flake inputs
       (update-flake '((dry-run . #f)))
       
-      ;; Deploy to machine
-      (execute-nixos-rebuild "sleeper-service" "switch" 
+      ;; Deploy to development laptop
+      (execute-nixos-rebuild "little-rascal" "switch" 
+                           '((dry-run . #f)))
+      
+      ;; Deploy to storage server
+      (execute-nixos-rebuild "sleeper-service" "boot" 
                            '((dry-run . #f))))
     (display "Environment validation failed\n"))
 ```
@@ -351,10 +370,13 @@ scheme@(guile-user)> (use-modules (lab core) (utils logging))
 scheme@(guile-user)> (set-log-level! 'debug)
 
 ;; Check machine status interactively
-scheme@(guile-user)> (get-infrastructure-status "congenital-optimist")
+scheme@(guile-user)> (get-infrastructure-status "little-rascal")
 
-;; Test health checks
-scheme@(guile-user)> (check-system-health "grey-area")
+;; Test health checks for development machine
+scheme@(guile-user)> (check-system-health "little-rascal")
+
+;; Test SSH connectivity to laptop
+scheme@(guile-user)> (test-ssh-connection "little-rascal")
 
 ```
 

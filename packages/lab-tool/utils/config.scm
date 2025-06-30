@@ -37,7 +37,12 @@
                   (type . remote)
                   (hostname . "reverse-proxy.tail807ea.ts.net")
                   (ssh-alias . "admin-reverse")
-                  (services . (nginx proxy ssl)))))
+                  (services . (nginx proxy ssl)))
+                 (little-rascal
+                  (type . remote)
+                  (hostname . "little-rascal.tail807ea.ts.net")
+                  (ssh-alias . "little-rascal")
+                  (services . (development niri desktop ai-tools)))))
     (deployment . ((default-mode . "boot")
                    (timeout . 300)
                    (retry-count . 3)))
