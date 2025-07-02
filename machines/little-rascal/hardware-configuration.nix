@@ -29,25 +29,12 @@
     };
 
     kernelModules = [
-      "kvm-amd" # AMD Ryzen system
-      # HID and input modules for touchpad
-      "hid_generic"
-      "hid_multitouch"
-      "i2c_hid"
-      "i2c_hid_acpi"
-      # Additional HID drivers that might help
-      "hid_input"
-      "evdev"
+      "kvm-amd"
+      "amdgpu"
     ];
-
-    # Use LTS kernel for better hardware compatibility
-    kernelPackages = pkgs.linuxPackages_5_15;
 
     extraModulePackages = [];
   };
-
-  # Filesystem configuration - TEMPLATE
-  # Update these paths and UUIDs after running nixos-generate-config
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/nixos";
@@ -61,12 +48,6 @@
     };
   };
 
-  # Swap configuration - TEMPLATE
-  # Uncomment and update if using swap partition
-  # swapDevices = [
-  #   { device = "/dev/disk/by-uuid/REPLACE-WITH-SWAP-UUID"; }
-  # ];
-
   # Hardware-specific configuration for Lenovo Yoga Slim 7 14ARE05
   hardware = {
     # CPU configuration - AMD Ryzen 7 4700U
@@ -75,19 +56,9 @@
     # Enable firmware updates
     enableRedistributableFirmware = true;
 
-    # Graphics configuration - AMD Radeon Vega (integrated)
-    # Using open source driver without ROCm and 32-bit support
     graphics = {
       enable = true;
-      enable32Bit = false; # Disabled 32-bit support
-
-      # AMD open source graphics drivers only
-      extraPackages = with pkgs; [
-        amdvlk # AMD Vulkan driver
-        # Removed ROCm packages for simpler configuration
-      ];
-
-      # No 32-bit support packages needed
+      enable32Bit = false;
     };
 
     # Bluetooth support for Intel AX200
@@ -118,27 +89,18 @@
     linux-firmware
   ];
 
-  # AMD-specific optimizations
   boot.kernelParams = [
-    # Enable AMD graphics performance
-    "amdgpu.ppfeaturemask=0xffffffff"
-    # I2C HID touchpad parameters
-    "i2c_hid.debug=1"
-    # Ensure ACPI devices are properly detected
-    "acpi_enforce_resources=lax"
-    # Force ITE touchpad to be recognized as input device
-    "i2c_hid_acpi.probe_defer=1"
   ];
 
   # TLP for better power management (alternative to power-profiles-daemon)
-  services.tlp = {
-    enable = false; # Using power-profiles-daemon instead
-    settings = {
-      # Would be configured here if enabled
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-    };
-  };
+  # services.tlp = {
+  #   enable = false; # Using power-profiles-daemon instead
+  #   settings = {
+  #     # Would be configured here if enabled
+  #     CPU_SCALING_GOVERNOR_ON_AC = "performance";
+  #     CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+  #   };
+  # };
 
   # Notes for this specific hardware:
   # - Lenovo Yoga Slim 7 14ARE05
