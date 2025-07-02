@@ -52,15 +52,15 @@
       # Home lab servers (geir user for development access)
       Host sleeper-service sleeper-service.home 10.0.0.8
         User geir
-        IdentityFile ~/.ssh/id_ed25519_dev
+        IdentityFile /home/geir/.ssh/id_ed25519_dev
 
       Host grey-area grey-area.home 10.0.0.12
         User geir
-        IdentityFile ~/.ssh/id_ed25519_dev
+        IdentityFile /home/geir/.ssh/id_ed25519_dev
 
       Host reverse-proxy reverse-proxy.home 46.226.104.98
         User geir
-        IdentityFile ~/.ssh/id_ed25519_dev
+        IdentityFile /home/geir/.ssh/id_ed25519_dev
 
       # Admin access to servers (when needed)
       Host admin-sleeper sleeper-service.admin
@@ -81,7 +81,7 @@
       # Tailscale network
       Host 100.* *.tail*
         User geir
-        IdentityFile ~/.ssh/id_ed25519_dev
+        IdentityFile /home/geir/.ssh/id_ed25519_dev
     '';
   };
 }
