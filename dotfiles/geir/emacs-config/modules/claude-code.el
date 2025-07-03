@@ -73,7 +73,7 @@
 (use-package eat
   :ensure nil  ; Already installed via quelpa
   :custom
-  (eat-term-name "xterm-256color")
+  (eat-term-name "xterm-256color")OB
   (eat-kill-buffer-on-exit t))
 
 ;; Alternative terminal emulator (if eat fails or user prefers vterm)

@@ -53,7 +53,7 @@
   # Emacs server configuration (minimal)
   services.emacs-profiles = {
     enable = true;
-    profile = "server";
+    profile = "nox";
     enableDaemon = false; # Don't run daemon on server
     user = "sma";
   };

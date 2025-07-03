@@ -155,7 +155,9 @@
 ;; Module loading system
 ;; Load modules based on availability and profile
 (defvar my-modules-dir
-  (expand-file-name "modules/" user-emacs-directory)
+  (if (getenv "EMACS_PROFILE")
+      "/etc/emacs/modules/" ; System modules for Nix environment
+    (expand-file-name "modules/" user-emacs-directory)) ; User modules for non-Nix
   "Directory containing modular configuration files.")
 
 (defun load-module (module-name)
@@ -168,19 +170,21 @@
 ;; Load modules based on profile
 (let ((profile (getenv "EMACS_PROFILE")))
   (pcase profile
-    ("server"
-     ;; Minimal modules for server
-     (load-module "ui"))
+    ("nox"
+     ;; Minimal modules for terminal use
+     (load-module "completion")
+     (load-module "navigation")
+     (load-module "development")
+     (load-module "elisp-development"))
     
-    ((or "laptop" "workstation")
-     ;; Full module set for development machines
+    ("gui"
+     ;; Full module set for GUI development
      (load-module "ui")
      (load-module "completion")
      (load-module "navigation")
      (load-module "development")
      (load-module "elisp-development")
-     (when (string= profile "workstation")
-       (load-module "claude-code")))
+     (load-module "claude-code"))
     
     (_
      ;; Default module loading (non-Nix environment)

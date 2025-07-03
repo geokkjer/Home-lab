@@ -52,7 +52,7 @@
         (let* ((deploy-cmd (build-deploy-command machine-name skip-checks auto-rollback magic-rollback))
                (start-time (current-time)))
           
-          (log-debug "Deploy command: ~a" deploy-cmd)
+          (log-info "Deploy command: ~a" deploy-cmd)
           (log-info "Executing deployment with automatic rollback protection...")
           
           (let* ((port (open-pipe* OPEN_READ "/bin/sh" "-c" deploy-cmd))
@@ -84,15 +84,15 @@
       (set! flags (cons "--skip-checks" flags)))
     
     (when auto-rollback
-      (set! flags (cons "--auto-rollback" flags)))
+      (set! flags (cons "--auto-rollback=true" flags)))
     
     (when magic-rollback
-      (set! flags (cons "--magic-rollback" flags)))
+      (set! flags (cons "--magic-rollback=true" flags)))
     
     ;; Combine command with flags
     (if (null? flags)
         base-cmd
-        (format #f "~a ~a" base-cmd (string-join flags " ")))))
+        (format #f "~a ~a" base-cmd (string-join (reverse flags) " ")))))
 
 ;; Deploy to all machines
 (define (deploy-all-machines . args)

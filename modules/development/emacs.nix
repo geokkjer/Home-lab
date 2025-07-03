@@ -80,7 +80,6 @@ with lib; let
         org
         org-roam
         org-roam-ui
-        org-agenda
 
         # UI enhancements
         doom-themes
@@ -105,7 +104,6 @@ with lib; let
     workstation = epkgs:
       with epkgs; [
         # All development packages plus extras
-        claude-code # AI assistance (when available)
         pdf-tools
         nov # EPUB reader
         elfeed # RSS reader
@@ -118,76 +116,33 @@ with lib; let
   };
 
   # Generate Emacs configuration based on profile
-  # Uses emacs-gtk to track upstream with GTK3 support for desktop profiles
+  # Uses emacs-pgtk for native Wayland support on desktop profiles
   # Uses emacs-nox for server profiles (no X11/GUI dependencies)
   emacsWithProfile = profile: let
     # Choose Emacs package based on profile
     emacsPackage =
-      if profile == "server"
-      then pkgs.emacs-nox # No GUI for servers
-      else pkgs.emacs-gtk; # GTK3 for desktops
+      if profile == "nox"
+      then pkgs.emacs-nox # Terminal only
+      else pkgs.emacs-pgtk; # Pure GTK for native Wayland support
 
     # Combine package sets based on profile
     selectedPackages = epkgs:
       (packageSets.essential epkgs)
       ++ (
-        if profile == "server"
+        if profile == "nox"
         then packageSets.minimal epkgs
-        else if profile == "laptop"
-        then packageSets.development epkgs
-        else if profile == "workstation"
-        then (packageSets.development epkgs) ++ (packageSets.workstation epkgs)
-        else packageSets.minimal epkgs
+        else (packageSets.development epkgs) ++ (packageSets.workstation epkgs)
       );
   in
-    pkgs.emacsWithPackagesFromUsePackage {
-      config = builtins.readFile ../../dotfiles/geir/emacs-config/init-nix.el;
-      package = emacsPackage;
-      extraEmacsPackages = selectedPackages;
-
-      # Provide external tools that Emacs will use
-      # These will be available via environment variables
-      override = epkgs:
-        epkgs
-        // {
-          # External tools for Emacs integration
-          external-tools =
-            [
-              pkgs.ripgrep # for fast searching
-              pkgs.fd # for file finding
-              pkgs.sqlite # for org-roam database
-              pkgs.ag # the silver searcher
-              pkgs.git # version control
-              pkgs.direnv # environment management
-
-              # Language servers (when available)
-              pkgs.nixd # Nix language server
-              pkgs.nodePackages.bash-language-server
-              pkgs.nodePackages.yaml-language-server
-              pkgs.marksman # Markdown language server
-
-              # Formatters
-              pkgs.alejandra # Nix formatter
-              pkgs.shellcheck # Shell script analysis
-              pkgs.shfmt # Shell script formatter
-            ]
-            ++ lib.optionals (profile != "server") [
-              # Additional tools for development profiles
-              pkgs.nodejs # for various language servers
-              pkgs.python3 # for Python development
-              pkgs.rustup # Rust toolchain
-              pkgs.go # Go language
-            ];
-        };
-    };
+    emacsPackage.pkgs.withPackages (epkgs: selectedPackages epkgs);
 in {
   options.services.emacs-profiles = {
     enable = mkEnableOption "Emacs with machine-specific profiles";
 
     profile = mkOption {
-      type = types.enum ["server" "laptop" "workstation"];
-      default = "laptop";
-      description = "Emacs profile to use based on machine type";
+      type = types.enum ["gui" "nox"];
+      default = "gui";
+      description = "Emacs profile: gui (with UI) or nox (terminal only)";
     };
 
     enableDaemon = mkOption {
@@ -207,6 +162,7 @@ in {
     # Install Emacs with the selected profile
     environment.systemPackages = [
       (emacsWithProfile cfg.profile)
+      pkgs.silver-searcher
     ];
 
     # System-wide Emacs daemon (optional)
@@ -248,7 +204,7 @@ in {
         mode = "0644";
       };
 
-      "emacs/modules/claude-code.el" = mkIf (cfg.profile == "workstation") {
+      "emacs/modules/claude-code.el" = mkIf (cfg.profile == "gui") {
         source = ../../dotfiles/geir/emacs-config/modules/claude-code.el;
         mode = "0644";
       };
@@ -257,12 +213,10 @@ in {
     # Environment variables for Nix integration
     environment.variables = {
       EMACS_PROFILE = cfg.profile;
-
-      # Tool paths for Emacs integration
       RG_PATH = "${pkgs.ripgrep}/bin/rg";
       FD_PATH = "${pkgs.fd}/bin/fd";
       SQLITE_PATH = "${pkgs.sqlite}/bin/sqlite3";
-      AG_PATH = "${pkgs.ag}/bin/ag";
+      AG_PATH = "${pkgs.silver-searcher}/bin/ag";
 
       # Language servers
       NIL_LSP_PATH = "${pkgs.nixd}/bin/nixd";

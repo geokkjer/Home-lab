@@ -49,7 +49,7 @@
   # Emacs server configuration (minimal for services host)
   services.emacs-profiles = {
     enable = true;
-    profile = "server";
+    profile = "nox";
     enableDaemon = false;
     user = "sma";
   };

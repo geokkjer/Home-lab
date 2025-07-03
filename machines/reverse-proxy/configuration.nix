@@ -49,7 +49,7 @@
   # Emacs server configuration (minimal for edge server)
   services.emacs-profiles = {
     enable = true;
-    profile = "server";
+    profile = "nox";
     enableDaemon = false;
     user = "sma";
   };

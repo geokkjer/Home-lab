@@ -10,7 +10,7 @@
     pname = "lab-tool";
     version = "2.0.0-kiss";
 
-    src = ./lab;
+    src = ./lab-tool;
 
     nativeBuildInputs = [makeWrapper];
     buildInputs = [

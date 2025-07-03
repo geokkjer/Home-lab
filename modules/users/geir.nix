@@ -95,8 +95,6 @@ in {
       celluloid
       ytmdesktop
 
-      # Emacs Integration
-      emacsPackages.vterm
       # Gaming
       steam
       # Desktop integration (moved from system)

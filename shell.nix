@@ -1,5 +1,4 @@
 # Nix shell for Home Lab development with deploy-rs and lab-tool
-
 {
   description = "Home Lab dev shell with deploy-rs and lab-tool";
 
@@ -8,9 +7,14 @@
     deploy-rs.url = "github:serokell/deploy-rs";
   };
 
-  outputs = { self, nixpkgs, deploy-rs, ... }@inputs: let
+  outputs = {
+    self,
+    nixpkgs,
+    deploy-rs,
+    ...
+  } @ inputs: let
     system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; };
+    pkgs = import nixpkgs {inherit system;};
   in {
     devShells.${system}.default = pkgs.mkShell {
       buildInputs = [
@@ -23,7 +27,7 @@
         pkgs.openssh
         pkgs.nixos-rebuild
         deploy-rs.packages.${system}.deploy-rs
-        (import ./packages/lab-tool/default.nix { inherit (pkgs) lib stdenv makeWrapper guile_3_0 guile-ssh guile-json guile-git guile-gcrypt openssh git nixos-rebuild; })
+        (import ./packages/lab-tool/default.nix {inherit (pkgs) lib stdenv makeWrapper guile_3_0 guile-ssh guile-json guile-git guile-gcrypt openssh git nixos-rebuild;})
       ];
       shellHook = ''
         echo "Dev shell: deploy-rs and lab-tool available."

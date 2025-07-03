@@ -68,7 +68,7 @@
   # Emacs workstation configuration
   services.emacs-profiles = {
     enable = true;
-    profile = "workstation";
+    profile = "gui";
     enableDaemon = true;
     user = "geir";
   };

@@ -79,10 +79,10 @@
     kernel.sysctl."vm.swappiness" = 180;
   };
 
-  # Emacs laptop configuration
+  # Emacs GUI configuration
   services.emacs-profiles = {
     enable = true;
-    profile = "laptop";
+    profile = "gui";
     enableDaemon = true;
     user = "geir";
   };
