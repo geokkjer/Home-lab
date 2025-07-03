@@ -33,6 +33,10 @@
 
     # Development tools
     ../../modules/development/tools.nix
+    ../../modules/development/emacs.nix
+
+    # Emacs with workstation profile
+    ../../modules/development/emacs.nix
 
     # AI tools
     ../../modules/ai/claude-code.nix
@@ -59,6 +63,14 @@
         path = "/boot";
       }
     ];
+  };
+
+  # Emacs workstation configuration
+  services.emacs-profiles = {
+    enable = true;
+    profile = "workstation";
+    enableDaemon = true;
+    user = "geir";
   };
 
   # Enable clean seatd/greetd login

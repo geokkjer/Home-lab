@@ -15,7 +15,6 @@
     ../../modules/common/base.nix
     ../../modules/common/nix.nix
     ../../modules/common/tty.nix
-    ../../modules/common/emacs.nix
 
     # Desktop
     ../../modules/desktop/niri.nix
@@ -25,6 +24,7 @@
 
     # Development
     ../../modules/development/tools.nix
+    ../../modules/development/emacs.nix
     ../../modules/ai/claude-code.nix
 
     # Users
@@ -77,6 +77,14 @@
 
     # zram swap like other machines
     kernel.sysctl."vm.swappiness" = 180;
+  };
+
+  # Emacs laptop configuration
+  services.emacs-profiles = {
+    enable = true;
+    profile = "laptop";
+    enableDaemon = true;
+    user = "geir";
   };
 
   # zram configuration

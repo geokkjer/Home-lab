@@ -10,6 +10,9 @@
     ../../modules/network/extraHosts.nix
     ../../modules/users/sma.nix
     ../../modules/security/ssh-keys.nix
+
+    # Development (minimal for edge server)
+    ../../modules/development/emacs.nix
   ];
 
   environment.systemPackages = with pkgs; [
@@ -42,6 +45,14 @@
 
   # Tailscale for secure management access
   services.tailscale.enable = true;
+
+  # Emacs server configuration (minimal for edge server)
+  services.emacs-profiles = {
+    enable = true;
+    profile = "server";
+    enableDaemon = false;
+    user = "sma";
+  };
 
   # SSH configuration - temporarily simplified for testing
   services.openssh = {

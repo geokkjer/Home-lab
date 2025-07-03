@@ -1,4 +1,4 @@
-;; lab/deployment.scm - Deployment operations (impure)
+;; lab/deployment.scm - Deploy-rs based deployment operations
 
 (define-module (lab deployment)
   #:use-module (ice-9 format)
@@ -7,10 +7,10 @@
   #:use-module (srfi srfi-1)
   #:use-module (utils logging)
   #:use-module (utils config)
-  #:use-module (utils ssh)
   #:export (deploy-machine
             update-flake
-            execute-nixos-rebuild
+            deploy-all-machines
+            deploy-with-rollback
             option-ref))
 
 ;; Helper function for option handling
@@ -19,26 +19,128 @@
   (let ((value (assoc-ref options key)))
     (if value value default)))
 
-;; Impure function: Deploy machine configuration
+;; Main deployment function using deploy-rs
 (define (deploy-machine machine-name . args)
-  "Deploy configuration to machine (impure - has side effects)"
-  (let* ((mode (if (null? args) "boot" (car args)))
+  "Deploy configuration to machine using deploy-rs (impure - has side effects)"
+  (let* ((mode (if (null? args) "default" (car args)))
          (options (if (< (length args) 2) '() (cadr args)))
-         (valid-modes '("boot" "test" "switch"))
-         (dry-run (option-ref options 'dry-run #f)))
+         (dry-run (option-ref options 'dry-run #f))
+         (skip-checks (option-ref options 'skip-checks #f)))
     
     (if (not (validate-machine-name machine-name))
         #f
-        (if (not (member mode valid-modes))
-            (begin
-              (log-error "Invalid deployment mode: ~a" mode)
-              (log-error "Valid modes: ~a" (string-join valid-modes ", "))
-              #f)
-            (begin
-              (log-info "Starting deployment: ~a (mode: ~a)" machine-name mode)
-              (execute-nixos-rebuild machine-name mode options))))))
+        (begin
+          (log-info "Starting deploy-rs deployment: ~a" machine-name)
+          (execute-deploy-rs machine-name mode options)))))
 
-;; Impure function: Update flake inputs
+;; Execute deploy-rs deployment
+(define (execute-deploy-rs machine-name mode options)
+  "Execute deployment using deploy-rs with automatic rollback"
+  (let* ((homelab-root (get-homelab-root))
+         (dry-run (option-ref options 'dry-run #f))
+         (skip-checks (option-ref options 'skip-checks #f))
+         (auto-rollback (option-ref options 'auto-rollback #t))
+         (magic-rollback (option-ref options 'magic-rollback #t)))
+    
+    (log-info "Deploying ~a using deploy-rs..." machine-name)
+    
+    (if dry-run
+        (begin
+          (log-info "DRY RUN: Would execute deploy-rs for ~a" machine-name)
+          (log-info "Command would be: deploy '.#~a'" machine-name)
+          #t)
+        (let* ((deploy-cmd (build-deploy-command machine-name skip-checks auto-rollback magic-rollback))
+               (start-time (current-time)))
+          
+          (log-debug "Deploy command: ~a" deploy-cmd)
+          (log-info "Executing deployment with automatic rollback protection...")
+          
+          (let* ((port (open-pipe* OPEN_READ "/bin/sh" "-c" deploy-cmd))
+                 (output (get-string-all port))
+                 (status (close-pipe port))
+                 (elapsed (- (current-time) start-time)))
+            
+            (if (zero? status)
+                (begin
+                  (log-success "Deploy-rs deployment completed successfully in ~as" elapsed)
+                  (log-info "Deployment output:")
+                  (log-info "~a" output)
+                  #t)
+                (begin
+                  (log-error "Deploy-rs deployment failed (exit: ~a)" status)
+                  (log-error "Error output:")
+                  (log-error "~a" output)
+                  (log-info "Deploy-rs automatic rollback should have been triggered")
+                  #f)))))))
+
+;; Build deploy-rs command with options
+(define (build-deploy-command machine-name skip-checks auto-rollback magic-rollback)
+  "Build the deploy-rs command with appropriate flags"
+  (let ((base-cmd (format #f "cd ~a && deploy '.#~a'" (get-homelab-root) machine-name))
+        (flags '()))
+    
+    ;; Add flags based on options
+    (when skip-checks
+      (set! flags (cons "--skip-checks" flags)))
+    
+    (when auto-rollback
+      (set! flags (cons "--auto-rollback" flags)))
+    
+    (when magic-rollback
+      (set! flags (cons "--magic-rollback" flags)))
+    
+    ;; Combine command with flags
+    (if (null? flags)
+        base-cmd
+        (format #f "~a ~a" base-cmd (string-join flags " ")))))
+
+;; Deploy to all machines
+(define (deploy-all-machines . args)
+  "Deploy to all machines using deploy-rs"
+  (let* ((options (if (null? args) '() (car args)))
+         (dry-run (option-ref options 'dry-run #f))
+         (machines (get-all-machines)))
+    
+    (log-info "Starting deployment to all machines (~a total)" (length machines))
+    
+    (let ((results 
+           (map (lambda (machine)
+                  (log-info "Deploying to ~a..." machine)
+                  (let ((result (deploy-machine machine "default" options)))
+                    (if result
+                        (log-success "✓ ~a deployed successfully" machine)
+                        (log-error "✗ ~a deployment failed" machine))
+                    (cons machine result)))
+                machines)))
+      
+      ;; Summary
+      (let ((successful (filter cdr results))
+            (failed (filter (lambda (r) (not (cdr r))) results)))
+        (log-info "Deployment summary:")
+        (log-info "  Successful: ~a/~a machines" (length successful) (length machines))
+        (when (not (null? failed))
+          (log-error "  Failed: ~a" (string-join (map car failed) ", ")))
+        
+        ;; Return true if all succeeded
+        (= (length successful) (length machines))))))
+
+;; Deploy with explicit rollback testing
+(define (deploy-with-rollback machine-name . args)
+  "Deploy with explicit rollback capability testing"
+  (let* ((options (if (null? args) '() (car args)))
+         (test-rollback (option-ref options 'test-rollback #f)))
+    
+    (log-info "Deploying ~a with rollback testing..." machine-name)
+    
+    (if test-rollback
+        (begin
+          (log-info "Testing rollback mechanism (deploy will be reverted)")
+          ;; Deploy with magic rollback disabled to test manual rollback
+          (let ((modified-options (cons '(magic-rollback . #f) options)))
+            (execute-deploy-rs machine-name "default" modified-options)))
+        (execute-deploy-rs machine-name "default" options))))
+
+;; Update flake inputs (moved from old deployment module)
 (define (update-flake . args)
   "Update flake inputs (impure - has side effects)"
   (let* ((options (if (null? args) '() (car args)))
@@ -64,76 +166,3 @@
                 (log-error "Flake update failed (exit: ~a)" status)
                 (log-error "Error output: ~a" output)
                 #f))))))
-
-;; Impure function: Execute nixos-rebuild
-(define (execute-nixos-rebuild machine-name mode options)
-  "Execute nixos-rebuild command (impure - has side effects)"
-  (let* ((dry-run (option-ref options 'dry-run #f))
-         (ssh-config (get-ssh-config machine-name))
-         (is-local (and ssh-config (assoc-ref ssh-config 'is-local)))
-         (homelab-root (get-homelab-root)))
-    
-    (if is-local
-        ;; Local deployment
-        (let ((rebuild-cmd (format #f "sudo nixos-rebuild ~a --flake ~a#~a" 
-                                  mode homelab-root machine-name)))
-          (log-debug "Local rebuild command: ~a" rebuild-cmd)
-          
-          (if dry-run
-              (begin
-                (log-info "DRY RUN: Would execute: ~a" rebuild-cmd)
-                #t)
-              (let* ((port (open-pipe* OPEN_READ "/bin/sh" "-c" rebuild-cmd))
-                     (output (get-string-all port))
-                     (status (close-pipe port)))
-                
-                (if (zero? status)
-                    (begin
-                      (log-success "Local nixos-rebuild completed")
-                      #t)
-                    (begin
-                      (log-error "Local nixos-rebuild failed (exit: ~a)" status)
-                      #f)))))
-        
-        ;; Remote deployment
-        (let* ((hostname (assoc-ref ssh-config 'hostname))
-               (ssh-alias (or (assoc-ref ssh-config 'ssh-alias) hostname))
-               (temp-dir "/tmp/homelab-deploy")
-               (sync-cmd (format #f "rsync -av --delete ~a/ ~a:~a/"
-                                homelab-root ssh-alias temp-dir))
-               (rebuild-cmd (format #f "ssh ~a 'cd ~a && sudo nixos-rebuild ~a --flake .#~a'"
-                                   ssh-alias temp-dir mode machine-name)))
-          
-          (log-debug "Remote sync command: ~a" sync-cmd)
-          (log-debug "Remote rebuild command: ~a" rebuild-cmd)
-          
-          (if dry-run
-              (begin
-                (log-info "DRY RUN: Would sync and rebuild remotely")
-                #t)
-              (begin
-                ;; Sync configuration
-                (log-info "Syncing configuration to ~a..." machine-name)
-                (let* ((sync-port (open-pipe* OPEN_READ "/bin/sh" "-c" sync-cmd))
-                       (sync-output (get-string-all sync-port))
-                       (sync-status (close-pipe sync-port)))
-                  
-                  (if (zero? sync-status)
-                      (begin
-                        (log-success "Configuration synced")
-                        ;; Execute rebuild
-                        (log-info "Executing nixos-rebuild on ~a..." machine-name)
-                        (let* ((rebuild-port (open-pipe* OPEN_READ "/bin/sh" "-c" rebuild-cmd))
-                               (rebuild-output (get-string-all rebuild-port))
-                               (rebuild-status (close-pipe rebuild-port)))
-                          
-                          (if (zero? rebuild-status)
-                              (begin
-                                (log-success "Remote nixos-rebuild completed")
-                                #t)
-                              (begin
-                                (log-error "Remote nixos-rebuild failed (exit: ~a)" rebuild-status)
-                                #f))))
-                      (begin
-                        (log-error "Configuration sync failed (exit: ~a)" sync-status)
-                        #f)))))))))

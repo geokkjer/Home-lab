@@ -8,9 +8,7 @@
     # Editors
     zed-editor
     neovim
-    emacs
     vscode
-    vscodium-fhs
 
     # Language servers
     nixd
@@ -35,12 +33,13 @@
     direnv
     gh
     github-copilot-cli
+    deploy-rs
     # ai
     claude-code
   ];
 
-  # System-wide Emacs daemon
-  services.emacs.enable = true;
+  # Note: Emacs is now configured via modules/development/emacs.nix
+  # with machine-specific profiles
 
   # Enable ZSH system-wide for development
   programs.zsh.enable = true;

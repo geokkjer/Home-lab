@@ -78,6 +78,33 @@
         User sma
         IdentityFile ~/.ssh/id_ed25519_admin
 
+      # Direct sma user access via Tailscale for deployments
+      Host sma@sleeper-service.tail807ea.ts.net
+        Hostname sleeper-service.tail807ea.ts.net
+        User sma
+        IdentityFile ~/.ssh/id_ed25519_admin
+
+      Host sma@grey-area.tail807ea.ts.net
+        Hostname grey-area.tail807ea.ts.net
+        User sma
+        IdentityFile ~/.ssh/id_ed25519_admin
+
+      Host sma@reverse-proxy.tail807ea.ts.net
+        Hostname reverse-proxy.tail807ea.ts.net
+        User sma
+        IdentityFile ~/.ssh/id_ed25519_admin
+
+      Host sma@little-rascal.tail807ea.ts.net
+        Hostname little-rascal.tail807ea.ts.net
+        User sma
+        IdentityFile ~/.ssh/id_ed25519_admin
+
+      # Localhost sma user for local deployment from laptop
+      Host sma@localhost
+        Hostname localhost
+        User sma
+        IdentityFile ~/.ssh/id_ed25519_admin
+
       # Tailscale network
       Host 100.* *.tail*
         User geir

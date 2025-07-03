@@ -22,44 +22,48 @@
 ;; Pure function: Command help text
 (define (get-help-text)
   "Pure function returning help text"
-  "Home Lab Tool - K.I.S.S Refactored Edition
+  "Home Lab Tool - Deploy-rs Edition
 
 USAGE: lab <command> [args...]
 
 COMMANDS:
   status              Show infrastructure status
-  machines            List all machines  
-  deploy <machine> [mode]  Deploy configuration to machine
-                      Available modes: boot (default), test, switch
-  deploy-all          Deploy to all machines
+  machines            List all machines
+  deploy <machine> [options]  Deploy configuration to machine using deploy-rs
+                      Options: --dry-run, --skip-checks
+  deploy-all [options]        Deploy to all machines using deploy-rs
   update              Update flake inputs
   auto-update         Perform automatic system update with health checks
   auto-update-status  Show auto-update service status and logs
   health [machine]    Check machine health (all if no machine specified)
-  ssh <machine>       SSH to machine
-  test-modules        Test modular implementation
+  ssh <machine>       SSH to machine (using sma user)
+  test-rollback <machine>     Test deployment with rollback
   help                Show this help
 
 EXAMPLES:
   lab status
   lab machines
-  lab deploy congenital-optimist          # Deploy with boot mode (default)
-  lab deploy congenital-optimist switch   # Deploy and activate immediately
-  lab deploy congenital-optimist test     # Deploy temporarily for testing
-  lab deploy-all
-  lab update
-  lab auto-update                         # Perform automatic update with reboot
-  lab auto-update-status                  # Show auto-update logs and status
-  lab health
-  lab health sleeper-service
-  lab ssh sleeper-service
-  lab test-modules
+  lab deploy congenital-optimist           # Deploy with deploy-rs safety
+  lab deploy sleeper-service --dry-run     # Test deployment without applying
+  lab deploy grey-area --skip-checks       # Deploy without health checks
+  lab deploy-all                          # Deploy to all machines
+  lab deploy-all --dry-run                # Test deployment to all machines
+  lab update                              # Update flake inputs
+  lab test-rollback sleeper-service       # Test rollback functionality
+  lab ssh sleeper-service                 # SSH to machine as sma user
 
-This implementation follows K.I.S.S principles:
-- Modular: Each module has single responsibility  
-- Functional: Pure functions separated from side effects
-- Small: Individual modules under 50 lines
-- Simple: One function does one thing well
+Deploy-rs Features:
+- Automatic rollback on deployment failure
+- Health checks after deployment
+- Magic rollback for network connectivity issues
+- Atomic deployments with safety guarantees
+- Consistent sma user for all deployments
+
+This implementation uses deploy-rs for all deployments:
+- Robust: Automatic rollback protection
+- Safe: Health checks and validation
+- Consistent: Same deployment method for all machines
+- Flexible: Dry-run and skip-checks options available
 ")
 
 ;; Pure function: Format machine list
@@ -109,36 +113,33 @@ Home lab root: ~a
     (log-success "Machine list complete")))
 
 (define (cmd-deploy machine-name . args)
-  "Deploy configuration to machine"
-  (let* ((mode (if (null? args) "boot" (car args)))
-         (valid-modes '("boot" "test" "switch")))
-    (log-info "Deploying to machine: ~a (mode: ~a)" machine-name mode)
-    (if (not (member mode valid-modes))
+  "Deploy configuration to machine using deploy-rs"
+  (let* ((options (parse-deploy-options args)))
+    (log-info "Deploying to machine: ~a using deploy-rs" machine-name)
+    (if (validate-machine-name machine-name)
+        (let ((result (deploy-machine machine-name "default" options)))
+          (if result
+              (log-success "Deploy-rs deployment to ~a completed successfully" machine-name)
+              (log-error "Deploy-rs deployment to ~a failed" machine-name)))
         (begin
-          (log-error "Invalid deployment mode: ~a" mode)
-          (log-error "Valid modes: ~a" (string-join valid-modes ", "))
-          (format #t "Usage: lab deploy <machine> [boot|test|switch]\n"))
-        (if (validate-machine-name machine-name)
-            (let ((result (deploy-machine machine-name mode '())))
-              (if result
-                  (log-success "Deployment to ~a complete (mode: ~a)" machine-name mode)
-                  (log-error "Deployment to ~a failed" machine-name)))
-            (begin
-              (log-error "Invalid machine: ~a" machine-name)
-              (log-info "Available machines: ~a" (string-join (get-all-machines) ", ")))))))
+          (log-error "Invalid machine: ~a" machine-name)
+          (log-info "Available machines: ~a" (string-join (get-all-machines) ", "))))))
 
 (define (cmd-ssh machine-name)
-  "SSH to machine"
-  (log-info "Connecting to machine: ~a" machine-name)
+  "SSH to machine using sma user"
+  (log-info "Connecting to machine: ~a as sma user" machine-name)
   (if (validate-machine-name machine-name)
       (let ((ssh-config (get-ssh-config machine-name)))
         (if ssh-config
             (let ((hostname (assoc-ref ssh-config 'hostname))
                   (ssh-alias (assoc-ref ssh-config 'ssh-alias))
+                  (ssh-user (assoc-ref ssh-config 'ssh-user))
                   (is-local (assoc-ref ssh-config 'is-local)))
               (if is-local
-                  (log-info "Machine ~a is local - no SSH needed" machine-name)
-                  (let ((target (or ssh-alias hostname)))
+                  (begin
+                    (log-info "Machine ~a is local - switching to sma user locally" machine-name)
+                    (system "sudo -u sma -i"))
+                  (let ((target (format #f "~a@~a" (or ssh-user "sma") (or ssh-alias hostname))))
                     (log-info "Connecting to ~a via SSH..." target)
                     (system (format #f "ssh ~a" target)))))
             (log-error "No SSH configuration found for ~a" machine-name)))
@@ -171,20 +172,12 @@ Home lab root: ~a
         (log-error "Flake update failed"))))
 
 (define (cmd-deploy-all)
-  "Deploy to all machines"
-  (log-info "Deploying to all machines...")
-  (let* ((machines (list-machines))
-         (results (map (lambda (machine)
-                         (log-info "Deploying to ~a..." machine)
-                         (let ((result (deploy-machine machine "boot" '())))
-                           (if result
-                               (log-success "✓ ~a deployed" machine)
-                               (log-error "✗ ~a failed" machine))
-                           result))
-                       machines))
-         (successful (filter identity results)))
-    (log-info "Deployment summary: ~a/~a successful" 
-              (length successful) (length machines))))
+  "Deploy to all machines using deploy-rs"
+  (log-info "Deploying to all machines using deploy-rs...")
+  (let ((result (deploy-all-machines '())))
+    (if result
+        (log-success "All deploy-rs deployments completed successfully")
+        (log-error "Some deploy-rs deployments failed"))))
 
 (define (cmd-health args)
   "Check machine health"
@@ -219,6 +212,33 @@ Home lab root: ~a
   "Show auto-update status and logs"
   (auto-update-status))
 
+;; Parse deployment options from command line arguments
+(define (parse-deploy-options args)
+  "Parse deployment options from command line arguments"
+  (let ((options '()))
+    (for-each
+     (lambda (arg)
+       (cond
+        ((string=? arg "--dry-run")
+         (set! options (cons '(dry-run . #t) options)))
+        ((string=? arg "--skip-checks")
+         (set! options (cons '(skip-checks . #t) options)))
+        (else
+         (log-warn "Unknown option: ~a" arg))))
+     args)
+    options))
+
+(define (cmd-test-rollback machine-name)
+  "Test deployment with rollback functionality"
+  (log-info "Testing rollback deployment for machine: ~a" machine-name)
+  (if (validate-machine-name machine-name)
+      (let ((options '((test-rollback . #t))))
+        (let ((result (deploy-with-rollback machine-name options)))
+          (if result
+              (log-success "Rollback test completed for ~a" machine-name)
+              (log-error "Rollback test failed for ~a" machine-name))))
+      (log-error "Invalid machine: ~a" machine-name)))
+
 ;; Main command dispatcher
 (define (dispatch-command command args)
   "Dispatch command with appropriate handler"
@@ -236,11 +256,19 @@ Home lab root: ~a
      (if (null? args)
          (begin
            (log-error "deploy command requires machine name")
-           (format #t "Usage: lab deploy <machine> [boot|test|switch]\n"))
+           (format #t "Usage: lab deploy <machine> [options]\n")
+           (format #t "Options: --dry-run, --skip-checks\n"))
          (apply cmd-deploy args)))
     
     ('deploy-all
      (cmd-deploy-all))
+    
+    ('test-rollback
+     (if (null? args)
+         (begin
+           (log-error "test-rollback command requires machine name")
+           (format #t "Usage: lab test-rollback <machine>\n"))
+         (cmd-test-rollback (car args))))
     
     ('update
      (cmd-update))
@@ -264,6 +292,13 @@ Home lab root: ~a
     ('test-modules
      (cmd-test-modules))
     
+    ('test-rollback
+     (if (null? args)
+         (begin
+           (log-error "test-rollback command requires machine name")
+           (format #t "Usage: lab test-rollback <machine>\n"))
+         (cmd-test-rollback (car args))))
+    
     (_
      (log-error "Unknown command: ~a" command)
      (format #t "Use 'lab help' for available commands\n")
@@ -272,7 +307,7 @@ Home lab root: ~a
 ;; Main entry point
 (define (main args)
   "Main entry point for lab tool"
-  (log-info "Home Lab Tool - K.I.S.S Refactored Edition")
+  (log-info "Home Lab Tool - Deploy-rs Edition")
   
   (let* ((parsed-cmd (if (> (length args) 1) (cdr args) '("help")))
          (command (string->symbol (car parsed-cmd)))

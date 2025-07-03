@@ -1,4 +1,11 @@
-{ config, lib, pkgs, inputs, unstable, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  unstable,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     # Security modules
@@ -10,6 +17,9 @@
     ./nfs.nix
     ./services/transmission.nix
 
+    # Development (minimal for server)
+    ../../modules/development/emacs.nix
+
     # User modules - server only needs sma user
     ../../modules/users/sma.nix
   ];
@@ -20,25 +30,37 @@
     zfsSupport = true;
     efiSupport = true;
     efiInstallAsRemovable = true;
-     mirroredBoots = [
-      { devices = [ "nodev" ]; path  = "/boot"; }     ];
+    mirroredBoots = [
+      {
+        devices = ["nodev"];
+        path = "/boot";
+      }
+    ];
   };
-  
-  boot.supportedFilesystems = [ "zfs" ];
+
+  boot.supportedFilesystems = ["zfs"];
   boot.loader.grub.memtest86.enable = true;
-  
+
   # Add nomodeset for graphics compatibility
-  boot.kernelParams = [ "nomodeset" ];
-  
+  boot.kernelParams = ["nomodeset"];
+
   # ZFS services for file server
   services.zfs = {
     autoScrub.enable = true;
     trim.enable = true;
   };
 
+  # Emacs server configuration (minimal)
+  services.emacs-profiles = {
+    enable = true;
+    profile = "server";
+    enableDaemon = false; # Don't run daemon on server
+    user = "sma";
+  };
+
   # Enable ZFS auto-mounting since we're using ZFS native mountpoints
   # systemd.services.zfs-mount.enable = lib.mkForce false;
-  
+
   # Disable graphics for server use - comment out NVIDIA config for now
   # hardware.graphics = {
   #   enable = true;
@@ -48,15 +70,15 @@
   #   open = false;
   #   package = config.boot.kernelPackages.nvidiaPackages.legacy_470;
   # };
-  
+
   # Comment out NVIDIA kernel modules for now
   # boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-  
+
   # Comment out NVIDIA utilities for now
   # environment.systemPackages = with pkgs; [
   #   config.boot.kernelPackages.nvidiaPackages.legacy_470
   # ];
-  
+
   # Create mount directories early in boot process
   # systemd.tmpfiles.rules = [
   #   "d /mnt/storage 0755 root root -"

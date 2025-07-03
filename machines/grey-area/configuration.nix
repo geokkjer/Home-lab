@@ -16,6 +16,9 @@
     ../../modules/virtualization/incus.nix
     ../../modules/users/sma.nix
 
+    # Development (minimal for services host)
+    ../../modules/development/emacs.nix
+
     # NFS client with ID mapping
     ../../modules/services/nfs-client.nix
 
@@ -42,6 +45,14 @@
 
   # Disks and Updates
   services.fstrim.enable = true;
+
+  # Emacs server configuration (minimal for services host)
+  services.emacs-profiles = {
+    enable = true;
+    profile = "server";
+    enableDaemon = false;
+    user = "sma";
+  };
 
   # Mount remote filesystem
   fileSystems."/mnt/remote/media" = {

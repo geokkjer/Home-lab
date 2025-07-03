@@ -261,7 +261,7 @@
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.little-rascal;
-          sshUser = "geir";
+          sshUser = "sma";
           sudo = "sudo -u";
           autoRollback = true;
           magicRollback = true;
