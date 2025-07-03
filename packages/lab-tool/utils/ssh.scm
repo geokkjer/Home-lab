@@ -27,14 +27,17 @@
               (log-debug "Machine ~a is local, skipping SSH test" machine-name)
               #t)
             (let ((hostname (assoc-ref ssh-config 'hostname))
-                  (ssh-alias (assoc-ref ssh-config 'ssh-alias)))
-              (log-debug "Testing SSH connection to ~a (~a)" machine-name hostname)
+                  (ssh-alias (assoc-ref ssh-config 'ssh-alias))
+                  (user (assoc-ref ssh-config 'user))
+                  (identity-file (assoc-ref ssh-config 'identity-file)))
+              (log-debug "Testing SSH connection to ~a (~a) as ~a using key ~a" machine-name hostname user identity-file)
               (catch #t
                 (lambda ()
-                  ;; Use system ssh command for compatibility with existing configuration
-                  (let* ((test-cmd (if ssh-alias
-                                      (format #f "ssh -o ConnectTimeout=5 -o BatchMode=yes ~a echo OK" ssh-alias)
-                                      (format #f "ssh -o ConnectTimeout=5 -o BatchMode=yes ~a echo OK" hostname)))
+                  (let* ((target (if user (format #f "~a@~a" user hostname) hostname))
+                         (key-arg (if identity-file (format #f "-i ~a" identity-file) ""))
+                         (test-cmd (if ssh-alias
+                                       (format #f "ssh -o ConnectTimeout=5 -o BatchMode=yes ~a ~a echo OK" key-arg ssh-alias)
+                                       (format #f "ssh -o ConnectTimeout=5 -o BatchMode=yes ~a ~a echo OK" key-arg target)))
                          (port (open-pipe* OPEN_READ "/bin/sh" "-c" test-cmd))
                          (output (get-string-all port))
                          (status (close-pipe port)))
@@ -67,15 +70,19 @@
                 (values (zero? status) output)))
             ;; Remote execution
             (let ((ssh-alias (assoc-ref ssh-config 'ssh-alias))
-                  (hostname (assoc-ref ssh-config 'hostname)))
-              (log-debug "Executing on ~a: ~a" machine-name full-command)
-              (let* ((ssh-cmd (format #f "ssh ~a '~a'" 
-                                     (or ssh-alias hostname) 
-                                     full-command))
-                     (port (open-pipe* OPEN_READ "/bin/sh" "-c" ssh-cmd))
-                     (output (get-string-all port))
-                     (status (close-pipe port)))
-                (values (zero? status) output)))))))
+                  (hostname (assoc-ref ssh-config 'hostname))
+                  (user (assoc-ref ssh-config 'user))
+                  (identity-file (assoc-ref ssh-config 'identity-file)))
+              (log-debug "Testing SSH connection to ~a (~a) as ~a using key ~a" machine-name hostname user identity-file)
+              (catch #t
+                (lambda ()
+                  (let* ((target (if user (format #f "~a@~a" user (or ssh-alias hostname)) (or ssh-alias hostname)))
+                         (key-arg (if identity-file (format #f "-i ~a" identity-file) ""))
+                         (ssh-cmd (format #f "ssh ~a ~a '~a'" key-arg target full-command))
+                         (port (open-pipe* OPEN_READ "/bin/sh" "-c" ssh-cmd))
+                         (output (get-string-all port))
+                         (status (close-pipe port)))
+                    (values (zero? status) output)))))))
 
 ;; Copy file to remote machine using scp
 (define (copy-file-to-remote machine-name local-path remote-path)
@@ -93,12 +100,13 @@
                 (zero? status)))
             ;; Remote copy
             (let ((ssh-alias (assoc-ref ssh-config 'ssh-alias))
-                  (hostname (assoc-ref ssh-config 'hostname)))
-              (log-debug "Copying to ~a: ~a -> ~a" machine-name local-path remote-path)
-              (let* ((scp-cmd (format #f "scp '~a' '~a:~a'" 
-                                     local-path 
-                                     (or ssh-alias hostname) 
-                                     remote-path))
+                  (hostname (assoc-ref ssh-config 'hostname))
+                  (user (assoc-ref ssh-config 'user))
+                  (identity-file (assoc-ref ssh-config 'identity-file)))
+              (log-debug "Copying to ~a: ~a -> ~a as ~a using key ~a" machine-name local-path remote-path user identity-file)
+              (let* ((target (if user (format #f "~a@~a" user (or ssh-alias hostname)) (or ssh-alias hostname)))
+                     (key-arg (if identity-file (format #f "-i ~a" identity-file) ""))
+                     (scp-cmd (format #f "scp ~a '~a' '~a:~a'" key-arg local-path target remote-path))
                      (status (system scp-cmd)))
                 (if (zero? status)
                     (begin

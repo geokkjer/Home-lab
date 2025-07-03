@@ -25,6 +25,8 @@
 (define (get-ssh-config machine-name)
   "Get SSH configuration for a machine"
   `((hostname . ,(symbol->string machine-name))
+    (user . "sma")
+    (identity-file . "~/.ssh/id_ed25519_admin")
     (is-local . #f)))
 
 (define (get-homelab-root)
