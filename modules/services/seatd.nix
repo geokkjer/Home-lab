@@ -18,8 +18,14 @@ with lib; {
 
     tuigreetCommand = mkOption {
       type = types.str;
-      default = "${pkgs.zsh}/bin/zsh";
-      description = "Command to execute after login via tuigreet";
+      default = "${pkgs.niri}/bin/niri";
+      description = "Command to execute after login via tuigreet (default: niri)";
+    };
+
+    tuigreetTheme = mkOption {
+      type = types.str;
+      default = "border=magenta;text=cyan;prompt=green;time=red;action=blue;button=yellow;container=black;input=red";
+      description = "Custom theme string for tuigreet (see tuigreet README for options)";
     };
   };
 
@@ -29,7 +35,7 @@ with lib; {
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd ${config.services.seatd-clean.tuigreetCommand}";
+          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --theme '${config.services.seatd-clean.tuigreetTheme}' --cmd ${config.services.seatd-clean.tuigreetCommand}";
           user = "greeter";
         };
       };
