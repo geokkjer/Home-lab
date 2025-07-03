@@ -114,7 +114,15 @@ Home lab root: ~a
 
 (define (cmd-deploy machine-name . args)
   "Deploy configuration to machine using deploy-rs"
-  (let* ((options (parse-deploy-options args)))
+  (let* ((base-options (parse-deploy-options args))
+         ;; Auto-skip checks for local machines to speed up deployment
+         (local-machines '("little-rascal"))
+         (should-skip-checks (member machine-name local-machines))
+         (options (if should-skip-checks
+                      (cons '(skip-checks . #t) base-options)
+                      base-options)))
+    (when should-skip-checks
+      (log-info "Auto-skipping checks for local machine: ~a" machine-name))
     (log-info "Deploying to machine: ~a using deploy-rs" machine-name)
     (if (validate-machine-name machine-name)
         (let ((result (deploy-machine machine-name "default" options)))

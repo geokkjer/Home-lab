@@ -64,10 +64,12 @@
 
 ;; Package linting
 (use-package package-lint
+  :if (not (string-equal system-name "little-rascal"))
   :commands package-lint-current-buffer)
 
 ;; Flycheck for syntax checking
 (use-package flycheck
+  :if (not (string-equal system-name "little-rascal"))
   :hook (emacs-lisp-mode . flycheck-mode)
   :config
   ;; Enhanced Emacs Lisp checking
@@ -87,6 +89,8 @@
 
 ;; Package development helpers
 (use-package auto-compile
+  :if (and (package-installed-p 'auto-compile)
+           (not (string-equal system-name "little-rascal")))
   :config
   (auto-compile-on-load-mode)
   (auto-compile-on-save-mode))

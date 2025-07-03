@@ -8,20 +8,12 @@
 
 ;; Install claude-code via quelpa if not already installed
 (unless (package-installed-p 'claude-code)
-  (quelpa '(claude-code :fetcher github :repo "stevemolitor/claude-code.el")))
+  (quelpa '(claude-code :fetcher git :url "https://github.com/stevemolitor/claude-code.el.git")))
 
 ;; Claude Code - AI assistant integration
 (use-package claude-code
   :ensure nil  ; Already installed via quelpa
   :bind-keymap ("C-c C-c" . claude-code-command-map)
-  :bind (("C-c C-c c" . claude-code)
-         ("C-c C-c s" . claude-code-send-command)
-         ("C-c C-c r" . claude-code-send-region)
-         ("C-c C-c b" . claude-code-send-buffer)
-         ("C-c C-c e" . claude-code-fix-error-at-point)
-         ("C-c C-c t" . claude-code-toggle)
-         ("C-c C-c k" . claude-code-kill)
-         ("C-c C-c n" . claude-code-new))
   :custom
   ;; Terminal backend preference (eat is now installed via quelpa)
   (claude-code-terminal-type 'eat)
@@ -39,6 +31,7 @@
   (claude-code-newline-and-send-style 'modern)
   
   :config
+  (claude-code-mode)
   ;; Smart terminal detection - eat should be available via quelpa
   (defun claude-code-detect-best-terminal ()
     "Detect the best available terminal for Claude Code."
@@ -73,7 +66,7 @@
 (use-package eat
   :ensure nil  ; Already installed via quelpa
   :custom
-  (eat-term-name "xterm-256color")OB
+  (eat-term-name "xterm-256color")
   (eat-kill-buffer-on-exit t))
 
 ;; Alternative terminal emulator (if eat fails or user prefers vterm)
