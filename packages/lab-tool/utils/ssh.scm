@@ -141,4 +141,6 @@
           #f))
       (begin
         (log-error "Cannot establish SSH connection to ~a" machine-name)
-        #f)))
+        #f))))
+
+;; Ensure file ends with a newline and all parentheses are closed
