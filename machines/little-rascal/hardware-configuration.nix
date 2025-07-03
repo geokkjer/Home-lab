@@ -29,25 +29,12 @@
     };
 
     kernelModules = [
-      "kvm-amd" # AMD Ryzen system
-      # HID and input modules for touchpad
-      "hid_generic"
-      "hid_multitouch"
-      "i2c_hid"
-      "i2c_hid_acpi"
+      "kvm-amd"
+      "amdgpu"
     ];
-    
-    # Blacklist modules that interfere with touchpad
-    blacklistedKernelModules = [
-      "amd_sfh"          # AMD Sensor Fusion Hub - causes touchpad to be misidentified
-      "hid_sensor_hub"   # Prevents touchpad from being properly recognized
-    ];
-    
+
     extraModulePackages = [];
   };
-
-  # Filesystem configuration - TEMPLATE
-  # Update these paths and UUIDs after running nixos-generate-config
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/nixos";
@@ -61,12 +48,6 @@
     };
   };
 
-  # Swap configuration - TEMPLATE
-  # Uncomment and update if using swap partition
-  # swapDevices = [
-  #   { device = "/dev/disk/by-uuid/REPLACE-WITH-SWAP-UUID"; }
-  # ];
-
   # Hardware-specific configuration for Lenovo Yoga Slim 7 14ARE05
   hardware = {
     # CPU configuration - AMD Ryzen 7 4700U
@@ -75,19 +56,9 @@
     # Enable firmware updates
     enableRedistributableFirmware = true;
 
-    # Graphics configuration - AMD Radeon Vega (integrated)
-    # Using open source driver without ROCm and 32-bit support
     graphics = {
       enable = true;
-      enable32Bit = false; # Disabled 32-bit support
-
-      # AMD open source graphics drivers only
-      extraPackages = with pkgs; [
-        amdvlk # AMD Vulkan driver
-        # Removed ROCm packages for simpler configuration
-      ];
-
-      # No 32-bit support packages needed
+      enable32Bit = false;
     };
 
     # Bluetooth support for Intel AX200
@@ -96,17 +67,6 @@
       powerOnBoot = true;
     };
   };
-
-  # Additional services for touchpad support
-  services.udev.extraRules = ''
-    # ITE8353 touchpad support - try to force proper driver binding
-    SUBSYSTEM=="i2c", KERNEL=="i2c-ITE8353:00", MODE="0664", GROUP="input"
-    SUBSYSTEM=="input", ATTRS{name}=="ITE8353:00*", MODE="0664", GROUP="input"
-    # Additional HID rules for touchpads
-    KERNEL=="hidraw*", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="8353", MODE="0664", GROUP="input"
-    # Force unbind from hid_sensor_hub and rebind to hid_multitouch for ITE8353
-    ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="8353", ATTR{bInterfaceClass}=="03", ATTR{bInterfaceSubClass}=="01", ATTR{bInterfaceProtocol}=="02", RUN+="/bin/sh -c 'echo $kernel > /sys/bus/hid/drivers/hid-sensor-hub/unbind; echo $kernel > /sys/bus/hid/drivers/hid-multitouch/bind'"
-  '';
 
   # Power management for AMD Ryzen 7 4700U
   powerManagement = {
@@ -129,27 +89,18 @@
     linux-firmware
   ];
 
-  # AMD-specific optimizations
   boot.kernelParams = [
-    # Enable AMD graphics performance
-    "amdgpu.ppfeaturemask=0xffffffff"
-    # I2C HID touchpad parameters
-    "i2c_hid.debug=1"
-    # Ensure ACPI devices are properly detected
-    "acpi_enforce_resources=lax"
-    # Force ITE touchpad to be recognized as input device
-    "i2c_hid_acpi.probe_defer=1"
   ];
 
   # TLP for better power management (alternative to power-profiles-daemon)
-  services.tlp = {
-    enable = false; # Using power-profiles-daemon instead
-    settings = {
-      # Would be configured here if enabled
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-    };
-  };
+  # services.tlp = {
+  #   enable = false; # Using power-profiles-daemon instead
+  #   settings = {
+  #     # Would be configured here if enabled
+  #     CPU_SCALING_GOVERNOR_ON_AC = "performance";
+  #     CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+  #   };
+  # };
 
   # Notes for this specific hardware:
   # - Lenovo Yoga Slim 7 14ARE05

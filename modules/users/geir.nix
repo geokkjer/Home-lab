@@ -30,6 +30,9 @@ in {
 
     shell = pkgs.zsh;
 
+    # Ensure home directory is created so SSH authorized keys are applied
+    createHome = true;
+
     # SSH access with development keys
     openssh.authorizedKeys.keys = [
       # Current key (keep for continuity during transition)

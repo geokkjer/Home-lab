@@ -34,9 +34,9 @@
     ../../modules/users/shell-aliases.nix
 
     # Virtualization
-    ../../modules/virtualization/libvirt.nix
-    ../../modules/virtualization/incus.nix
-    ../../modules/virtualization/podman.nix
+    # ../../modules/virtualization/libvirt.nix
+    # ../../modules/virtualization/incus.nix
+    # ../../modules/virtualization/podman.nix
 
     # Audio
     ../../modules/sound/pipewire.nix
@@ -112,7 +112,9 @@
     # Essential services
     tailscale.enable = true;
     blueman.enable = true;
-    printing.enable = true;
+
+    # Firmware updates
+    fwupd.enable = true;
 
     # Location services for time zone
     geoclue2.enable = true;
