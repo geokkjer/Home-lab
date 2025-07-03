@@ -160,9 +160,10 @@
 ;; Better compilation output
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
-            (setq-local compile-command
-                        (format "emacs -batch -f batch-byte-compile %s"
-                                (shell-quote-argument buffer-file-name)))))
+            (when buffer-file-name
+              (setq-local compile-command
+                          (format "emacs -batch -f batch-byte-compile %s"
+                                  (shell-quote-argument buffer-file-name))))))
 
 (provide 'elisp-development)
 ;;; elisp-development.el ends here

@@ -34,9 +34,7 @@
     ../../modules/users/shell-aliases.nix
 
     # Virtualization
-    # ../../modules/virtualization/libvirt.nix
-    # ../../modules/virtualization/incus.nix
-    # ../../modules/virtualization/podman.nix
+    ../../modules/virtualization/podman.nix
 
     # Audio
     ../../modules/sound/pipewire.nix

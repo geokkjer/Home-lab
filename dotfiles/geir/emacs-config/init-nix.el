@@ -25,7 +25,7 @@
 (menu-bar-mode -1)
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 100)
 (setq-default cursor-type 'bar)
 
 ;; Nix Integration Setup
@@ -92,6 +92,26 @@
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package)))
+
+;; Quelpa setup for packages not available in standard repos
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+;; Install quelpa-use-package for integration
+(unless (package-installed-p 'quelpa-use-package)
+  (quelpa 'quelpa-use-package))
+(require 'quelpa-use-package)
+
+;; Install eat terminal emulator (not available in standard repos)
+(unless (package-installed-p 'eat)
+  (quelpa '(eat :fetcher git
+                :url "https://codeberg.org/akib/emacs-eat.git"
+                :files ("*.el" "dir"
+                        "*.info" "*.texi"
+                        "*.ti" ("e" "e/*")))))
 
 ;; Configure use-package for Nix integration
 (require 'use-package)

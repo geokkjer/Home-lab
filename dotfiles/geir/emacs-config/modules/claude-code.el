@@ -96,12 +96,12 @@
         (claude-code-send-command 
          (format "I'm getting an error around line %d. Here's the context:\n\n```%s\n%s\n```\n\nCan you help me fix this?"
                  error-line
-                 (or (file-name-extension (buffer-file-name)) "")
+                 (or (and buffer-file-name (file-name-extension buffer-file-name)) "")
                  context)))
     (message "Claude Code is not running. Start it with C-c C-c c")))
 
 ;; Keybinding for enhanced error context
-(global-set-key (kbd "C-c C-c x") #'claude-code-send-error-context)
+(global-set-key (kbd "C-c c x") #'claude-code-send-error-context)
 
 ;; Project-aware Claude instances
 (defun claude-code-project-instance ()
@@ -113,7 +113,7 @@
     (claude-code)))
 
 ;; Keybinding for project-specific Claude
-(global-set-key (kbd "C-c C-c p") #'claude-code-project-instance)
+(global-set-key (kbd "C-c c p") #'claude-code-project-instance)
 
 (provide 'claude-code)
 ;;; claude-code.el ends here

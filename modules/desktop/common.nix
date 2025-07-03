@@ -26,6 +26,14 @@
   environment.systemPackages = with pkgs; [
     firefox
   ];
+  
+  # GUI sudo askpass helper for desktop environments
+  programs.ssh.askPassword = "${pkgs.libsForQt5.ksshaskpass}/bin/ksshaskpass";
+  security.sudo.extraConfig = ''
+    Defaults env_keep += "SSH_ASKPASS"
+  '';
+  environment.variables.SUDO_ASKPASS = "${pkgs.libsForQt5.ksshaskpass}/bin/ksshaskpass";
+  
   # Flatpak support
   services.flatpak.enable = true;
 }

@@ -75,6 +75,7 @@ with lib; let
         json-mode
         yaml-mode
         markdown-mode
+        lsp-scheme
 
         # Org mode and knowledge management
         org
@@ -82,6 +83,7 @@ with lib; let
         org-roam-ui
 
         # UI enhancements
+        highlight-defined
         doom-themes
         doom-modeline
         all-the-icons
@@ -89,6 +91,8 @@ with lib; let
         highlight-indent-guides
 
         # Editing enhancements
+        elisp-slime-nav
+        aggressive-indent
         smartparens
         expand-region
         multiple-cursors
