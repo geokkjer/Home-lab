@@ -63,5 +63,4 @@
 
 ;; Update flake inputs - delegate to ssh-deploy module  
 (define update-flake
-  "Update flake inputs (impure - has side effects)"
   (@ (lab ssh-deploy) update-flake))

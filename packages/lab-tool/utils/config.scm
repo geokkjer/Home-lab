@@ -135,7 +135,9 @@
           `((type . ,type)
             (hostname . ,hostname)
             (ssh-alias . ,ssh-alias)
-            (ssh-user . ,ssh-user)
+            (user . ,ssh-user)
+            (ssh-user . ,ssh-user)  ; Keep both for compatibility
+            (identity-file . "~/.ssh/id_ed25519_admin")  ; Default SSH key for sma user
             (is-local . ,(eq? type 'local))))
         #f)))
 
