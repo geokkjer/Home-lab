@@ -85,7 +85,7 @@
                     (values (zero? status) output)))
                 (lambda (key . args)
                   (log-error "SSH command failed for ~a: ~a ~a" machine-name key args)
-                  (values #f "")))))))))))
+                  (values #f ""))))))))))
 
 ;; Copy file to remote machine using scp
 (define (copy-file-to-remote machine-name local-path remote-path)
