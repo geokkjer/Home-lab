@@ -62,10 +62,10 @@
     };
 
     # Bluetooth support for Intel AX200
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-    };
+    # bluetooth = {
+    #   enable = true;
+    #   powerOnBoot = true;
+    # };
   };
 
   # Power management for AMD Ryzen 7 4700U

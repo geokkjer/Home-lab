@@ -19,6 +19,7 @@
     ../../modules/desktop/niri.nix
     ../../modules/desktop/waybar.nix
     ../../modules/desktop/gnome.nix
+    ../../modules/desktop/cosmic.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/input.nix
 
@@ -47,7 +48,7 @@
     ../../modules/security/ssh-keys.nix
 
     # Services
-    ../../modules/services/seatd.nix
+    #../../modules/services/seatd.nix
   ];
 
   networking = {
@@ -98,22 +99,23 @@
 
   # Laptop-specific services
   services = {
-    # Enable clean seatd/greetd login
-    seatd-clean.enable = true;
+    xserver.displayManager.gdm.enable = true;
+    xserver.displayManager.gdm.wayland = true; # Enable Wayland support
+    # Enable clean seatd/greetd login (seat management for Wayland compositors)
+    #    seatd-clean.enable = true;
 
-    # Power management for laptop
-    power-profiles-daemon.enable = true;
-    upower.enable = true;
+    #    power-profiles-daemon.enable = true;
+    #    upower.enable = true;
 
-    # Essential services
     tailscale.enable = true;
-    blueman.enable = true;
+    # Bluetooth manager GUI
+    #    blueman.enable = true;
 
-    # Firmware updates
+    # Firmware updates via fwupd
     fwupd.enable = true;
 
-    # Location services for time zone
-    geoclue2.enable = true;
+    # Location services (used for automatic time zone, etc.)
+    #   geoclue2.enable = true;
   };
 
   # Localization
