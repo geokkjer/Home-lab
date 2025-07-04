@@ -21,7 +21,6 @@
       "wheel" # sudo access
       "networkmanager" # network management
       "libvirt" # virtualization management
-      "incus-admin" # container management
       "podman" # container runtime
       "docker" # docker compatibility (if needed)
       "media" # shared media access for NFS shares
