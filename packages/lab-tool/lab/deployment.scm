@@ -1,4 +1,4 @@
-;; lab/deployment.scm - Deploy-rs based deployment operations
+;; lab/deployment.scm - Unified deployment operations (SSH + rsync by default)
 
 (define-module (lab deployment)
   #:use-module (ice-9 format)
@@ -7,162 +7,61 @@
   #:use-module (srfi srfi-1)
   #:use-module (utils logging)
   #:use-module (utils config)
+  #:use-module (lab ssh-deploy)
+  #:use-module (lab deploy-rs)
   #:export (deploy-machine
             update-flake
             deploy-all-machines
             deploy-with-rollback
             option-ref))
 
-;; Helper function for option handling
+;; Helper function for option handling (re-exported from ssh-deploy)
 (define (option-ref options key default)
   "Get option value with default fallback"
   (let ((value (assoc-ref options key)))
     (if value value default)))
 
-;; Main deployment function using deploy-rs
+;; Main deployment function - SSH by default, deploy-rs optional
 (define (deploy-machine machine-name . args)
-  "Deploy configuration to machine using deploy-rs (impure - has side effects)"
+  "Deploy configuration to machine using SSH + rsync (default) or deploy-rs (optional)"
   (let* ((mode (if (null? args) "default" (car args)))
          (options (if (< (length args) 2) '() (cadr args)))
-         (dry-run (option-ref options 'dry-run #f))
-         (skip-checks (option-ref options 'skip-checks #f)))
+         (use-deploy-rs (option-ref options 'use-deploy-rs #f)))
     
     (if (not (validate-machine-name machine-name))
         #f
-        (begin
-          (log-info "Starting deploy-rs deployment: ~a" machine-name)
-          (execute-deploy-rs machine-name mode options)))))
+        (if use-deploy-rs
+            (begin
+              (log-info "Using deploy-rs deployment method")
+              (deploy-machine-deploy-rs machine-name mode options))
+            (begin
+              (log-info "Using SSH + rsync deployment method")
+              (deploy-machine-ssh machine-name mode options))))))
 
-;; Execute deploy-rs deployment
-(define (execute-deploy-rs machine-name mode options)
-  "Execute deployment using deploy-rs with automatic rollback"
-  (let* ((homelab-root (get-homelab-root))
-         (dry-run (option-ref options 'dry-run #f))
-         (skip-checks (option-ref options 'skip-checks #f))
-         (auto-rollback (option-ref options 'auto-rollback #t))
-         (magic-rollback (option-ref options 'magic-rollback #t)))
-    
-    (log-info "Deploying ~a using deploy-rs..." machine-name)
-    
-    (if dry-run
-        (begin
-          (log-info "DRY RUN: Would execute deploy-rs for ~a" machine-name)
-          (log-info "Command would be: deploy '.#~a'" machine-name)
-          #t)
-        (let* ((deploy-cmd (build-deploy-command machine-name skip-checks auto-rollback magic-rollback))
-               (start-time (current-time)))
-          
-          (log-info "Deploy command: ~a" deploy-cmd)
-          (log-info "Executing deployment with automatic rollback protection...")
-          
-          (let* ((port (open-pipe* OPEN_READ "/bin/sh" "-c" deploy-cmd))
-                 (output (get-string-all port))
-                 (status (close-pipe port))
-                 (elapsed (- (current-time) start-time)))
-            
-            (if (zero? status)
-                (begin
-                  (log-success "Deploy-rs deployment completed successfully in ~as" elapsed)
-                  (log-info "Deployment output:")
-                  (log-info "~a" output)
-                  #t)
-                (begin
-                  (log-error "Deploy-rs deployment failed (exit: ~a)" status)
-                  (log-error "Error output:")
-                  (log-error "~a" output)
-                  (log-info "Deploy-rs automatic rollback should have been triggered")
-                  #f)))))))
-
-;; Build deploy-rs command with options
-(define (build-deploy-command machine-name skip-checks auto-rollback magic-rollback)
-  "Build the deploy-rs command with appropriate flags"
-  (let ((base-cmd (format #f "cd ~a && deploy '.#~a'" (get-homelab-root) machine-name))
-        (flags '()))
-    
-    ;; Add flags based on options
-    (when skip-checks
-      (set! flags (cons "--skip-checks" flags)))
-    
-    (when auto-rollback
-      (set! flags (cons "--auto-rollback=true" flags)))
-    
-    (when magic-rollback
-      (set! flags (cons "--magic-rollback=true" flags)))
-    
-    ;; Combine command with flags
-    (if (null? flags)
-        base-cmd
-        (format #f "~a ~a" base-cmd (string-join (reverse flags) " ")))))
-
-;; Deploy to all machines
+;; Deploy to all machines - delegate to appropriate module
 (define (deploy-all-machines . args)
-  "Deploy to all machines using deploy-rs"
+  "Deploy to all machines using SSH + rsync (default) or deploy-rs (optional)"
   (let* ((options (if (null? args) '() (car args)))
-         (dry-run (option-ref options 'dry-run #f))
-         (machines (get-all-machines)))
+         (use-deploy-rs (option-ref options 'use-deploy-rs #f)))
     
-    (log-info "Starting deployment to all machines (~a total)" (length machines))
-    
-    (let ((results 
-           (map (lambda (machine)
-                  (log-info "Deploying to ~a..." machine)
-                  (let ((result (deploy-machine machine "default" options)))
-                    (if result
-                        (log-success "✓ ~a deployed successfully" machine)
-                        (log-error "✗ ~a deployment failed" machine))
-                    (cons machine result)))
-                machines)))
-      
-      ;; Summary
-      (let ((successful (filter cdr results))
-            (failed (filter (lambda (r) (not (cdr r))) results)))
-        (log-info "Deployment summary:")
-        (log-info "  Successful: ~a/~a machines" (length successful) (length machines))
-        (when (not (null? failed))
-          (log-error "  Failed: ~a" (string-join (map car failed) ", ")))
-        
-        ;; Return true if all succeeded
-        (= (length successful) (length machines))))))
+    (if use-deploy-rs
+        (begin
+          (log-info "Using deploy-rs for all machines")
+          (deploy-all-machines-deploy-rs options))
+        (begin
+          (log-info "Using SSH + rsync for all machines")
+          (deploy-all-machines-ssh options)))))
 
-;; Deploy with explicit rollback testing
+;; Deploy with rollback testing - only available with deploy-rs
 (define (deploy-with-rollback machine-name . args)
-  "Deploy with explicit rollback capability testing"
+  "Deploy with explicit rollback capability testing (deploy-rs only)"
   (let* ((options (if (null? args) '() (car args)))
-         (test-rollback (option-ref options 'test-rollback #f)))
+         (modified-options (cons '(use-deploy-rs . #t) options)))
     
-    (log-info "Deploying ~a with rollback testing..." machine-name)
-    
-    (if test-rollback
-        (begin
-          (log-info "Testing rollback mechanism (deploy will be reverted)")
-          ;; Deploy with magic rollback disabled to test manual rollback
-          (let ((modified-options (cons '(magic-rollback . #f) options)))
-            (execute-deploy-rs machine-name "default" modified-options)))
-        (execute-deploy-rs machine-name "default" options))))
+    (log-info "Rollback testing requires deploy-rs - switching to deploy-rs mode")
+    (deploy-with-rollback machine-name modified-options)))
 
-;; Update flake inputs (moved from old deployment module)
-(define (update-flake . args)
+;; Update flake inputs - delegate to ssh-deploy module  
+(define update-flake
   "Update flake inputs (impure - has side effects)"
-  (let* ((options (if (null? args) '() (car args)))
-         (dry-run (option-ref options 'dry-run #f)))
-    
-    (log-info "Updating flake inputs...")
-    
-    (if dry-run
-        (begin
-          (log-info "DRY RUN: Would execute: nix flake update")
-          #t)
-        (let* ((homelab-root (get-homelab-root))
-               (update-cmd (format #f "cd ~a && nix flake update" homelab-root))
-               (port (open-pipe* OPEN_READ "/bin/sh" "-c" update-cmd))
-               (output (get-string-all port))
-               (status (close-pipe port)))
-          
-          (if (zero? status)
-              (begin
-                (log-success "Flake inputs updated successfully")
-                #t)
-              (begin
-                (log-error "Flake update failed (exit: ~a)" status)
-                (log-error "Error output: ~a" output)
-                #f))))))
+  (@ (lab ssh-deploy) update-flake))

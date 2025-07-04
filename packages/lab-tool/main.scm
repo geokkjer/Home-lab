@@ -22,49 +22,55 @@
 ;; Pure function: Command help text
 (define (get-help-text)
   "Pure function returning help text"
-  "Home Lab Tool - Deploy-rs Edition
+  "Home Lab Tool - SSH + Rsync Edition
 
 USAGE: lab <command> [args...]
 
 COMMANDS:
   status              Show infrastructure status
   machines            List all machines
-  deploy <machine> [options]  Deploy configuration to machine using deploy-rs
-                      Options: --dry-run, --skip-checks
-  deploy-all [options]        Deploy to all machines using deploy-rs
+  deploy <machine> [options]  Deploy configuration to machine using SSH + rsync + nixos-rebuild
+                      Options: --dry-run, --boot, --test, --use-deploy-rs
+  deploy-all [options]        Deploy to all machines using SSH + rsync + nixos-rebuild
   update              Update flake inputs
   auto-update         Perform automatic system update with health checks
   auto-update-status  Show auto-update service status and logs
   health [machine]    Check machine health (all if no machine specified)
   ssh <machine>       SSH to machine (using sma user)
-  test-rollback <machine>     Test deployment with rollback
+  test-rollback <machine>     Test deployment with rollback (uses deploy-rs)
   help                Show this help
 
 EXAMPLES:
   lab status
   lab machines
-  lab deploy congenital-optimist           # Deploy with deploy-rs safety
-  lab deploy sleeper-service --dry-run     # Test deployment without applying
-  lab deploy grey-area --skip-checks       # Deploy without health checks
+  lab deploy little-rascal                # Deploy with SSH + rsync (default)
+  lab deploy little-rascal --dry-run      # Test deployment without applying
+  lab deploy little-rascal --boot         # Deploy but only activate on next boot
+  lab deploy little-rascal --test         # Deploy but don't make permanent
+  lab deploy little-rascal --use-deploy-rs # Use deploy-rs instead of SSH method
   lab deploy-all                          # Deploy to all machines
   lab deploy-all --dry-run                # Test deployment to all machines
   lab update                              # Update flake inputs
-  lab test-rollback sleeper-service       # Test rollback functionality
+  lab test-rollback sleeper-service       # Test rollback functionality (deploy-rs)
   lab ssh sleeper-service                 # SSH to machine as sma user
 
-Deploy-rs Features:
+SSH + Rsync Features (Default):
+- Fast: Only syncs changed files with rsync
+- Simple: Uses standard nixos-rebuild workflow
+- Reliable: Same command workflow as manual deployment
+- Flexible: Supports boot, test, and switch modes
+
+Deploy-rs Features (Optional with --use-deploy-rs):
 - Automatic rollback on deployment failure
 - Health checks after deployment
 - Magic rollback for network connectivity issues
 - Atomic deployments with safety guarantees
-- Consistent sma user for all deployments
 
-This implementation uses deploy-rs for all deployments:
-- Robust: Automatic rollback protection
-- Safe: Health checks and validation
-- Consistent: Same deployment method for all machines
-- Flexible: Dry-run and skip-checks options available
-")
+This implementation uses SSH + rsync + nixos-rebuild by default:
+- Fast: Efficient file synchronization
+- Simple: Standard NixOS deployment workflow
+- Consistent: Same user (sma) for all operations
+- Flexible: Multiple deployment modes available"
 
 ;; Pure function: Format machine list
 (define (format-machine-list machines)
@@ -323,4 +329,4 @@ Home lab root: ~a
 
 ;; Run main function if script is executed directly
 (when (and (defined? 'command-line) (not (null? (command-line))))
-  (main (command-line)))
+  (main (command-line))))
