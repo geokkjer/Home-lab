@@ -12,8 +12,8 @@
   nixos-rebuild,
 }:
 stdenv.mkDerivation {
-  pname = "lab-tool";
-  version = "0.2.0";
+  pname = "lab";
+  version = "0.1.0-dev";
 
   src = ./.;
 
@@ -29,7 +29,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     # Compile Guile modules for better performance
     mkdir -p $out/share/guile/site/3.0
-    cp -r . $out/share/guile/site/3.0/lab-tool/
+    cp -r . $out/share/guile/site/3.0/lab/
 
     # Compile .scm files to .go files
     for file in $(find . -name "*.scm"); do
@@ -44,18 +44,18 @@ stdenv.mkDerivation {
         # Create the main lab executable
         cat > $out/bin/lab << EOF
     #!/usr/bin/env bash
-    export GUILE_LOAD_PATH="$out/share/guile/site/3.0/lab-tool:${guile-ssh}/share/guile/site/3.0:${guile-json}/share/guile/site/3.0:${guile-git}/share/guile/site/3.0:${guile-gcrypt}/share/guile/site/3.0:\$GUILE_LOAD_PATH"
-    export GUILE_LOAD_COMPILED_PATH="$out/share/guile/site/3.0/lab-tool:${guile-ssh}/lib/guile/3.0/site-ccache:${guile-json}/lib/guile/3.0/site-ccache:${guile-git}/lib/guile/3.0/site-ccache:${guile-gcrypt}/lib/guile/3.0/site-ccache:\$GUILE_LOAD_COMPILED_PATH"
-    exec ${guile_3_0}/bin/guile "$out/share/guile/site/3.0/lab-tool/main.scm" "\$@"
+    export GUILE_LOAD_PATH="$out/share/guile/site/3.0/lab:${guile-ssh}/share/guile/site/3.0:${guile-json}/share/guile/site/3.0:${guile-git}/share/guile/site/3.0:${guile-gcrypt}/share/guile/site/3.0:$GUILE_LOAD_PATH"
+    export GUILE_LOAD_COMPILED_PATH="$out/share/guile/site/3.0/lab:${guile-ssh}/lib/guile/3.0/site-ccache:${guile-json}/lib/guile/3.0/site-ccache:${guile-git}/lib/guile/3.0/site-ccache:${guile-gcrypt}/lib/guile/3.0/site-ccache:$GUILE_LOAD_COMPILED_PATH"
+    exec ${guile_3_0}/bin/guile "$out/share/guile/site/3.0/lab/main.scm" "$@"
     EOF
         chmod +x $out/bin/lab
 
         # Create MCP server executable
         cat > $out/bin/lab-mcp-server << EOF
     #!/usr/bin/env bash
-    export GUILE_LOAD_PATH="$out/share/guile/site/3.0/lab-tool:${guile-ssh}/share/guile/site/3.0:${guile-json}/share/guile/site/3.0:${guile-git}/share/guile/site/3.0:${guile-gcrypt}/share/guile/site/3.0:\$GUILE_LOAD_PATH"
-    export GUILE_LOAD_COMPILED_PATH="$out/share/guile/site/3.0/lab-tool:${guile-ssh}/lib/guile/3.0/site-ccache:${guile-json}/lib/guile/3.0/site-ccache:${guile-git}/lib/guile/3.0/site-ccache:${guile-gcrypt}/lib/guile/3.0/site-ccache:\$GUILE_LOAD_COMPILED_PATH"
-    exec ${guile_3_0}/bin/guile -L "$out/share/guile/site/3.0/lab-tool" -c "(use-modules (mcp server)) (run-mcp-server)"
+    export GUILE_LOAD_PATH="$out/share/guile/site/3.0/lab:${guile-ssh}/share/guile/site/3.0:${guile-json}/share/guile/site/3.0:${guile-git}/share/guile/site/3.0:${guile-gcrypt}/share/guile/site/3.0:$GUILE_LOAD_PATH"
+    export GUILE_LOAD_COMPILED_PATH="$out/share/guile/site/3.0/lab:${guile-ssh}/lib/guile/3.0/site-ccache:${guile-json}/lib/guile/3.0/site-ccache:${guile-git}/lib/guile/3.0/site-ccache:${guile-gcrypt}/lib/guile/3.0/site-ccache:$GUILE_LOAD_COMPILED_PATH"
+    exec ${guile_3_0}/bin/guile -L "$out/share/guile/site/3.0/lab" -c "(use-modules (mcp server)) (run-mcp-server)"
     EOF
         chmod +x $out/bin/lab-mcp-server
 
