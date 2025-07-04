@@ -82,7 +82,10 @@
                          (port (open-pipe* OPEN_READ "/bin/sh" "-c" ssh-cmd))
                          (output (get-string-all port))
                          (status (close-pipe port)))
-                    (values (zero? status) output)))))))
+                    (values (zero? status) output)))
+                (lambda (key . args)
+                  (log-error "SSH command failed for ~a: ~a ~a" machine-name key args)
+                  (values #f "")))))))))))
 
 ;; Copy file to remote machine using scp
 (define (copy-file-to-remote machine-name local-path remote-path)

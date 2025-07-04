@@ -46,7 +46,7 @@
     ../../modules/users/sma.nix
 
     # Virtualization configuration
-    # ../../modules/virtualization/incus.nix  # Disabled: cowsql build issue
+    ../../modules/virtualization/incus.nix    # Re-enabled with LTS version
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
   ];

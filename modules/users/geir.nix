@@ -20,6 +20,7 @@ in {
       "wheel"
       "networkmanager"
       "libvirt"
+      "incus-admin"
       "podman"
       "audio"
       "video"
