@@ -1,5 +1,4 @@
 # Little Rascal - Development Laptop Configuration
-# Based on congenital-optimist with laptop-specific adjustments
 {
   config,
   pkgs,
@@ -18,7 +17,8 @@
 
     # Desktop
     ../../modules/desktop/niri.nix
-    ../../modules/desktop/cosmic.nix
+    ../../modules/desktop/waybar.nix
+    ../../modules/desktop/gnome.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/input.nix
 
@@ -54,7 +54,6 @@
     hostName = "little-rascal";
     networkmanager.enable = true;
 
-    # Tailscale for home lab access
     firewall = {
       enable = true;
       allowedUDPPorts = [41641]; # Tailscale
@@ -73,7 +72,6 @@
     kernelModules = ["kvm-amd" "zram"];
     tmp.cleanOnBoot = true;
 
-    # zram swap like other machines
     kernel.sysctl."vm.swappiness" = 180;
   };
 
