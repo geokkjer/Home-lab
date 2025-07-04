@@ -12,8 +12,12 @@
   # XDG Portal configuration for Wayland/X11 compatibility
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    extraPortals = [
+      pkgs.xdg-desktop-portal-wlr
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    config.common.default = "*";
+    config.niri.default = ["wlr" "gtk"];
   };
 
   # Display manager and session management

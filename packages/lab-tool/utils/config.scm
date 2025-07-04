@@ -20,8 +20,9 @@
 (define default-config
   `((homelab-root . "/home/geir/Home-lab")
     (machines . ((congenital-optimist 
-                  (type . local)
-                  (hostname . "localhost")
+                  (type . remote)
+                  (hostname . "congenital-optimist.tail807ea.ts.net")
+                  (ssh-alias . "congenital-optimist.tail807ea.ts.net")
                   (ssh-user . "sma")
                   (services . (workstation development)))
                  (sleeper-service
