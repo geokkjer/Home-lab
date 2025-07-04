@@ -95,6 +95,9 @@
       pkgs = nixpkgs.legacyPackages.${system};
     };
 
+    # Set the default package to lab
+    defaultPackage.${system} = self.packages.${system}.lab;
+
     # Development shells for different projects
     devShells.${system} = {
       default = nixpkgs.legacyPackages.${system}.mkShell {

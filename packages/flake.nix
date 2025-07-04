@@ -67,6 +67,9 @@
 
       # Packages
       packages = {
+        # Lab tool package
+        lab = (pkgs.callPackage ./lab-tools.nix {}).lab;
+
         # Guile MCP Server package
         guile-mcp-server = pkgs.stdenv.mkDerivation {
           pname = "guile-mcp-server";
