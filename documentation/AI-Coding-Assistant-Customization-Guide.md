@@ -46,11 +46,13 @@ GitHub Copilot supports several customization approaches that work across differ
 Personal instructions apply globally to all your Copilot Chat conversations.
 
 **Use cases:**
+
 - Language preferences: `Always respond in Norwegian`
 - Code style preferences: `Prefer TypeScript over JavaScript`
 - Explanation style: `Be concise and use bullet points`
 
 **Configuration:**
+
 1. Open VS Code settings (Ctrl/Cmd + ,)
 2. Search for "copilot chat"
 3. Find "Personal Custom Instructions"
@@ -61,6 +63,7 @@ Personal instructions apply globally to all your Copilot Chat conversations.
 Repository instructions apply to all conversations within a specific repository context.
 
 **Use cases:**
+
 - Project coding standards: `Use early returns in all functions`
 - Framework specifications: `Use Vue with PrimeVue library`
 - Testing requirements: `Write tests using Jest and React Testing Library`
@@ -80,6 +83,7 @@ All API endpoints must include error handling.
 *(Enterprise only)* Apply to all conversations within an organization.
 
 **Use cases:**
+
 - Security guidelines: `For security questions, consult the Security Docs Knowledge Base`
 - Company language: `Always respond in Portuguese`
 - Code standards: `Do not generate code blocks in responses`
@@ -89,6 +93,7 @@ All API endpoints must include error handling.
 Prompt files are Markdown files (`*.prompt.md`) containing reusable instructions.
 
 **Setup:**
+
 1. Create a prompts directory (e.g., `.github/prompts/`)
 2. Add VS Code settings:
 
@@ -207,6 +212,7 @@ Claude Code uses `settings.json` for configuration:
 ```
 
 **Configuration commands:**
+
 - `claude config list` - List all settings
 - `claude config set <key> <value>` - Set a value
 - `claude config add <key> <value>` - Add to list
@@ -231,6 +237,7 @@ claude -p "Review this config" --append-system-prompt "Focus on NixOS best pract
 ### GitHub Copilot in VS Code
 
 1. **Enable prompt files:**
+
    ```json
    {
      "chat.promptFiles": true,
@@ -252,11 +259,13 @@ claude -p "Review this config" --append-system-prompt "Focus on NixOS best pract
 ### Claude Code Setup
 
 1. **Install globally:**
+
    ```bash
    npm install -g @anthropic-ai/claude-code
    ```
 
 2. **Initialize project:**
+
    ```bash
    cd your-project
    claude
@@ -264,11 +273,13 @@ claude -p "Review this config" --append-system-prompt "Focus on NixOS best pract
    ```
 
 3. **Configure settings:**
+
    ```bash
    claude config set permissions.allow "Bash(git status)"
    ```
 
 4. **Create custom commands:**
+
    ```bash
    mkdir -p .claude/commands
    echo "Your command prompt here" > .claude/commands/command-name.md
@@ -441,16 +452,19 @@ Brief description of the project and its goals
 ## References
 
 ### GitHub Copilot
+
 - [GitHub Copilot Documentation](https://docs.github.com/en/copilot)
 - [Customizing Copilot Chat Responses](https://docs.github.com/en/copilot/concepts/about-customizing-github-copilot-chat-responses)
 - [Prompt Engineering for Copilot Chat](https://docs.github.com/en/copilot/concepts/prompt-engineering-for-copilot-chat)
 
 ### Claude Code
+
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [Claude Code GitHub Repository](https://github.com/anthropics/claude-code)
 - [Anthropic API Documentation](https://docs.anthropic.com/en/api)
 
 ### Additional Resources
+
 - [Prompt Engineering Guide](https://github.blog/2023-07-17-prompt-engineering-guide-generative-ai-llms/)
 - [AI Coding Best Practices](https://github.blog/2024-03-25-how-to-use-github-copilot-in-your-ide-tips-tricks-and-best-practices/)
 

@@ -111,6 +111,7 @@ GitHub Copilot can be tailored to your workflow and preferences by providing it 
   - Implement rate limiting and throttling
   - Implement logging and monitoring for security events
   ```
+
 - Reference prompt files in Copilot Chat by name or use the VS Code Copilot Chat UI to insert them.
 
 #### VS Code Settings Example
