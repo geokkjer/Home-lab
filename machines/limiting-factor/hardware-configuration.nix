@@ -15,24 +15,22 @@
   # NOTE: This is a template - replace with actual hardware configuration
   # after running nixos-generate-config on the target machine
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod"];
+  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "sdhci_pci" "usbhid"];
   boot.initrd.kernelModules = [];
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
-  # Filesystems - update paths and UUIDs after installation
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/REPLACE-WITH-ACTUAL-UUID";
+    device = "/dev/disk/by-uuid/35a33370-c764-4ffb-9492-0be304be9b50";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/REPLACE-WITH-ACTUAL-BOOT-UUID";
+    device = "/dev/disk/by-uuid/A202-71FE";
     fsType = "vfat";
-    options = ["fmask=0077" "dmask=0077"];
+    options = ["fmask=0022" "dmask=0022"];
   };
 
-  # Swap configuration - adjust as needed
   swapDevices = [];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

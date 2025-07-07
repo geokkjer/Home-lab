@@ -9,6 +9,8 @@
     ../../modules/common
     ../../modules/security/ssh-keys.nix
     ../../modules/users/sma.nix
+    ../../modules/network/common.nix
+    ../../modules/network/extraHosts.nix
   ];
 
   # Bootloader
@@ -19,37 +21,17 @@
   networking.hostName = "limiting-factor";
   networking.networkmanager.enable = true;
 
-  # Time zone
+  # Add nomodeset for graphics compatibility
+  boot.kernelParams = ["nomodeset"];
+
+  # Time and locale
   time.timeZone = "Europe/Oslo";
-
-  # Internationalization
   i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "nb_NO.UTF-8";
-    LC_IDENTIFICATION = "nb_NO.UTF-8";
-    LC_MEASUREMENT = "nb_NO.UTF-8";
-    LC_MONETARY = "nb_NO.UTF-8";
-    LC_NAME = "nb_NO.UTF-8";
-    LC_NUMERIC = "nb_NO.UTF-8";
-    LC_PAPER = "nb_NO.UTF-8";
-    LC_TELEPHONE = "nb_NO.UTF-8";
-    LC_TIME = "nb_NO.UTF-8";
-  };
 
-  # Console keymap
-  console.keyMap = "us";
-
-  # Define users
-  users.users.sma = {
-    isNormalUser = true;
-    description = "Diziet Sma";
-    extraGroups = ["networkmanager" "wheel"];
-    packages = with pkgs; [
-      # Basic server tools
-      git
-      vim
-      htop
-    ];
+  # Console configuration
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "no";
   };
 
   # Allow unfree packages
