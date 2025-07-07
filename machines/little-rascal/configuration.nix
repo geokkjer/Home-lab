@@ -17,7 +17,7 @@
 
     # Desktop
     ../../modules/desktop/niri.nix
-    ../../modules/desktop/waybar.nix
+    # ../../modules/desktop/waybar.nix
     ../../modules/desktop/gnome.nix
     ../../modules/desktop/cosmic.nix
     ../../modules/desktop/fonts.nix

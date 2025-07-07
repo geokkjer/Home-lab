@@ -13,7 +13,7 @@
         "position": "top",
         "height": 30,
         "spacing": 4,
-        "modules-left": ["sway/workspaces"],
+        "modules-left": ["niri/workspaces"],
         "modules-center": [],
         "modules-right": ["network", "clock"],
         "sway/workspaces": {

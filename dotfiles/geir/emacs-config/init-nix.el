@@ -25,7 +25,9 @@
 (menu-bar-mode -1)
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height 110)
+;; Set text width to 140 characters
+(setq-default fill-column 140)
 (setq-default cursor-type 'bar)
 
 ;; Nix Integration Setup

@@ -87,6 +87,7 @@ with lib; let
         doom-themes
         doom-modeline
         all-the-icons
+        all-the-icons-completion
         rainbow-delimiters
         highlight-indent-guides
 

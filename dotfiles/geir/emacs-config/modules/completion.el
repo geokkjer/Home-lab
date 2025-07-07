@@ -51,5 +51,13 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file))
 
+;; All-the-icons completion (for icons in completion UI)
+(use-package all-the-icons-completion
+  :if (display-graphic-p)
+  :after marginalia
+  :config
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+
 (provide 'completion)
 ;;; completion.el ends here
