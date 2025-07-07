@@ -92,7 +92,7 @@ in {
 
       # Container tools
       podman-compose
-      podman-desktop
+      #podman-desktop
 
       # Media
       celluloid

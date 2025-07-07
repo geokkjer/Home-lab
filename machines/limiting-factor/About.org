@@ -1,0 +1,54 @@
+#+TITLE: limiting-factor Machine Configuration
+#+DATE: July 7, 2025
+#+AUTHOR: Geir Okkenhaug Jerstad
+#+DESCRIPTION: Configuration details for the limiting-factor machine, which is set to become a file server
+
+* Machine Overview
+
+*Machine Name:* limiting-factor
+*Culture Reference:* LimitingFactor (GSV) - A machine that defines boundaries or bottlenecks
+*Role:* File Server (Future)
+*Current Status:* Minimal configuration, preparation phase
+
+* Hardware Specifications
+
+- *CPU:* Intel N150 (low-power processor)
+- *RAM:* 12 GB
+- *Storage:* Six NVMe slots available for future storage expansion
+- *Filesystem:* ext4 (for simplicity and reliability)
+
+* Configuration Details
+
+** Users
+- *Primary User:* sma (Diziet Sma - System Administrator)
+- *UID:* 1001 (consistent across machines)
+- *Groups:* wheel, networkmanager, and other admin groups
+
+** Current Setup
+- Minimal NixOS configuration
+- SSH access enabled
+- No specialized services yet (will be added when transitioning to file server role)
+
+** Future Plans
+- Configure as dedicated file server
+- Set up NFS/SMB shares
+- Implement storage management across NVMe slots
+- Add backup and redundancy solutions
+
+* Network Configuration
+
+- *Hostname:* limiting-factor
+- *Network:* NetworkManager enabled
+- *SSH:* Enabled for remote administration
+
+* Security
+
+- SSH key-based authentication
+- Standard firewall configuration
+- Admin user with sudo access
+
+* Notes
+
+This machine is currently set up with a minimal configuration to prepare for its future role as a file server. The name "limiting-factor" is fitting as it will potentially define storage boundaries and could become a bottleneck if the storage needs exceed its capabilities.
+
+The configuration follows the lab's standard patterns and can be easily extended when the machine is ready to take on its file server responsibilities.
