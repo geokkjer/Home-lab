@@ -6,11 +6,12 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/common
     ../../modules/security/ssh-keys.nix
     ../../modules/users/sma.nix
     ../../modules/network/common.nix
     ../../modules/network/extraHosts.nix
+    # Development (minimal for server)
+    ../../modules/development/emacs.nix
   ];
 
   # Bootloader
@@ -36,6 +37,14 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  # Emacs server configuration (minimal)
+  services.emacs-profiles = {
+    enable = true;
+    profile = "nox";
+    enableDaemon = false; # Don't run daemon on server
+    user = "sma";
+  };
 
   # List packages installed in system profile
   environment.systemPackages = with pkgs; [
