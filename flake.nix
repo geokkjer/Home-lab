@@ -52,7 +52,17 @@
           ./modules/common/tty.nix
         ];
       };
-
+      # limiting-factor - MiniNas
+      limiting-factor = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          ./machines/limiting-factor/configuration.nix
+          ./machines/limiting-factor/hardware-configuration.nix
+          ./modules/common/nix.nix
+          ./modules/common/base.nix
+          ./modules/common/tty.nix
+        ];
+      };
       # reverse-proxy - VPS edge server with Nginx reverse proxy
       reverse-proxy = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
