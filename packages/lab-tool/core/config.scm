@@ -21,6 +21,7 @@
               (sleeper-service (hostname . "sleeper-service"))
               (grey-area (hostname . "grey-area"))
               (reverse-proxy (hostname . "reverse-proxy"))
+              (limiting-factor (hostname . "limiting-factor"))
               (little-rascal (hostname . "little-rascal"))))
     (deployment . ((default-mode . "boot")
                    (timeout . 300)
