@@ -39,14 +39,14 @@
     ../../modules/development/emacs.nix
 
     # AI tools
-    ../../modules/ai/claude-code.nix
+    ../../modules/ai/ai-tools.nix
 
     # User configuration
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
 
     # Virtualization configuration
-    ../../modules/virtualization/incus.nix    # Re-enabled with LTS version
+    ../../modules/virtualization/incus.nix # Re-enabled with LTS version
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
   ];

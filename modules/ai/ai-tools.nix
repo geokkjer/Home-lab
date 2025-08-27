@@ -4,6 +4,8 @@
   ...
 }: {
   environment.systemPackages = with pkgs; [
-    unstable.claude-code
+    unstable.gemini-cli
+    unstable.code-cursor
+    unstable.goose-cli
   ];
 }

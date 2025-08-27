@@ -26,7 +26,7 @@
     # Development
     ../../modules/development/tools.nix
     ../../modules/development/emacs.nix
-    ../../modules/ai/claude-code.nix
+    ../../modules/ai/ai-tools.nix
 
     # Users
     ../../modules/users/geir.nix
