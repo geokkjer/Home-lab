@@ -1,4 +1,8 @@
-{ config, pkgs, ... }: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   # GNOME Desktop Environment
   services.xserver = {
     enable = true;
@@ -14,8 +18,9 @@
     gnome-tweaks
     gnome-terminal
     nautilus
+    capitaine-cursors-themed
   ];
-  
+
   # GNOME services
   services.gnome = {
     gnome-keyring.enable = true;

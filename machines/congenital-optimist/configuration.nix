@@ -22,8 +22,8 @@
 
     # Desktop environments
     ../../modules/desktop/common.nix
-    # ../../modules/desktop/gnome.nix
-    ../../modules/desktop/cosmic.nix
+    ../../modules/desktop/gnome.nix
+    #../../modules/desktop/cosmic.nix
     ../../modules/desktop/sway.nix
     ../../modules/desktop/niri.nix
     ../../modules/desktop/steam-xwayland-satellite.nix
