@@ -6,9 +6,9 @@
   # Development editors and tools
   environment.systemPackages = with pkgs; [
     # Editors
-    zed-editor
-    neovim
-    vscode
+    unstable.zed-editor
+    unstable.neovim
+    unstable.vscode
 
     # Language servers
     nixd
