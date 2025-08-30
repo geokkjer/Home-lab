@@ -94,11 +94,4 @@
       VECLIB_MAXIMUM_THREADS = "20";
     };
   };
-
-  # Add useful packages for AI development
-  environment.systemPackages = with pkgs; [
-    # CLI clients for testing
-    curl
-    jq
-  ];
 }

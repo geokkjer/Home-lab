@@ -12,10 +12,6 @@
     hostName = "congenital-optimist";
     hostId = "8425e349";
     networkmanager.enable = true;
-    
-    # Additional firewall ports for workstation services
-    firewall.allowedTCPPorts = [ 
-    ];
   };
 
 }
