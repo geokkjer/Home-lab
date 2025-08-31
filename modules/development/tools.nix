@@ -13,10 +13,8 @@
 
     # Language servers
     nixd
-    zls
     alejandra
     python3Packages.python-lsp-server
-    gopls
     luajitPackages.lua-lsp
     nodePackages.bash-language-server
     vimPlugins.cmp-nvim-lsp
@@ -25,7 +23,6 @@
 
     # Programming languages and tools
     guile
-    rustup
     gdb
 
     # Development utilities
@@ -35,8 +32,6 @@
     gh
     github-copilot-cli
     deploy-rs
-    # ai
-    claude-code
   ];
 
   # Note: Emacs is now configured via modules/development/emacs.nix

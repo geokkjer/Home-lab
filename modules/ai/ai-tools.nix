@@ -8,5 +8,6 @@
     unstable.code-cursor
     goose-cli
     unstable.opencode
+    unstable.qwen-code
   ];
 }
