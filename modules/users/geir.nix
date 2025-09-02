@@ -76,8 +76,6 @@ in {
       koodo-reader
 
       # Development & System Management
-      neovim
-      vscode
       git-credential-manager
       nodejs
       virt-manager
@@ -86,9 +84,6 @@ in {
       gimp
       obs-studio
       inkscape
-
-      # AI Tools
-      opencode # AI code assistant
 
       # Container tools
       podman-compose
