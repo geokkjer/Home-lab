@@ -24,7 +24,7 @@
     tailscale = {
       enable = true;
       useRoutingFeatures = "client";
-      package = unstable.tailscale; # Use unstable version for better binary cache coverage
+      package = pkgs.tailscale; # Use unstable version for better binary cache coverage
     };
 
     # Note: SSH configuration is handled by modules/security/ssh-keys.nix
