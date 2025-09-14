@@ -76,8 +76,7 @@
   # Enable clean seatd/greetd login
   #services.seatd-clean.enable = true;
   # GDM
-  xserver.displayManager.gdm.enable = true;
-  xserver.displayManager.gdm.wayland = true; # Enable Wayland support
+  services.xserver.displayManager.gdm.enable = true;
 
   # ZFS services for this machine
   services.zfs = {
