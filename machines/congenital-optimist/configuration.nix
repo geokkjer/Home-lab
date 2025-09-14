@@ -18,7 +18,7 @@
 
     # Services
     ../../modules/services/nfs-client.nix
-    ../../modules/services/seatd.nix
+    #../../modules/services/seatd.nix
 
     # Desktop environments
     ../../modules/desktop/common.nix
@@ -74,7 +74,10 @@
   };
 
   # Enable clean seatd/greetd login
-  services.seatd-clean.enable = true;
+  #services.seatd-clean.enable = true;
+  # GDM
+  xserver.displayManager.gdm.enable = true;
+  xserver.displayManager.gdm.wayland = true; # Enable Wayland support
 
   # ZFS services for this machine
   services.zfs = {

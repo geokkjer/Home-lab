@@ -51,6 +51,7 @@ in {
       terminator
       starship
       ghostty
+      wezterm
 
       # Essential system tools (moved duplicates to base.nix)
       mc
@@ -77,13 +78,13 @@ in {
 
       # Development & System Management
       git-credential-manager
+      jujutsu
       nodejs
       virt-manager
 
       # Creative Tools (optional - remove if not needed)
       gimp
       obs-studio
-      inkscape
 
       # Container tools
       podman-compose
@@ -117,7 +118,7 @@ in {
     # Development preferences
     EDITOR = "emacs";
     BROWSER = "firefox";
-    TERMINAL = "kitty";
+    TERMINAL = "wezterm";
 
     # Git configuration
     GIT_EDITOR = "nano";

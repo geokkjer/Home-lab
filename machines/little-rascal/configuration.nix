@@ -48,7 +48,7 @@
     ../../modules/security/ssh-keys.nix
 
     # Services
-    #../../modules/services/seatd.nix
+    ../../modules/services/seatd.nix
   ];
 
   networking = {
@@ -99,10 +99,10 @@
 
   # Laptop-specific services
   services = {
-    xserver.displayManager.gdm.enable = true;
-    xserver.displayManager.gdm.wayland = true; # Enable Wayland support
+    #xserver.displayManager.gdm.enable = true;
+    #xserver.displayManager.gdm.wayland = true; # Enable Wayland support
     # Enable clean seatd/greetd login (seat management for Wayland compositors)
-    #    seatd-clean.enable = true;
+    seatd-clean.enable = true;
 
     #    power-profiles-daemon.enable = true;
     #    upower.enable = true;
