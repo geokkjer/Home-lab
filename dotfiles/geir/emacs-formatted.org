@@ -1,0 +1,550 @@
+#+title: Emacs Configuration
+#+author: Geir Okkenhaug Jerstad
+#+email: geir@geokkjer.eu
+#+options: toc:2 num:nil
+#+startup: overview
+#+property: header-args :comments both :mkdirp yes
+
+* About
+
+My literate configuration for Emacs, organized into multiple tangled files for better modularity and maintainability.
+
+** Tangling Instructions
+
+To tangle this file, use the keyboard shortcut `C-c C-v t` (org-babel-tangle) in Emacs.
+This will generate multiple `.el` files in the `~/.emacs.d/` directory:
+
+- `init.el` - Main configuration entry point
+- `ui.el` - User interface customizations
+- `packages.el` - Package management setup
+- `org-config.el` - Org-mode configuration
+- `lsp-config.el` - Language Server Protocol setup
+- `copilot-config.el` - GitHub Copilot configuration
+- `language-support.el` - Language-specific configurations
+
+** Usage
+
+Load this configuration by ensuring your `~/.emacs.d/init.el` loads all the tangled files.
+
+* Core Configuration
+
+** Init File (Entry Point)
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/init.el
+:END:
+
+This is the main entry point that loads all other configuration files.
+
+#+begin_src emacs-lisp
+;;; init.el --- Main Emacs configuration entry point -*- lexical-binding: t; -*-
+;;; Commentary:
+;; This file loads all modular configuration files
+
+;;; Code:
+
+;; Enable lexical binding
+(setq lexical-binding t)
+
+;; Performance optimization during startup
+(defvar geokkjer/gc-cons-threshold-original gc-cons-threshold)
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; Restore GC threshold after startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold geokkjer/gc-cons-threshold-original)))
+
+;; Display startup time
+(defun geokkjer/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                    (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook #'geokkjer/display-startup-time)
+
+;; Load configuration modules
+(load "~/.emacs.d/packages.el")
+(load "~/.emacs.d/ui.el")
+(load "~/.emacs.d/org-config.el")
+(load "~/.emacs.d/lsp-config.el")
+(load "~/.emacs.d/copilot-config.el")
+(load "~/.emacs.d/language-support.el")
+
+(provide 'init)
+;;; init.el ends here
+#+end_src
+
+* Package Management
+
+** Package Setup
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/packages.el
+:END:
+
+#+begin_src emacs-lisp
+;;; packages.el --- Package management configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Package management setup and use-package configuration
+
+;;; Code:
+
+;; Initialize package sources
+(require 'package)
+
+;; Set the package repositories
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+
+;; Refresh package contents if not available
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; Install use-package if not available
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Configure use-package
+(require 'use-package)
+(setq use-package-always-ensure t
+      use-package-verbose t)
+
+(provide 'packages)
+;;; packages.el ends here
+#+end_src
+
+* User Interface Configuration
+
+** UI Customizations
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/ui.el
+:END:
+
+#+begin_src emacs-lisp
+;;; ui.el --- User interface configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; UI customizations including themes, modeline, and visual elements
+
+;;; Code:
+
+;; Disable startup screen
+(setq inhibit-startup-screen t)
+
+;; Disable UI elements
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
+;; Set font size
+(set-face-attribute 'default nil :height 140)
+
+;; Enable line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; All-the-icons setup
+(use-package all-the-icons
+  :if (display-graphic-p)
+  :config
+  ;; Install fonts if not already done
+  (unless (file-exists-p "~/.local/share/fonts/all-the-icons.ttf")
+    (all-the-icons-install-fonts t)))
+
+;; Doom themes
+(use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-monokai-pro t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification
+  (doom-themes-org-config))
+
+;; Doom modeline
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom
+  ((doom-modeline-height 15)
+   (doom-modeline-icon t)
+   (doom-modeline-major-mode-icon t)
+   (doom-modeline-minor-modes nil)))
+
+(provide 'ui)
+;;; ui.el ends here
+#+end_src
+
+* Org Mode Configuration
+
+** Org Setup
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/org-config.el
+:END:
+
+#+begin_src emacs-lisp
+;;; org-config.el --- Org-mode configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Org-mode configuration for literate programming and note-taking
+
+;;; Code:
+
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :hook (org-mode . org-indent-mode)
+  :config
+  ;; Enable syntax highlighting in code blocks
+  (setq org-src-fontify-natively t
+        org-src-preserve-indentation t
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 0)
+
+  ;; Enable babel for code execution
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t)
+     (nix . t)
+     (js . t)))
+
+  ;; Don't ask for confirmation when evaluating code blocks
+  (setq org-confirm-babel-evaluate nil)
+
+  ;; Org agenda settings
+  (setq org-agenda-files '("~/Documents/org/"))
+
+  ;; Custom keywords
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+  ;; Custom faces for keywords
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "red" :weight bold))
+          ("PROG" . (:foreground "orange" :weight bold))
+          ("WAIT" . (:foreground "yellow" :weight bold))
+          ("DONE" . (:foreground "green" :weight bold))
+          ("CANCELLED" . (:foreground "gray" :weight bold)))))
+
+;; Org bullets for better visual appearance
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Better org-mode table editing
+(use-package org-table-sticky-header
+  :hook (org-mode . org-table-sticky-header-mode))
+
+(provide 'org-config)
+;;; org-config.el ends here
+#+end_src
+
+* Code Completion and IDE Features
+
+** LSP Configuration
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/lsp-config.el
+:END:
+
+#+begin_src emacs-lisp
+;;; lsp-config.el --- Language Server Protocol configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; LSP-mode configuration for IDE features
+
+;;; Code:
+
+;; LSP Mode
+(use-package lsp-mode
+  :init
+  ;; Set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; Replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (nix-mode . lsp)
+         (python-mode . lsp)
+         (js-mode . lsp)
+         (typescript-mode . lsp)
+         ;; If you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp
+  :config
+  (setq lsp-idle-delay 0.6
+        lsp-file-watch-threshold 2000
+        lsp-completion-provider :none) ; Use corfu for completion
+
+  ;; Enable log only for debug
+  (setq lsp-log-io nil)
+
+  ;; Use plists for deserialization
+  (setq lsp-use-plists t))
+
+;; LSP UI
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-show-with-cursor t)
+  (lsp-ui-doc-show-with-mouse t)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-sideline-show-diagnostics t))
+
+;; Company mode for completion
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+;; Which-key for keybinding help
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+;; Flycheck for syntax checking
+(use-package flycheck
+  :init (global-flycheck-mode)
+  :config
+  (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list))
+
+(provide 'lsp-config)
+;;; lsp-config.el ends here
+#+end_src
+
+** GitHub Copilot Configuration
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/copilot-config.el
+:END:
+
+#+begin_src emacs-lisp
+;;; copilot-config.el --- GitHub Copilot configuration -*- lexical-binding: t; -*-
+;;; Commentary:
+;; GitHub Copilot setup and configuration
+;; Remember to run: M-x copilot-install-server and M-x copilot-login
+
+;;; Code:
+
+;; GitHub Copilot
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("M-TAB" . copilot-complete)
+              ("M-<tab>" . copilot-complete))
+  :config
+  (setq copilot-idle-delay 0.1))
+
+;; Copilot Chat
+(use-package copilot-chat
+  :straight (:host github :repo "copilot-emacs/copilot-chat.el" :files ("*.el"))
+  :after copilot
+  :bind (:map global-map
+              ("C-c C-y" . copilot-chat-yank)
+              ("C-c M-y" . copilot-chat-yank-pop)
+              ("C-c C-M-y" . (lambda () (interactive) (copilot-chat-yank-pop -1)))
+              ("C-c c c" . copilot-chat-display)
+              ("C-c c e" . copilot-chat-explain)
+              ("C-c c r" . copilot-chat-review)
+              ("C-c c f" . copilot-chat-fix)
+              ("C-c c o" . copilot-chat-optimize)
+              ("C-c c t" . copilot-chat-test))
+  :config
+  (setq copilot-chat-frontend 'shell-maker))
+
+;; Note: You may need straight.el for copilot packages
+;; Add this to your packages.el if not using straight:
+(unless (package-installed-p 'straight)
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage)))
+
+(provide 'copilot-config)
+;;; copilot-config.el ends here
+#+end_src
+
+* Language Support
+
+** Language-Specific Configurations
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/language-support.el
+:END:
+
+#+begin_src emacs-lisp
+;;; language-support.el --- Language-specific configurations -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Configuration for various programming languages
+
+;;; Code:
+
+;; Nix Language Support
+(use-package nix-mode
+  :mode "\\.nix\\'"
+  :config
+  (setq nix-nixfmt-bin "nixpkgs-fmt"))
+
+(use-package nix-repl
+  :after nix-mode)
+
+;; Python Support
+(use-package python-mode
+  :mode "\\.py\\'"
+  :interpreter "python"
+  :config
+  (setq python-shell-interpreter "python3"))
+
+;; JavaScript/TypeScript Support
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :config
+  (setq js2-basic-offset 2))
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :config
+  (setq typescript-indent-level 2))
+
+;; JSON Support
+(use-package json-mode
+  :mode "\\.json\\'")
+
+;; YAML Support
+(use-package yaml-mode
+  :mode "\\.ya?ml\\'")
+
+;; Markdown Support
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+;; Docker Support
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+;; Magit for Git
+(use-package magit
+  :bind ("C-x g" . magit-status)
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+;; Git Gutter
+(use-package git-gutter
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02))
+
+;; Rainbow Delimiters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Paredit for structured editing
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (eval-expression-minibuffer-setup . enable-paredit-mode)
+         (ielm-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)
+         (lisp-interaction-mode . enable-paredit-mode)
+         (scheme-mode . enable-paredit-mode)))
+
+(provide 'language-support)
+;;; language-support.el ends here
+#+end_src
+
+* Additional Configuration Ideas
+
+** Future Enhancements
+
+Here are some sections you might want to add as your configuration grows:
+
+*** Custom Functions
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/custom-functions.el
+:END:
+
+#+begin_src emacs-lisp
+;;; custom-functions.el --- Custom utility functions -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Custom functions and utilities
+
+;;; Code:
+
+;; Add your custom functions here
+;; Example:
+(defun geokkjer/reload-config ()
+  "Reload the Emacs configuration."
+  (interactive)
+  (load-file "~/.emacs.d/init.el")
+  (message "Configuration reloaded!"))
+
+(provide 'custom-functions)
+;;; custom-functions.el ends here
+#+end_src
+
+*** Keybindings
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.emacs.d/keybindings.el
+:END:
+
+#+begin_src emacs-lisp
+;;; keybindings.el --- Custom keybindings -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Custom keybindings and key remapping
+
+;;; Code:
+
+;; Global keybindings
+(global-set-key (kbd "C-c r") 'geokkjer/reload-config)
+
+;; Add more custom keybindings here
+
+(provide 'keybindings)
+;;; keybindings.el ends here
+#+end_src
+
+** Notes
+
+- Remember to add `(load "~/.emacs.d/custom-functions.el")` and `(load "~/.emacs.d/keybindings.el")` to your init.el if you create these additional files
+- Use `C-c C-v t` to tangle all code blocks
+- Use `C-c C-v C-t` to tangle the current code block only
+- The `:mkdirp yes` property ensures directories are created if they don't exist
+- Each tangled file includes proper headers and footers for better organization
+
+This modular approach makes your Emacs configuration more maintainable and easier to navigate!
