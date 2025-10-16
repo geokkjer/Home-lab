@@ -46,12 +46,11 @@ in {
       # Home lab management tools
       homeLabPackages.lab
 
-      # Terminal applications & system monitoring
-      kitty
-      terminator
+      # Terminal
       starship
       ghostty
       wezterm
+      slides
 
       # Essential system tools (moved duplicates to base.nix)
       mc
