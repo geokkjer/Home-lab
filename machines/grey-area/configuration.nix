@@ -13,7 +13,7 @@
     ../../modules/network/extraHosts.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/libvirt.nix
-    ../../modules/virtualization/incus.nix
+    #../../modules/virtualization/incus.nix
     ../../modules/users/sma.nix
 
     # Development (minimal for services host)
@@ -28,6 +28,7 @@
     ./services/audiobook.nix
     ./services/forgejo.nix
     ./services/ollama.nix
+    ./services/nextcloud.nix
     ../../modules/services/open-webui.nix
   ];
 
