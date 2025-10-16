@@ -17,6 +17,5 @@
 
     # Additional network devices
     100.103.143.108 pihole
-    100.126.202.40  wordpresserver
   '';
 }
