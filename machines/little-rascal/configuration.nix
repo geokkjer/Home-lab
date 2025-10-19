@@ -126,10 +126,7 @@
     keyMap = "no";
   };
 
-  # System packages - testing lab tool installation
-  environment.systemPackages = with pkgs; [
-    inputs.self.packages.${pkgs.system}.lab
-  ];
+
 
   # System version
   system.stateVersion = "25.05";

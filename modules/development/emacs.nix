@@ -103,6 +103,9 @@ with lib; let
         # Terminal integration
         vterm
         eshell-git-prompt
+
+        # AI Integration
+        gptel
       ];
 
     # Full workstation packages
@@ -209,8 +212,8 @@ in {
         mode = "0644";
       };
 
-      "emacs/modules/claude-code.el" = mkIf (cfg.profile == "gui") {
-        source = ../../dotfiles/geir/emacs-config/modules/claude-code.el;
+      "emacs/modules/ai-integration.el" = mkIf (cfg.profile == "gui") {
+        source = ../../dotfiles/geir/emacs-config/modules/ai-integration.el;
         mode = "0644";
       };
     };

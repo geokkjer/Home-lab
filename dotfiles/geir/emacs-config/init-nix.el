@@ -58,11 +58,11 @@
     ;; Nix LSP server
     (when-let ((nil-path (nix-tool-path "nil_lsp")))
       (setq lsp-nix-nil-server-path nil-path))
-    
+
     ;; Bash LSP server
     (when-let ((bash-lsp-path (nix-tool-path "bash_lsp")))
       (setq lsp-bash-language-server-path bash-lsp-path))
-    
+
     ;; YAML LSP server
     (when-let ((yaml-lsp-path (nix-tool-path "yaml_lsp")))
       (setq lsp-yaml-language-server-path yaml-lsp-path))))
@@ -89,7 +89,7 @@
 ;; In Nix environments, packages are pre-installed
 (unless (getenv "EMACS_PROFILE")
   (package-initialize)
-  
+
   ;; Install use-package for non-Nix environments
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -145,19 +145,19 @@
        (message "Loading minimal server configuration...")
        ;; Minimal config - only essential features
        (setq gc-cons-threshold (* 2 1000 1000))) ; Lower memory usage
-      
-      ("laptop" 
+
+      ("laptop"
        (message "Loading laptop development configuration...")
        ;; Laptop config - balanced features
        (setq auto-save-timeout 30)               ; More frequent saves
        (setq lsp-idle-delay 0.3))                ; Moderate LSP responsiveness
-      
+
       ("workstation"
        (message "Loading workstation configuration...")
        ;; Workstation config - maximum performance
        (setq gc-cons-threshold (* 50 1000 1000)) ; Higher performance
        (setq lsp-idle-delay 0.1))                ; Fastest LSP response
-      
+
       (_
        (message "Loading default configuration...")))))
 
@@ -198,7 +198,7 @@
      (load-module "navigation")
      (load-module "development")
      (load-module "elisp-development"))
-    
+
     ("gui"
      ;; Full module set for GUI development
      (load-module "ui")
@@ -206,13 +206,14 @@
      (load-module "navigation")
      (load-module "development")
      (load-module "elisp-development")
-     (load-module "claude-code"))
-    
+     (load-module "ai-integration"))
+
     (_
      ;; Default module loading (non-Nix environment)
      (load-module "ui")
      (load-module "completion")
-     (load-module "navigation"))))
+     (load-module "navigation")
+     (load-module "ai-integration"))))
 
 ;; Display startup information
 (add-hook 'emacs-startup-hook
