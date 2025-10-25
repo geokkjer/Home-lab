@@ -42,7 +42,13 @@ development = epkgs:
 
 GitHub CLI is already available in your global NixOS configuration, so no additional installation is needed.
 
-### 3. Grey-area Ollama Access
+### 3. Install Required Packages
+
+The `emacs.nix` module automatically installs:
+- **GitHub CLI (`gh`)**: Required for Copilot authentication
+- **Emacs with GPTel**: Pre-configured with all necessary packages
+
+### 4. Grey-area Ollama Access
 
 Your grey-area machine already runs Ollama on port 11434 with network access enabled. The configuration automatically detects and connects via Tailscale to `grey-area:11434` or `grey-area.tail807ea.ts.net:11434`.
 
@@ -55,20 +61,48 @@ The `modules/ai-integration.el` module is already created and configured for Git
 ```elisp
 ;; Backend configuration function
 (defun gptel-ai-integration-setup-backends ()
-  "Configure GPTel backends: GitHub Copilot and grey-area Ollama."
+  "Configure GPTel backends: GitHub Copilot (default) with Claude 4.5 and grey-area Ollama."
   (let ((configured-backends '()))
 
     ;; GitHub Copilot Chat (primary - no API key needed)
-    (condition-case nil
+    (condition-case err
         (progn
-          (gptel-make-gh-copilot "Copilot")
+          ;; Check if gh CLI is available and authenticated
+          (unless (executable-find "gh")
+            (error "GitHub CLI (gh) not found. Install it to use Copilot"))
+
+          ;; Create GitHub Copilot backend with October 2025 models
+          (gptel-make-gh-copilot "Copilot"
+            :stream t
+            :models '(;; Latest Claude 4.5 series (Oct 2025)
+                      claude-sonnet-4.5
+                      claude-haiku-4.5
+                      ;; OpenAI models (GPT-5 series if available)
+                      gpt-5
+                      gpt-5-mini
+                      gpt-4o
+                      gpt-4o-mini
+                      o1-preview
+                      o1-mini
+                      gpt-4
+                      gpt-3.5-turbo
+                      ;; Older Claude 3.x (being deprecated)
+                      claude-3.5-sonnet
+                      claude-3-opus
+                      claude-3-sonnet
+                      claude-3-haiku))
+
+          ;; Set as default backend
           (setq gptel-backend (gptel-get-backend "Copilot"))
-          (setq gptel-model 'claude-3.5-sonnet) ; Default Copilot model
-          (push "GitHub Copilot" configured-backends))
-      (error (message "GitHub Copilot setup failed - you may need to authenticate with 'gh auth login'")))
+          (setq gptel-model "claude-sonnet-4.5") ; Default to Claude Sonnet 4.5 (Oct 2025)
+          (push "GitHub Copilot" configured-backends)
+          (message "GitHub Copilot configured with Claude Sonnet 4.5 (Oct 2025) as default"))
+      (error
+       (message "GitHub Copilot setup failed: %s. Run 'gh auth login' to authenticate"
+                (error-message-string err))))
 
     ;; Grey-area Ollama instance (local privacy-focused models)
-    (condition-case nil
+    (condition-case err
         (let* ((grey-area-hosts '("grey-area" "grey-area.tail807ea.ts.net"))
                (reachable-host (cl-find-if
                                (lambda (host)
@@ -80,13 +114,18 @@ The `modules/ai-integration.el` module is already created and configured for Git
                 :host grey-area-host
                 :stream t
                 :models '(llama3.2:latest codellama:latest mistral:latest qwen2.5:latest))
-              (push "Grey-area Ollama" configured-backends))))
-      (error (message "Grey-area Ollama not reachable - check Tailscale connection")))
+              (push "Grey-area Ollama" configured-backends)
+              (message "Grey-area Ollama available at %s" grey-area-host))))
+      (error
+       (message "Grey-area Ollama not reachable: %s" (error-message-string err))))
 
-    ;; Display configured backends
+    ;; Display summary of configured backends
     (if configured-backends
-        (message "GPTel configured with backends: %s" (string-join configured-backends ", "))
-      (message "GPTel: No backends available. Check GitHub authentication and Ollama connectivity"))))
+        (message "GPTel ready! Backends: %s. Default: %s"
+                 (string-join configured-backends ", ")
+                 (gptel-backend-name gptel-backend))
+      (message "WARNING: No GPTel backends available. Install 'gh' CLI and run 'gh auth login' for Copilot, or start Ollama"))))
+```
 
 ;; Org mode integration
 (use-package gptel
@@ -199,6 +238,23 @@ gh copilot --help
 
 No authentication required - Ollama runs on your grey-area machine and is accessible over Tailscale. The configuration automatically detects connectivity to `grey-area:11434` or `grey-area.tail807ea.ts.net:11434`.
 
+## Default Configuration (October 2025)
+
+The AI integration is configured with:
+- **Default Backend**: GitHub Copilot Chat
+- **Default Model**: `claude-sonnet-4.5` (Claude Sonnet 4.5 - October 2025 release, most capable)
+- **Available Claude 4.5 Models**: `claude-sonnet-4.5`, `claude-haiku-4.5` (Oct 2025 - GA and Preview)
+- **Available GPT-5 Models**: `gpt-5`, `gpt-5-mini` (if available via Copilot)
+- **Available GPT-4 Models**: `gpt-4o`, `gpt-4o-mini`, `o1-preview`, `o1-mini`, `gpt-4`, `gpt-3.5-turbo`
+- **Legacy Claude 3.x Models**: `claude-3.5-sonnet` (being deprecated Oct 2025), `claude-3-opus`, `claude-3-sonnet`, `claude-3-haiku`
+- **Streaming**: Enabled for real-time responses
+- **Fallback**: Grey-area Ollama for local/private queries
+
+**Important Updates (October 2025)**:
+- ✅ **Claude Sonnet 4.5** - Now generally available (Oct 13, 2025)
+- ✅ **Claude Haiku 4.5** - Public preview (Oct 15, 2025)
+- ⚠️ **Claude 3.5 Sonnet** - Being deprecated (Oct 7, 2025)
+- ✅ **GPT-5 series** - Check availability in your Copilot subscription
 ## Key Features and Workflows
 
 ### Primary Keybindings
@@ -297,14 +353,26 @@ gptel--known-backends
 
 ## Conclusion
 
-This GPTel setup provides seamless AI integration with no API key management required. GitHub Copilot gives you access to the latest models, while grey-area Ollama provides local/private AI capabilities. The configuration automatically detects available backends and provides easy switching between them.
+This GPTel setup provides seamless AI integration with no API key management required. GitHub Copilot is configured as the default provider using **Claude Sonnet 4.5** (October 2025 release), giving you access to the latest Anthropic Claude 4.5 series and OpenAI GPT-5 series models through your Copilot subscription. Grey-area Ollama provides local/private AI capabilities. The configuration automatically detects available backends and provides easy switching between them.
 
 Start with GitHub Copilot for general queries and switch to grey-area Ollama for sensitive/private work. The buffer-native approach provides a natural development workflow within Emacs.
 
 ## Quick Start
 
-1. Ensure Tailscale is connected: `tailscale status`
-2. Ensure GitHub CLI is authenticated: `gh auth login`
-3. Start Emacs and press `C-c g c`
-4. Choose your backend with `C-c g b` if needed
-5. Start chatting with AI directly in Emacs!
+1. Rebuild your NixOS configuration to install GitHub CLI: `sudo nixos-rebuild switch`
+2. Authenticate with GitHub: `gh auth login`
+3. Ensure Tailscale is connected (optional, for Ollama): `tailscale status`
+4. Start Emacs - GitHub Copilot will be automatically configured as default
+5. Press `C-c g c` to start a GPTel chat with **Claude Sonnet 4.5** (October 2025)
+6. Use `C-c g b` to switch between models: Claude 4.5, GPT-5, older models, or Ollama
+7. Start chatting with the latest AI models directly in Emacs!
+
+## Verifying Setup
+
+When Emacs starts, check the `*Messages*` buffer for:
+```
+GitHub Copilot configured with Claude Sonnet 4.5 (Oct 2025) as default
+GPTel ready! Backends: GitHub Copilot, Grey-area Ollama. Default: Copilot
+```
+
+If you see "GitHub Copilot setup failed", run `gh auth login` in your terminal.

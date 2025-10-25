@@ -1,0 +1,57 @@
+[user]
+	name = Geir Okkenhaug Jerstad
+	email = geokkjer@gmail.com
+
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	clean = git-lfs clean -- %f
+	process = git-lfs filter-process
+	required = true
+
+[init]
+	defaultBranch = main
+
+[core]
+	editor = emacs
+	excludesfile = ~/.config/git/ignore_global
+
+[color]
+	ui = auto
+
+[pull]
+	rebase = true
+
+[merge]
+	tool = vimdiff
+
+[diff]
+	# Use external diff tool if desired; comment out if unused
+	# tool = meld
+
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	ci = commit
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	lg = log --graph --pretty=format:'%C(yellow)%h%Creset %C(cyan)%ad%Creset %C(green)%an%Creset %C(magenta)%d%Creset %s' --date=short --all
+	amend = commit --amend --no-edit
+	rb = rebase
+
+[credential]
+	# Use the credential helper you prefer; examples:
+	# cache = temporary in-memory cache (Linux), store = plaintext on disk
+	# helper = cache --timeout=3600
+	helper = cache --timeout=3600
+
+[commit]
+	# Uncomment and point to a template file if you use commit message templates
+	# template = ~/.config/git/commit_template.txt
+
+[safe]
+	crlf = warn
+
+[include]
+	# Local overrides (create ~/.gitconfig.local to keep machine-specific settings out of repo)
+	path = ~/.gitconfig.local

@@ -171,6 +171,7 @@ in {
     environment.systemPackages = [
       (emacsWithProfile cfg.profile)
       pkgs.silver-searcher
+      pkgs.gh # GitHub CLI for Copilot authentication
     ];
 
     # System-wide Emacs daemon (optional)

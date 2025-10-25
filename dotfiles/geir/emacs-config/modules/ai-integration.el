@@ -24,8 +24,7 @@
          ("C-c g f" . gptel-add-file-context))
 
   :custom
-  ;; Default model and backend (will be set by backend configuration)
-  (gptel-model 'gpt-4o-mini)
+  ;; Default mode for GPTel buffers
   (gptel-default-mode 'org-mode)
 
   ;; Response behavior
@@ -39,10 +38,7 @@
   (gptel-crowdsource-default nil) ; Don't share by default
 
   :config
-  ;; GitHub Copilot handles authentication automatically
-  ;; No API key configuration needed
-
-  ;; Backend configuration
+  ;; Backend configuration - GitHub Copilot as default
   (gptel-ai-integration-setup-backends)
 
   ;; Post-response hook for additional processing
@@ -53,20 +49,48 @@
 
 ;; Backend configuration function
 (defun gptel-ai-integration-setup-backends ()
-  "Configure GPTel backends: GitHub Copilot and grey-area Ollama."
+  "Configure GPTel backends: GitHub Copilot (default) and grey-area Ollama."
   (let ((configured-backends '()))
 
     ;; GitHub Copilot Chat (primary - no API key needed)
-    (condition-case nil
+    (condition-case err
         (progn
-          (gptel-make-gh-copilot "Copilot")
+          ;; Check if gh CLI is available and authenticated
+          (unless (executable-find "gh")
+            (error "GitHub CLI (gh) not found. Install it to use Copilot"))
+
+          ;; Create GitHub Copilot backend with October 2025 models
+          (gptel-make-gh-copilot "Copilot"
+            :stream t
+            :models '(;; Latest Claude 4.5 series (Oct 2025)
+                      claude-sonnet-4.5
+                      claude-haiku-4.5
+                      ;; OpenAI models (GPT-5 series if available)
+                      gpt-5
+                      gpt-5-mini
+                      gpt-4o
+                      gpt-4o-mini
+                      o1-preview
+                      o1-mini
+                      gpt-4
+                      gpt-3.5-turbo
+                      ;; Older Claude 3.x (being deprecated)
+                      claude-3.5-sonnet
+                      claude-3-opus
+                      claude-3-sonnet
+                      claude-3-haiku))
+
+          ;; Set as default backend
           (setq gptel-backend (gptel-get-backend "Copilot"))
-          (setq gptel-model 'claude-3.5-sonnet) ; Default Copilot model
-          (push "GitHub Copilot" configured-backends))
-      (error (message "GitHub Copilot setup failed - you may need to authenticate with 'gh auth login'")))
+          (setq gptel-model "claude-sonnet-4.5") ; Default to Claude Sonnet 4.5 (Oct 2025)
+          (push "GitHub Copilot" configured-backends)
+          (message "GitHub Copilot configured with Claude Sonnet 4.5 (Oct 2025) as default"))
+      (error
+       (message "GitHub Copilot setup failed: %s. Run 'gh auth login' to authenticate"
+                (error-message-string err))))
 
     ;; Grey-area Ollama instance (local privacy-focused models)
-    (condition-case nil
+    (condition-case err
         (let* ((grey-area-hosts '("grey-area" "grey-area.tail807ea.ts.net"))
                (reachable-host (cl-find-if
                                (lambda (host)
@@ -78,24 +102,30 @@
                 :host grey-area-host
                 :stream t
                 :models '(llama3.2:latest codellama:latest mistral:latest qwen2.5:latest))
-              (push "Grey-area Ollama" configured-backends))))
-      (error (message "Grey-area Ollama not reachable - check network connection")))
+              (push "Grey-area Ollama" configured-backends)
+              (message "Grey-area Ollama available at %s" grey-area-host))))
+      (error
+       (message "Grey-area Ollama not reachable: %s" (error-message-string err))))
 
     ;; Local Ollama fallback (if running locally)
-    (condition-case nil
+    (condition-case err
         (when (and (executable-find "ollama")
                    (zerop (call-process "ollama" nil nil nil "ps")))
           (gptel-make-ollama "Local Ollama"
             :host "localhost:11434"
             :stream t
             :models '(llama3.2:latest codellama:latest mistral:latest qwen2.5:latest))
-          (push "Local Ollama" configured-backends))
-      (error nil))
+          (push "Local Ollama" configured-backends)
+          (message "Local Ollama available"))
+      (error
+       (message "Local Ollama not available: %s" (error-message-string err))))
 
-    ;; Display configured backends
+    ;; Display summary of configured backends
     (if configured-backends
-        (message "GPTel configured with backends: %s" (string-join configured-backends ", "))
-      (message "GPTel: No backends available. Check GitHub authentication and Ollama connectivity"))))
+        (message "GPTel ready! Backends: %s. Default: %s"
+                 (string-join configured-backends ", ")
+                 (gptel-backend-name gptel-backend))
+      (message "WARNING: No GPTel backends available. Install 'gh' CLI and run 'gh auth login' for Copilot, or start Ollama"))))
 
 ;; Enhanced project integration
 (defun gptel-project-context ()

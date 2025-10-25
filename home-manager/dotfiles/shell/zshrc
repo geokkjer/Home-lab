@@ -1,2 +1,47 @@
-# Placeholder for zsh configuration
-# This will contain shell-specific configurations that need to be deployed as dotfiles
+# ~/.zshrc - Managed by Home Manager (populated from little-rascal configuration)
+# This file is intended to reproduce the previous user-local zsh setup found on
+# little-rascal. It is safe to edit, but prefer edits via the repository and
+# Home Manager once the migration is complete.
+
+# Completion configuration (from previous config)
+zstyle ':completion:*' completer _expand _complete _ignored
+zstyle ':completion:*' matcher-list ''
+zstyle :compinstall filename '/home/geir/.zshrc'
+
+# Initialize completion system
+autoload -Uz compinit
+compinit
+
+# History settings
+HISTFILE=~/.histfile
+HISTSIZE=10000
+SAVEHIST=10000
+
+# Shell options
+setopt autocd extendedglob
+unsetopt beep nomatch
+
+# Emacs-style keybindings for readline compatibility
+bindkey -e
+
+# Prompt, direnv and zoxide integration
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
+
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+# Fun startup message preserved from the previous config (may require fortune, cowsay, clolcat)
+if command -v fortune >/dev/null 2>&1 && command -v cowsay >/dev/null 2>&1; then
+  # Note: the original config piped to 'clolcat' (as written). If you prefer 'lolcat'
+  # or another coloring tool, adjust accordingly.
+  fortune -s | cowsay -f dragon | clolcat || true
+fi
+
+# End of managed ~/.zshrc
