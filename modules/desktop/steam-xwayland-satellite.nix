@@ -85,8 +85,6 @@
     gamemode
     gamescope
     mangohud # Performance overlay
-    lutris # Game manager
-    bottles # Windows app runner
   ];
 
   # Ensure Steam has proper gaming optimizations
