@@ -87,7 +87,21 @@
   # System packages
   environment.systemPackages = with pkgs; [
     # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
-    (callPackage ../../modules/sound/Music/SoundThread.nix {})
+    # Wrap to expose CDP tools directly in bin directory
+    (let 
+       st = (callPackage ../../modules/sound/Music/SoundThread.nix {});
+     in
+       pkgs.symlinkJoin {
+         name = "soundthread-with-cdp";
+         paths = [ st ];
+         postBuild = ''
+           mkdir -p $out/bin
+           for tool in ${st}/cdp-bin/*; do
+             ln -sf "$tool" "$out/bin/$(basename $tool)"
+           done
+         '';
+       }
+    )
   ];
 
   # Export CDP_PATH environment variable
