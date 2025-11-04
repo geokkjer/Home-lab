@@ -113,7 +113,20 @@ stdenv.mkDerivation rec {
     # These are patched versions maintained by the SoundThread author
     cdpBinPath="$out/cdp/bin"
 
-    # Create a wrapper script that sets the necessary environment for SoundThread
+    # First: Create executable wrapper scripts for all CDP tools
+    # This makes them available system-wide when the package is added to systemPackages
+    for tool in "$cdpBinPath"/*; do
+      toolName=$(basename "$tool")
+      # Create a simple wrapper script that delegates to the actual tool
+      cat > "$out/bin/$toolName" <<'TOOLWRAPPER'
+#!/bin/sh
+exec "TOOLPATH" "$@"
+TOOLWRAPPER
+      sed -i "s|TOOLPATH|$tool|" "$out/bin/$toolName"
+      chmod +x "$out/bin/$toolName"
+    done
+
+    # Second: Create a wrapper script that sets the necessary environment for SoundThread
     wrapProgram $out/bin/SoundThread \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
       libGL
@@ -131,19 +144,6 @@ stdenv.mkDerivation rec {
       --prefix PATH : "$cdpBinPath" \
       --set CDP_PATH "$cdpBinPath" \
       --set XDG_DATA_HOME "$out/share"
-
-    # Create executable wrapper scripts for all CDP tools
-    # This makes them available system-wide when the package is added to systemPackages
-    for tool in "$cdpBinPath"/*; do
-      toolName=$(basename "$tool")
-      # Create a simple wrapper script that delegates to the actual tool
-      cat > "$out/bin/$toolName" <<'TOOLWRAPPER'
-#!/bin/sh
-exec "TOOLPATH" "$@"
-TOOLWRAPPER
-      sed -i "s|TOOLPATH|$tool|" "$out/bin/$toolName"
-      chmod +x "$out/bin/$toolName"
-    done
   '';
 
   meta = with lib; {
