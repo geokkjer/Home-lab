@@ -95,28 +95,27 @@
     };
 
     # Minimal development shell for compatibility
-    devShells.${system}.default =
-      let
-        # Create deployment scripts
-        ds = nixpkgs.legacyPackages.${system}.writeShellScriptBin "ds" ''
-          nixos-rebuild boot --flake .#sleeper-service --target-host sma@sleeper-service.tail807ea.ts.net --use-remote-sudo "$@"
-        '';
-        dg = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dg" ''
-          nixos-rebuild boot --flake .#grey-area --target-host sma@grey-area.tail807ea.ts.net --use-remote-sudo "$@"
-        '';
-        dr = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dr" ''
-          nixos-rebuild boot --flake .#reverse-proxy --target-host sma@reverse-proxy.tail807ea.ts.net --use-remote-sudo "$@"
-        '';
-        dl = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dl" ''
-          nixos-rebuild boot --flake .#little-rascal --target-host sma@little-rascal.tail807ea.ts.net --use-remote-sudo "$@"
-        '';
-        dc = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dc" ''
-          nixos-rebuild boot --flake .#congenital-optimist --use-remote-sudo "$@"
-        '';
-        dlf = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dlf" ''
-          nixos-rebuild boot --flake .#limiting-factor --target-host sma@limiting-factor.tail807ea.ts.net --use-remote-sudo "$@"
-        '';
-      in
+    devShells.${system}.default = let
+      # Create deployment scripts
+      ds = nixpkgs.legacyPackages.${system}.writeShellScriptBin "ds" ''
+        nixos-rebuild boot --flake .#sleeper-service --target-host sma@sleeper-service.tail807ea.ts.net --use-remote-sudo "$@"
+      '';
+      dg = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dg" ''
+        nixos-rebuild boot --flake .#grey-area --target-host sma@grey-area.tail807ea.ts.net --use-remote-sudo "$@"
+      '';
+      dr = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dr" ''
+        nixos-rebuild boot --flake .#reverse-proxy --target-host sma@reverse-proxy.tail807ea.ts.net --use-remote-sudo "$@"
+      '';
+      dl = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dl" ''
+        nixos-rebuild boot --flake .#little-rascal --target-host sma@little-rascal.tail807ea.ts.net --use-remote-sudo "$@"
+      '';
+      dc = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dc" ''
+        nixos-rebuild boot --flake .#congenital-optimist --use-remote-sudo "$@"
+      '';
+      dlf = nixpkgs.legacyPackages.${system}.writeShellScriptBin "dlf" ''
+        nixos-rebuild boot --flake .#limiting-factor --target-host sma@limiting-factor.tail807ea.ts.net --use-remote-sudo "$@"
+      '';
+    in
       nixpkgs.legacyPackages.${system}.mkShell {
         buildInputs = with nixpkgs.legacyPackages.${system}; [
           nixd
@@ -148,7 +147,5 @@
 
     # Minimal packages for compatibility
     packages.${system}.default = nixpkgs.legacyPackages.${system}.hello;
-
-
   };
 }

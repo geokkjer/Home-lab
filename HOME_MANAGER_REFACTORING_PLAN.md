@@ -7,6 +7,7 @@ This document outlines a comprehensive plan to refactor the current user configu
 ## Current Architecture Analysis
 
 ### Strengths of Current System
+
 - **Declarative Configuration**: All configurations defined in Nix modules
 - **Sophisticated Emacs Integration**: Profile-based Emacs system with Nix tool integration
 - **Multi-machine Consistency**: Centralized configuration repository
@@ -14,6 +15,7 @@ This document outlines a comprehensive plan to refactor the current user configu
 - **Nix Tool Integration**: Excellent integration with Nix-provided tools and language servers
 
 ### Current Limitations
+
 - **System-level User Configuration**: User preferences mixed with system configuration
 - **No User Service Management**: Cannot manage user-level systemd services
 - **Manual Dotfile Deployment**: Limited systematic dotfile management
@@ -23,6 +25,7 @@ This document outlines a comprehensive plan to refactor the current user configu
 ## Refactoring Goals
 
 ### Primary Objectives
+
 1. **Separate User from System Configuration**: Move user-specific settings to Home Manager
 2. **Enable User Service Management**: Leverage Home Manager's systemd user service support
 3. **Systematic Dotfile Management**: Implement proper dotfile deployment and management
@@ -30,6 +33,7 @@ This document outlines a comprehensive plan to refactor the current user configu
 5. **Improve Maintainability**: Reduce complexity and improve modularity
 
 ### Secondary Objectives
+
 1. **Multi-user Support**: Better support for multiple users with different preferences
 2. **Development Environment Isolation**: User-level development environments
 3. **Profile-based Configuration**: Different user profiles for different contexts
@@ -38,16 +42,19 @@ This document outlines a comprehensive plan to refactor the current user configu
 ## Migration Strategy
 
 ### Phase 1: Foundation Setup
+
 **Timeline**: Week 1-2
 **Risk Level**: Low
 
-#### Tasks:
+#### Tasks
+
 1. **Initialize Home Manager Integration**
    - Add Home Manager to flake.nix inputs
    - Configure basic Home Manager module in NixOS
    - Create initial home.nix for user 'geir'
 
 2. **Create Home Manager Directory Structure**
+
    ```
    home-manager/
    ├── users/
@@ -82,16 +89,19 @@ This document outlines a comprehensive plan to refactor the current user configu
    - Set up basic shell configuration
    - Implement minimal dotfile management
 
-#### Deliverables:
+#### Deliverables
+
 - Working Home Manager integration
 - Basic user configuration in Home Manager
 - Preserved system functionality
 
 ### Phase 2: Emacs Migration
+
 **Timeline**: Week 3-4
 **Risk Level**: Medium
 
-#### Tasks:
+#### Tasks
+
 1. **Migrate Emacs Configuration to Home Manager**
    - Preserve current profile-based system
    - Migrate from `/etc/emacs/` to Home Manager file management
@@ -99,6 +109,7 @@ This document outlines a comprehensive plan to refactor the current user configu
    - Convert systemd service to user service
 
 2. **Enhanced Emacs Module Structure**
+
    ```nix
    programs.emacs = {
      enable = true;
@@ -137,17 +148,20 @@ This document outlines a comprehensive plan to refactor the current user configu
    - Maintain modular structure
    - Preserve profile-based loading
 
-#### Deliverables:
+#### Deliverables
+
 - Emacs fully managed by Home Manager
 - User-level Emacs daemon service
 - Preserved profile-based functionality
 - Improved dotfile deployment
 
 ### Phase 3: Complete User Migration
+
 **Timeline**: Week 5-6
 **Risk Level**: Medium
 
-#### Tasks:
+#### Tasks
+
 1. **Shell Configuration Migration**
    - Move zsh configuration to Home Manager
    - Implement user-specific aliases and functions
@@ -163,16 +177,19 @@ This document outlines a comprehensive plan to refactor the current user configu
    - Application-specific configurations
    - Theme and appearance management
 
-#### Deliverables:
+#### Deliverables
+
 - Complete user environment in Home Manager
 - System packages reduced to essential only
 - User-specific development environments
 
 ### Phase 4: Multi-user and Profiles
+
 **Timeline**: Week 7-8
 **Risk Level**: Low
 
-#### Tasks:
+#### Tasks
+
 1. **Multi-user Support**
    - Migrate 'sma' user configuration
    - Shared modules for common functionality
@@ -188,7 +205,8 @@ This document outlines a comprehensive plan to refactor the current user configu
    - Migration testing on different machines
    - Rollback procedures
 
-#### Deliverables:
+#### Deliverables
+
 - Complete multi-user Home Manager setup
 - Profile-based user configurations
 - Comprehensive documentation
@@ -314,9 +332,10 @@ in {
 ## Risk Assessment and Mitigation
 
 ### High-Risk Areas
+
 1. **Emacs Configuration Migration**
    - **Risk**: Breaking existing sophisticated Emacs setup
-   - **Mitigation**: 
+   - **Mitigation**:
      - Preserve exact current functionality first
      - Test on non-critical machine first
      - Maintain parallel system during transition
@@ -329,6 +348,7 @@ in {
      - Document service debugging procedures
 
 ### Medium-Risk Areas
+
 1. **Package Dependency Changes**
    - **Risk**: Missing packages or version conflicts
    - **Mitigation**:
@@ -344,6 +364,7 @@ in {
      - Collision detection and resolution
 
 ### Low-Risk Areas
+
 1. **Shell Configuration**
    - **Risk**: Minor shell behavior changes
    - **Mitigation**: Preserve exact current shell configuration
@@ -355,17 +376,20 @@ in {
 ## Testing Strategy
 
 ### Phase Testing
+
 1. **Per-phase Testing**: Each phase tested independently
 2. **Machine-specific Testing**: Test on each machine type
 3. **User-specific Testing**: Test for both geir and sma users
 4. **Rollback Testing**: Verify rollback procedures work
 
 ### Test Environments
+
 1. **Development VM**: Safe testing environment
 2. **Non-critical Machine**: Real hardware testing
 3. **Critical Machines**: Final validation
 
 ### Test Cases
+
 1. **Emacs Functionality**: All profiles, modules, and integrations
 2. **Development Workflow**: Complete development environment
 3. **Service Management**: User services start/stop correctly
@@ -384,6 +408,7 @@ in {
 ## Success Criteria
 
 ### Functional Requirements
+
 - [ ] All current functionality preserved
 - [ ] Emacs profiles work exactly as before
 - [ ] User services managed by Home Manager
@@ -391,6 +416,7 @@ in {
 - [ ] Development environment fully functional
 
 ### Quality Requirements
+
 - [ ] Configuration is more modular and maintainable
 - [ ] Clear separation between user and system configuration
 - [ ] Comprehensive documentation
@@ -398,6 +424,7 @@ in {
 - [ ] Multi-user support functional
 
 ### Performance Requirements
+
 - [ ] No degradation in system startup time
 - [ ] Emacs startup time maintained or improved
 - [ ] Home Manager switch time acceptable (<30 seconds)
@@ -405,16 +432,19 @@ in {
 ## Rollback Plan
 
 ### Emergency Rollback
+
 1. **Git Revert**: Revert to pre-migration commit
 2. **System Rebuild**: `sudo nixos-rebuild switch --flake .`
 3. **Service Restart**: Restart affected services
 
 ### Partial Rollback
+
 1. **Disable Home Manager**: Comment out Home Manager in machine configuration
 2. **Restore System Packages**: Move packages back to system level
 3. **Manual Service Management**: Manually manage services during transition
 
 ### Validation Steps
+
 1. **Emacs Functionality**: Verify Emacs starts and works correctly
 2. **Development Environment**: Verify development tools work
 3. **User Services**: Verify essential services are running
@@ -423,12 +453,14 @@ in {
 ## Documentation Deliverables
 
 ### User Documentation
+
 1. **Migration Guide**: Step-by-step migration instructions
 2. **Home Manager Usage**: How to use Home Manager for daily workflow
 3. **Profile Management**: How to switch and manage user profiles
 4. **Troubleshooting Guide**: Common issues and solutions
 
 ### Developer Documentation
+
 1. **Architecture Documentation**: New system architecture
 2. **Module Documentation**: How modules are structured and work
 3. **Extension Guide**: How to add new functionality

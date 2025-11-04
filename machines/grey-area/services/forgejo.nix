@@ -17,6 +17,7 @@
 
   services.forgejo = {
     enable = true;
+    package = pkgs.forgejo;
     user = "git"; # Use the git user we created above
     group = "git";
   };
