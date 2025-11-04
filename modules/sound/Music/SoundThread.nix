@@ -106,11 +106,15 @@ stdenv.mkDerivation rec {
 
   # Post-install phase: wrap the binary to handle CDP path and dependencies
   postInstall = ''
+    echo "DEBUG: Starting postInstall phase"
+    echo "DEBUG: Contents of $out/bin before wrap:"
+    ls -la $out/bin/
+    
     # Use bundled CDP binaries that come with SoundThread
     # These are patched versions maintained by the SoundThread author
     cdpBinPath="$out/cdp/bin"
 
-    # Create a wrapper script that sets the necessary environment
+    # Create a wrapper script that sets the necessary environment for SoundThread
     wrapProgram $out/bin/SoundThread \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
       libGL
@@ -128,6 +132,32 @@ stdenv.mkDerivation rec {
       --prefix PATH : "$cdpBinPath" \
       --set CDP_PATH "$cdpBinPath" \
       --set XDG_DATA_HOME "$out/share"
+
+    echo "DEBUG: Contents of $out/bin after wrapProgram:"
+    ls -la $out/bin/
+
+    # Create executable wrapper scripts for all CDP tools
+    # This makes them available system-wide when the package is added to systemPackages
+    echo "DEBUG: Creating wrappers for CDP tools..."
+    toolCount=0
+    for tool in "$cdpBinPath"/*; do
+      toolName=$(basename "$tool")
+      # Create a simple wrapper script that delegates to the actual tool
+      cat > "$out/bin/$toolName" <<'TOOLWRAPPER'
+#!/bin/sh
+exec "TOOLPATH" "$@"
+TOOLWRAPPER
+      sed -i "s|TOOLPATH|$tool|" "$out/bin/$toolName"
+      chmod +x "$out/bin/$toolName"
+      ((toolCount++))
+      if [ $((toolCount % 50)) -eq 0 ]; then
+        echo "DEBUG: Created $toolCount CDP tool wrappers..."
+      fi
+    done
+    
+    echo "DEBUG: Finished creating $toolCount CDP tool wrappers"
+    echo "DEBUG: Final contents of $out/bin:"
+    ls -la $out/bin/ | wc -l
   '';
 
   meta = with lib; {

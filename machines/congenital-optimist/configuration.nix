@@ -83,6 +83,13 @@
     autoScrub.enable = true;
     trim.enable = true;
   };
+
+  # System packages
+  environment.systemPackages = with pkgs; [
+    # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
+    (callPackage ../../modules/sound/Music/SoundThread.nix {})
+  ];
+
   # Basic system configuration
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "23.11"; # DO NOT CHANGE - maintains data compatibility

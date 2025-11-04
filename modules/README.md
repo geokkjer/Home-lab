@@ -5,7 +5,9 @@ This directory contains reusable NixOS modules organized by functional domain fo
 ## Directory Organization
 
 ### `common/`
+
 Core modules shared across all machines in the home lab:
+
 - `base.nix` - Modern CLI tools, aliases, and essential packages
 - `tty.nix` - Console configuration and theming
 - `nix.nix` - Nix/flakes configuration and optimization settings
@@ -13,7 +15,9 @@ Core modules shared across all machines in the home lab:
 - `networking.nix` - Basic networking and firewall settings
 
 ### `desktop/`
+
 Desktop environment configurations for workstation machines:
+
 - `gnome.nix` - GNOME desktop environment setup
 - `cosmic.nix` - System76 COSMIC desktop configuration  
 - `sway.nix` - Sway window manager and Wayland setup
@@ -21,7 +25,9 @@ Desktop environment configurations for workstation machines:
 - `audio.nix` - PipeWire/audio system setup
 
 ### `development/`
+
 Development tools and environments:
+
 - `editors.nix` - Text editors (Emacs, Neovim, VSCode)
 - `languages.nix` - Programming languages and runtimes
 - `tools.nix` - Development utilities and CLI tools
@@ -29,14 +35,18 @@ Development tools and environments:
 - `git.nix` - Git configuration and tools
 
 ### `virtualization/`
+
 Virtualization and containerization:
+
 - `podman.nix` - Podman container runtime
 - `libvirt.nix` - KVM/QEMU virtualization
 - `incus.nix` - System container management
 - `docker.nix` - Docker runtime (if needed)
 
 ### `services/`
+
 Network services primarily for SleeperService file server:
+
 - `nfs.nix` - Network File System server
 - `samba.nix` - SMB/CIFS file sharing
 - `backup.nix` - Automated backup services
@@ -45,7 +55,9 @@ Network services primarily for SleeperService file server:
 - `media.nix` - Media server services (Jellyfin/Plex)
 
 ### `users/`
+
 User management and shared user configurations:
+
 - `common.nix` - Shared user settings across machines
 - `groups.nix` - System groups and permissions
 - `security.nix` - User security policies
@@ -73,12 +85,14 @@ imports = [
 ## Machine Profiles
 
 ### CongenitalOptimist (Workstation)
+
 - All desktop modules
 - Development tools
 - Virtualization stack
 - User-focused configurations
 
 ### sleeper-service (File Server)
+
 - Common base only
 - Service modules (NFS, Samba, backup)
 - No desktop environment
