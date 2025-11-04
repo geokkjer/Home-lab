@@ -113,20 +113,7 @@ stdenv.mkDerivation rec {
     # These are patched versions maintained by the SoundThread author
     cdpBinPath="$out/cdp/bin"
 
-    # First: Create executable wrapper scripts for all CDP tools
-    # This makes them available system-wide when the package is added to systemPackages
-    for tool in "$cdpBinPath"/*; do
-      toolName=$(basename "$tool")
-      # Create a simple wrapper script that delegates to the actual tool
-      cat > "$out/bin/$toolName" <<'TOOLWRAPPER'
-#!/bin/sh
-exec "TOOLPATH" "$@"
-TOOLWRAPPER
-      sed -i "s|TOOLPATH|$tool|" "$out/bin/$toolName"
-      chmod +x "$out/bin/$toolName"
-    done
-
-    # Second: Create a wrapper script that sets the necessary environment for SoundThread
+    # Create a wrapper script that sets the necessary environment for SoundThread
     wrapProgram $out/bin/SoundThread \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
       libGL
@@ -144,6 +131,17 @@ TOOLWRAPPER
       --prefix PATH : "$cdpBinPath" \
       --set CDP_PATH "$cdpBinPath" \
       --set XDG_DATA_HOME "$out/share"
+  '';
+
+  # Instead of creating wrapper scripts that get lost, provide a separate bin directory for CDP tools
+  # This will be referenced directly from the nix store path
+  postFixup = ''
+    # Create symlinks for all CDP tools in a subdirectory accessible to users
+    mkdir -p $out/cdp-bin
+    for tool in "$out/cdp/bin"/*; do
+      toolName=$(basename "$tool")
+      ln -s "$tool" "$out/cdp-bin/$toolName"
+    done
   '';
 
   meta = with lib; {
