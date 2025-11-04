@@ -11,6 +11,10 @@
   gcc-unwrapped,
   makeWrapper,
   patchelf,
+  libxkbcommon,
+  libxkbcommon-x11,
+  wayland,
+  libxkbcommon-x11,
 }:
 stdenv.mkDerivation rec {
   pname = "soundthread";
@@ -33,10 +37,16 @@ stdenv.mkDerivation rec {
     xorg.libXinerama
     xorg.libXi
     xorg.libXxf86vm
+    xorg.libXext
+    xorg.libXdmcp
+    xorg.libXrender
     libGL
     alsa-lib
     pulseaudio
     libxcb
+    libxkbcommon
+    libxkbcommon-x11
+    wayland
     gcc-unwrapped.lib
   ];
 
@@ -125,7 +135,13 @@ stdenv.mkDerivation rec {
       xorg.libXinerama
       xorg.libXi
       xorg.libXxf86vm
+      xorg.libXext
+      xorg.libXdmcp
+      xorg.libXrender
       libxcb
+      libxkbcommon
+      libxkbcommon-x11
+      wayland
       gcc-unwrapped.lib
     ]}" \
       --prefix PATH : "$cdpBinPath" \

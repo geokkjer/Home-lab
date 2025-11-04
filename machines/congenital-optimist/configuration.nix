@@ -90,6 +90,16 @@
     (callPackage ../../modules/sound/Music/SoundThread.nix {})
   ];
 
+  # Export CDP_PATH environment variable
+  environment.sessionVariables = {
+    CDP_PATH = "${(pkgs.callPackage ../../modules/sound/Music/SoundThread.nix {})}/cdp/bin";
+  };
+
+  # Create a profile.d script to add CDP tools to PATH
+  environment.etc."profile.d/soundthread-cdp.sh".text = ''
+    export PATH="${(pkgs.callPackage ./../../modules/sound/Music/SoundThread.nix {})}/cdp-bin:$PATH"
+  '';
+
   # Basic system configuration
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "23.11"; # DO NOT CHANGE - maintains data compatibility
