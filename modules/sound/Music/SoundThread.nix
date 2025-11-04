@@ -105,6 +105,7 @@ stdenv.mkDerivation rec {
   '';
 
   dontStrip = true;
+  dontPatchShebangs = true;
 
   # Post-install phase: wrap the binary to handle CDP path and dependencies
   postInstall = ''
