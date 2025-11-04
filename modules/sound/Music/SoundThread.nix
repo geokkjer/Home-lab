@@ -14,7 +14,6 @@
   libxkbcommon,
   libxkbcommon-x11,
   wayland,
-  libxkbcommon-x11,
 }:
 stdenv.mkDerivation rec {
   pname = "soundthread";
