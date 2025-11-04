@@ -12,7 +12,6 @@
   makeWrapper,
   patchelf,
   libxkbcommon,
-  libxkbcommon-x11,
   wayland,
 }:
 stdenv.mkDerivation rec {
@@ -44,7 +43,6 @@ stdenv.mkDerivation rec {
     pulseaudio
     libxcb
     libxkbcommon
-    libxkbcommon-x11
     wayland
     gcc-unwrapped.lib
   ];
@@ -139,7 +137,6 @@ stdenv.mkDerivation rec {
       xorg.libXrender
       libxcb
       libxkbcommon
-      libxkbcommon-x11
       wayland
       gcc-unwrapped.lib
     ]}" \
