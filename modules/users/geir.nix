@@ -121,9 +121,11 @@ in {
 
     # Git configuration
     GIT_EDITOR = "nano";
+
+    # NPM Configuration for global packages
+    NPM_CONFIG_PREFIX = "$HOME/.npm-global";
   };
 
-  # Comprehensive zsh configuration for geir
   programs.zsh = {
     enable = true;
 
@@ -162,6 +164,9 @@ in {
       zstyle ':completion:*' matcher-list ""
       autoload -Uz compinit
       compinit
+
+      # NPM global packages PATH
+      export PATH="$HOME/.npm-global/bin:$PATH"
 
       # Initialize shell enhancements
       eval "$(starship init zsh)"

@@ -26,7 +26,6 @@
     # Development
     ../../modules/development/tools.nix
     ../../modules/development/emacs.nix
-    ../../modules/ai/ai-tools.nix
 
     # Users
     ../../modules/users/geir.nix
@@ -125,8 +124,6 @@
     font = "Lat2-Terminus16";
     keyMap = "no";
   };
-
-
 
   # System version
   system.stateVersion = "25.05";
