@@ -9,17 +9,20 @@ Successfully packaged and integrated **SoundThread** (Godot-based GUI for CDP - 
 ## Key Architecture Decisions
 
 ### 1. **Bundled CDP Approach**
+
 - Uses SoundThread's official prebuilt CDP binaries (`cdprogs_linux.tar.gz`)
 - 220 CDP tools included in the upstream release
 - Follows upstream maintenance and patch strategy
 - Alternative to building CDP8 from source
 
 ### 2. **NixOS Compatibility Layer**
+
 - **patchelf integration**: Rewrites ELF interpreter paths from `/lib64/ld-linux-x86-64.so.2` to NixOS dynamic linker
 - Applied to both SoundThread binary and all 220 CDP tools
 - Eliminates runtime errors on pure NixOS systems
 
 ### 3. **CDP Tools Exposure Strategy**
+
 - Two-phase approach:
   1. Extract CDP tools to `$out/cdp/bin/` in package
   2. Create `$out/cdp-bin/` with symlinks to all tools
@@ -100,6 +103,7 @@ environment.systemPackages = with pkgs; [
 ```
 
 **Result:**
+
 - SoundThread binary: `/run/current-system/sw/bin/SoundThread`
 - All 220 CDP tools: `/run/current-system/sw/bin/{tool_name}`
 - CDP_PATH environment variable: Points to package CDP binaries
@@ -108,20 +112,25 @@ environment.systemPackages = with pkgs; [
 ## Critical Fixes Applied
 
 ### Problem 1: ELF Interpreter Path
+
 **Error**: `Error relocation error: file not found: /lib64/ld-linux-x86-64.so.2`
 **Solution**: Patchelf to rewrite ELF interpreter sections
 
 ### Problem 2: Graphics Library Missing
+
 **Error**: "Can't load the Wayland client library"
 **Solution**: Added complete X11/Wayland dependency stack
 
 ### Problem 3: CDP Tools Not in PATH
+
 **Error**: Tools extracted but not accessible from shell
-**Solution**: 
+**Solution**:
+
 - Created `cdp-bin/` directory with symlinks in package
 - Used `symlinkJoin` in system configuration to expose to global PATH
 
 ### Problem 4: NixOS Module vs Package Confusion
+
 **Error**: "function called with unexpected argument 'inputs'"
 **Solution**: Used `environment.systemPackages` instead of `imports`
 
@@ -174,7 +183,7 @@ SoundThread --version && which filter && filter 2>&1 | head -1
 
 1. `/home/geir/Home-lab/modules/sound/Music/SoundThread.nix` (189 lines)
    - Complete package derivation with all fixes
-   
+
 2. `/home/geir/Home-lab/machines/congenital-optimist/configuration.nix`
    - System integration via `symlinkJoin`
    - Environment variables setup
@@ -203,6 +212,7 @@ SoundThread --version && which filter && filter 2>&1 | head -1
 ## Conclusion
 
 SoundThread is now fully integrated into NixOS congenital-optimist machine with:
+
 - ✅ Godot GUI binary running correctly
 - ✅ All 220 CDP tools accessible system-wide
 - ✅ Proper library dependencies resolved

@@ -38,9 +38,6 @@
     # Emacs with workstation profile
     ../../modules/development/emacs.nix
 
-    # AI tools
-    ../../modules/ai/ai-tools.nix
-
     # User configuration
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
@@ -49,6 +46,8 @@
     ../../modules/virtualization/incus.nix # Re-enabled with LTS version
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
+
+    # Music software packages - configured directly in flake
   ];
 
   # Boot configuration
@@ -84,35 +83,11 @@
     trim.enable = true;
   };
 
-  # System packages
+  # System packages - now handled by modules/sound/music-software.nix
+  # Additional system packages can be added here if needed
   environment.systemPackages = with pkgs; [
-    # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
-    # Wrap to expose CDP tools directly in bin directory
-    (let 
-       st = (callPackage ../../modules/sound/Music/SoundThread.nix {});
-     in
-       pkgs.symlinkJoin {
-         name = "soundthread-with-cdp";
-         paths = [ st ];
-         postBuild = ''
-           mkdir -p $out/bin
-           for tool in ${st}/cdp-bin/*; do
-             ln -sf "$tool" "$out/bin/$(basename $tool)"
-           done
-         '';
-       }
-    )
+    # Add any other system packages here as needed
   ];
-
-  # Export CDP_PATH environment variable
-  environment.sessionVariables = {
-    CDP_PATH = "${(pkgs.callPackage ../../modules/sound/Music/SoundThread.nix {})}/cdp/bin";
-  };
-
-  # Create a profile.d script to add CDP tools to PATH
-  environment.etc."profile.d/soundthread-cdp.sh".text = ''
-    export PATH="${(pkgs.callPackage ./../../modules/sound/Music/SoundThread.nix {})}/cdp-bin:$PATH"
-  '';
 
   # Basic system configuration
   nixpkgs.config.allowUnfree = true;

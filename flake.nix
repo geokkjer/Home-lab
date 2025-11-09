@@ -35,6 +35,39 @@
           ./modules/common/nix.nix
           ./modules/common/base.nix
           ./modules/common/tty.nix
+
+          # Music software configuration module
+          ({pkgs, ...}: {
+            environment.systemPackages = with pkgs; [
+              # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
+              # Wrap to expose CDP tools directly in bin directory
+              (
+                let
+                  st = import ./packages/soundthread.nix {pkgs = pkgs;};
+                in
+                  symlinkJoin {
+                    name = "soundthread-with-cdp";
+                    paths = [st];
+                    postBuild = ''
+                      mkdir -p $out/bin
+                      for tool in ${st}/cdp-bin/*; do
+                        ln -sf "$tool" "$out/bin/$(basename $tool)"
+                      done
+                    '';
+                  }
+              )
+            ];
+
+            # Export CDP_PATH environment variable
+            environment.sessionVariables = {
+              CDP_PATH = "${(import ./packages/soundthread.nix {pkgs = pkgs;})}/cdp/bin";
+            };
+
+            # Create a profile.d script to add CDP tools to PATH
+            environment.etc."profile.d/soundthread-cdp.sh".text = ''
+              export PATH="${(import ./packages/soundthread.nix {pkgs = pkgs;})}/cdp-bin:$PATH"
+            '';
+          })
         ];
       };
 
@@ -94,7 +127,19 @@
       };
     };
 
-    # Minimal development shell for compatibility
+    # Custom packages for the home lab
+    packages.${system} = {
+      # Music software packages
+      cdp8 = import ./packages/cdp.nix {pkgs = nixpkgs.legacyPackages.${system};};
+      soundthread = import ./packages/soundthread.nix {pkgs = nixpkgs.legacyPackages.${system};};
+      music-software = import ./packages/music-software.nix {pkgs = nixpkgs.legacyPackages.${system};};
+
+      # Lab tools and utilities
+      lab = (import ./packages/lab-tools.nix {pkgs = nixpkgs.legacyPackages.${system};}).lab;
+      default = nixpkgs.legacyPackages.${system}.hello;
+    };
+
+    # Development shell for compatibility
     devShells.${system}.default = let
       # Create deployment scripts
       ds = nixpkgs.legacyPackages.${system}.writeShellScriptBin "ds" ''
@@ -144,8 +189,5 @@
           echo ""
         '';
       };
-
-    # Minimal packages for compatibility
-    packages.${system}.default = nixpkgs.legacyPackages.${system}.hello;
   };
 }

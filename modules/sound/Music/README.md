@@ -6,7 +6,6 @@ In this module, we focus on tools and software that facilitate music creation, s
 
 ComposersDesktop (CDP) is a powerful suite of sound processing tools designed for composers and sound designers. This module integrates CDP into your workflow, allowing you to create, manipulate, and transform sounds with ease.
 
-
 - [GitHub Repository](https://github.com/ComposersDesktop/CDP8)
 
 ### Documentation
