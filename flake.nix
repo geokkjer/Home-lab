@@ -43,7 +43,7 @@
               # Wrap to expose CDP tools directly in bin directory
               (
                 let
-                  st = import ./packages/soundthread.nix {pkgs = pkgs;};
+                  st = nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {};
                 in
                   symlinkJoin {
                     name = "soundthread-with-cdp";
@@ -60,12 +60,12 @@
 
             # Export CDP_PATH environment variable
             environment.sessionVariables = {
-              CDP_PATH = "${(import ./packages/soundthread.nix {pkgs = pkgs;})}/cdp/bin";
+              CDP_PATH = "${(nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {})}/cdp/bin";
             };
 
             # Create a profile.d script to add CDP tools to PATH
             environment.etc."profile.d/soundthread-cdp.sh".text = ''
-              export PATH="${(import ./packages/soundthread.nix {pkgs = pkgs;})}/cdp-bin:$PATH"
+              export PATH="${(nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {})}/cdp-bin:$PATH"
             '';
           })
         ];
@@ -130,12 +130,10 @@
     # Custom packages for the home lab
     packages.${system} = {
       # Music software packages
-      cdp8 = import ./packages/cdp.nix {pkgs = nixpkgs.legacyPackages.${system};};
-      soundthread = import ./packages/soundthread.nix {pkgs = nixpkgs.legacyPackages.${system};};
-      music-software = import ./packages/music-software.nix {pkgs = nixpkgs.legacyPackages.${system};};
+      cdp8 = nixpkgs.lib.callPackageWith nixpkgs.legacyPackages.${system} ./packages/cdp.nix {};
+      soundthread = nixpkgs.lib.callPackageWith nixpkgs.legacyPackages.${system} ./packages/soundthread.nix {};
 
       # Lab tools and utilities
-      lab = (import ./packages/lab-tools.nix {pkgs = nixpkgs.legacyPackages.${system};}).lab;
       default = nixpkgs.legacyPackages.${system}.hello;
     };
 
