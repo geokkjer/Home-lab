@@ -4,10 +4,7 @@
   config,
   pkgs,
   ...
-}: let
-  # Import custom packages from the flake
-  homeLabPackages = import ../../packages {inherit pkgs;};
-in {
+}: {
   imports = [
     ./media-group.nix
   ];
@@ -43,9 +40,6 @@ in {
 
     # User-specific packages
     packages = with pkgs; [
-      # Home lab management tools
-      homeLabPackages.lab
-
       # Terminal
       starship
       ghostty
