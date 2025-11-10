@@ -12,7 +12,10 @@
 
   # Additional music production specific configuration can go here
   # For example, if you want to add SuperCollider or other music tools:
-  # environment.systemPackages = with pkgs; [
-  #   supercollider-with-plugins
-  # ];
+  environment.systemPackages = with pkgs; [
+    supercollider-with-plugins
+    samplebrain
+    vcv-rack
+    audacity
+  ];
 }
