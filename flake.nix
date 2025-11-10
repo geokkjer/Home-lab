@@ -35,39 +35,7 @@
           ./modules/common/nix.nix
           ./modules/common/base.nix
           ./modules/common/tty.nix
-
-          # Music software configuration module
-          ({pkgs, ...}: {
-            environment.systemPackages = with pkgs; [
-              # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
-              # Wrap to expose CDP tools directly in bin directory
-              (
-                let
-                  st = nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {};
-                in
-                  symlinkJoin {
-                    name = "soundthread-with-cdp";
-                    paths = [st];
-                    postBuild = ''
-                      mkdir -p $out/bin
-                      for tool in ${st}/cdp-bin/*; do
-                        ln -sf "$tool" "$out/bin/$(basename $tool)"
-                      done
-                    '';
-                  }
-              )
-            ];
-
-            # Export CDP_PATH environment variable
-            environment.sessionVariables = {
-              CDP_PATH = "${(nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {})}/cdp/bin";
-            };
-
-            # Create a profile.d script to add CDP tools to PATH
-            environment.etc."profile.d/soundthread-cdp.sh".text = ''
-              export PATH="${(nixpkgs.lib.callPackageWith pkgs ./packages/soundthread.nix {})}/cdp-bin:$PATH"
-            '';
-          })
+          ./modules/sound/Music/music-production.nix
         ];
       };
 
