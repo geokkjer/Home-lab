@@ -15,9 +15,4 @@
   # environment.systemPackages = with pkgs; [
   #   supercollider-with-plugins
   # ];
-
-  # Module description for documentation
-  meta = {
-    description = "Music production environment with CDP8 and SoundThread";
-  };
 }

@@ -35,9 +35,6 @@
     ../../modules/development/tools.nix
     ../../modules/development/emacs.nix
 
-    # Emacs with workstation profile
-    ../../modules/development/emacs.nix
-
     # User configuration
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
@@ -46,8 +43,6 @@
     ../../modules/virtualization/incus.nix # Re-enabled with LTS version
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
-
-    # Music software packages - configured directly in flake
   ];
 
   # Boot configuration
@@ -83,7 +78,7 @@
     trim.enable = true;
   };
 
-  # System packages - now handled by modules/sound/music-software.nix
+  # System packages - handled by specialized modules (music-production, etc.)
   # Additional system packages can be added here if needed
   environment.systemPackages = with pkgs; [
     # Add any other system packages here as needed
