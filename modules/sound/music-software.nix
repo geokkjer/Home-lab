@@ -3,28 +3,69 @@
   pkgs,
   ...
 }: {
-  # Music software module for importing from packages
-  # This provides CDP8 and SoundThread packages
+  # Music Production Software Module
+  # This module provides a complete music production environment with:
+  # - CDP8 (Composers Desktop Project)
+  # - SoundThread (Node-based GUI for CDP)
+  # - Samplebrain (Sample manipulation tool)
+  # - VCV Rack (Modular synthesizer)
+  # - Audacity (Audio editor)
+  # - SuperCollider (Audio synthesis language)
 
   # Import music software packages
-  environment.systemPackages = with pkgs.callPackage ../../packages/music-software.nix {}; [
+  environment.systemPackages = with pkgs; let
+    musicPkgs = callPackage ../../packages/music-software.nix {};
+    st = musicPkgs.soundthread;
+    sb = samplebrain;
+  in [
+    # === CDP & SoundThread Integration ===
     # SoundThread with bundled CDP tools (includes all 220 CDP binaries)
     # Wrap to expose CDP tools directly in bin directory
     (
-      let
-        st = soundthread;
-      in
-        pkgs.symlinkJoin {
-          name = "soundthread-with-cdp";
-          paths = [st];
-          postBuild = ''
-            mkdir -p $out/bin
-            for tool in ${st}/cdp-bin/*; do
-              ln -sf "$tool" "$out/bin/$(basename $tool)"
-            done
-          '';
-        }
+      pkgs.symlinkJoin {
+        name = "soundthread-with-cdp";
+        paths = [st];
+        postBuild = ''
+          mkdir -p $out/bin
+          for tool in ${st}/cdp-bin/*; do
+            ln -sf "$tool" "$out/bin/$(basename $tool)"
+          done
+        '';
+      }
     )
+    # SoundThread desktop application wrapper
+    (
+      pkgs.makeDesktopItem {
+        name = "soundthread";
+        desktopName = "SoundThread";
+        exec = "${st}/bin/SoundThread";
+        icon = "soundthread";
+        comment = "Node-based GUI for The Composers Desktop Project (CDP)";
+        categories = ["Audio" "AudioVideo"];
+        terminal = false;
+      }
+    )
+
+    # === Sample Manipulation ===
+    # Samplebrain desktop application wrapper
+    (
+      pkgs.makeDesktopItem {
+        name = "samplebrain";
+        desktopName = "Samplebrain";
+        exec = "${sb}/bin/samplebrain";
+        icon = "samplebrain";
+        comment = "Interactive tool for exploring multi-sample instruments";
+        categories = ["Audio" "AudioVideo" "Music"];
+        terminal = false;
+      }
+    )
+
+    # === Modular Synthesis & General Audio ===
+    vcv-rack # Modular synthesizer
+    audacity # Multi-track audio editor
+
+    # === Audio Synthesis & Composition ===
+    supercollider-with-plugins # Audio synthesis language and environment
   ];
 
   # Export CDP_PATH environment variable

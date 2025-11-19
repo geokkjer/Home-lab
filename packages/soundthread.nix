@@ -71,9 +71,6 @@ stdenv.mkDerivation rec {
 
     chmod +x $out/bin/SoundThread
 
-    # Patch the binary to use NixOS dynamic linker
-    patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} $out/bin/SoundThread
-
     # Extract and install bundled CDP binaries
     # SoundThread includes patched CDP binaries in cdprogs_linux.tar.gz
     cdpTarball=""
@@ -92,13 +89,6 @@ stdenv.mkDerivation rec {
         rmdir $out/cdp/cdprogs_linux
       fi
       chmod +x $out/cdp/bin/* 2>/dev/null || true
-
-      # Patch all CDP binaries to use NixOS dynamic linker
-      for tool in $out/cdp/bin/*; do
-        if file "$tool" | grep -q "ELF"; then
-          patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} "$tool" 2>/dev/null || true
-        fi
-      done
     else
       echo "Warning: Could not find bundled CDP binaries (cdprogs_linux.tar.gz)"
     fi
@@ -111,10 +101,43 @@ stdenv.mkDerivation rec {
   postInstall = ''
     # Use bundled CDP binaries that come with SoundThread
     # These are patched versions maintained by the SoundThread author
-    cdpBinPath="$out/cdp/bin"
+    cdpBinPath="${placeholder "out"}/cdp/bin"
 
-    # Create a wrapper script that sets the necessary environment for SoundThread
-    wrapProgram $out/bin/SoundThread \
+    # Create a custom wrapper script that:
+    # 1. Sets up CDP path in user's config directory (so SoundThread finds it)
+    # 2. Sets required environment variables
+    # 3. Launches SoundThread
+    mkdir -p $out/bin-wrapped
+    cat > $out/bin-wrapped/SoundThread-wrapper.sh << WRAPPER_EOF
+      #!/usr/bin/env bash
+      # Automatically set up CDP path for SoundThread
+      # This avoids the configuration dialog on first run
+
+      CDP_BIN_PATH="$cdpBinPath"
+      SOUNDTHREAD_CDP_DIR="\$HOME/.local/share/soundthread-cdp"
+
+      # Create the CDP directory and symlink all binaries
+      mkdir -p "\$SOUNDTHREAD_CDP_DIR"
+      for binary in "$cdpBinPath"/*; do
+        if [ -f "\$binary" ]; then
+          ln -sf "\$binary" "\$SOUNDTHREAD_CDP_DIR/\$(basename \"\$binary\")" 2>/dev/null || true
+        fi
+      done
+
+      # Export the CDP path so SoundThread can find it
+      export CDP_PATH="\$SOUNDTHREAD_CDP_DIR"
+
+      # Launch the actual binary
+      exec "${placeholder "out"}/bin/SoundThread.real" "\$@"
+    WRAPPER_EOF
+
+    chmod +x $out/bin-wrapped/SoundThread-wrapper.sh
+
+    # Rename the original binary
+    mv $out/bin/SoundThread $out/bin/SoundThread.real
+
+    # Create a wrapper script using makeWrapper for LD_LIBRARY_PATH
+    wrapProgram $out/bin-wrapped/SoundThread-wrapper.sh \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
       libGL
       alsa-lib
@@ -129,15 +152,48 @@ stdenv.mkDerivation rec {
       xorg.libXdmcp
       xorg.libXrender
       gcc-unwrapped
-    ]}" \
-      --prefix PATH : "$cdpBinPath" \
-      --set CDP_PATH "$cdpBinPath" \
-      --set XDG_DATA_HOME "$out/share"
+    ]}"
+
+    # Link the wrapper as the main binary
+    ln -s $out/bin-wrapped/SoundThread-wrapper.sh $out/bin/SoundThread
   '';
 
-  # Instead of creating wrapper scripts that get lost, provide a separate bin directory for CDP tools
-  # This will be referenced directly from the nix store path
+  # Post-fixup phase: patch binary rpath to find dependencies in NixOS
+  # This is critical for prebuilt binaries - setting rpath allows binaries to find libraries
   postFixup = ''
+    # Define the library search path for all dependencies
+    libPath="${lib.makeLibraryPath [
+      libGL
+      alsa-lib
+      pulseaudio
+      xorg.libX11
+      xorg.libXcursor
+      xorg.libXrandr
+      xorg.libXinerama
+      xorg.libXi
+      xorg.libXxf86vm
+      xorg.libXext
+      xorg.libXdmcp
+      xorg.libXrender
+      gcc-unwrapped
+    ]}"
+
+    # Patch the SoundThread binary: set interpreter and rpath
+    patchelf \
+      --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
+      --set-rpath "$libPath" \
+      $out/bin/SoundThread
+
+    # Patch all CDP binaries with the same rpath
+    for tool in $out/cdp/bin/*; do
+      if file "$tool" | grep -q "ELF"; then
+        patchelf \
+          --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
+          --set-rpath "$libPath" \
+          "$tool" 2>/dev/null || true
+      fi
+    done
+
     # Create symlinks for all CDP tools in a subdirectory accessible to users
     mkdir -p $out/cdp-bin
     for tool in "$out/cdp/bin"/*; do

@@ -27,6 +27,8 @@
     ../../modules/desktop/sway.nix
     ../../modules/desktop/niri.nix
     ../../modules/desktop/steam-xwayland-satellite.nix
+    # Music production environment
+    ../../modules/sound/Music/music-production.nix
 
     # Fonts
     ../../modules/desktop/fonts.nix
@@ -35,12 +37,15 @@
     ../../modules/development/tools.nix
     ../../modules/development/emacs.nix
 
+    # AI Tools
+    ../../modules/ai-tools/antigravity.nix
+
     # User configuration
     ../../modules/users/geir.nix
     ../../modules/users/sma.nix
 
     # Virtualization configuration
-    ../../modules/virtualization/incus.nix # Re-enabled with LTS version
+    #../../modules/virtualization/incus.nix # Re-enabled with LTS version
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
   ];
@@ -66,6 +71,9 @@
     enableDaemon = true;
     user = "geir";
   };
+
+  # Antigravity IDE
+  services.antigravity.enable = true;
 
   # Enable clean seatd/greetd login
   #services.seatd-clean.enable = true;
