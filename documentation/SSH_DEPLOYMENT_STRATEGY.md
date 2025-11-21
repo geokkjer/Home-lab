@@ -7,12 +7,14 @@ This document outlines the updated SSH deployment strategy for the home lab, sta
 ## User Strategy
 
 ### sma User (System Administrator)
+
 - **Purpose**: System administration, deployment, maintenance
-- **SSH Key**: `id_ed25519_admin` 
+- **SSH Key**: `id_ed25519_admin`
 - **Privileges**: sudo NOPASSWD, wheel group
 - **Usage**: All lab tool deployments, system maintenance
 
 ### geir User (Developer)
+
 - **Purpose**: Development work, daily usage, git operations
 - **SSH Key**: `id_ed25519_dev`
 - **Privileges**: Standard user with development tools
@@ -70,16 +72,19 @@ lab hybrid-update all
 ## Machine-Specific Notes
 
 ### congenital-optimist (Workstation)
+
 - **Type**: Local deployment
 - **SSH**: Uses localhost with sma user for consistency
 - **Primary Use**: Development and deployment hub
 
 ### little-rascal (Laptop)  
+
 - **Type**: Remote deployment
 - **SSH**: Tailscale hostname with sma user
 - **Primary Use**: Mobile development and deployment
 
 ### Remote Servers (sleeper-service, grey-area, reverse-proxy)
+
 - **Type**: Remote deployment
 - **SSH**: Tailscale hostnames with sma user
 - **Access**: Both workstation and laptop can deploy
