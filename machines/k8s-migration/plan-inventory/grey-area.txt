@@ -1,0 +1,112 @@
+[nix-shell:~]$ inxi -v 7
+System:
+  Host: grey-area Kernel: 6.12.58 arch: x86_64 bits: 64 compiler: gcc v: 14.3.0 clocksource: tsc
+  Console: pty pts/0 Distro: NixOS 25.05 (Warbler)
+Machine:
+  Type: Desktop Mobo: MACHINIST model: X99-MR9S v: V1.2 serial: <superuser required>
+    uuid: <superuser required> UEFI: American Megatrends v: 5.11 date: 07/28/2022
+Battery:
+  Message: No system battery data found. Is one present?
+Memory:
+  System RAM: total: 32 GiB available: 31.24 GiB used: 2.99 GiB (9.6%)
+  Message: For most reliable report, use superuser + dmidecode.
+  Report: arrays: 2 capacity: 256 GiB installed: 32 GiB slots: 4 active: 4 type: DDR4 eec: None
+  Array-1: capacity: 128 GiB note: check installed: 16 GiB slots: 2 modules: 2 EC: None
+    max-module-size: 64 GiB note: est.
+  Device-1: DIMM_A1 type: DDR4 detail: synchronous size: 8 GiB speed: spec: 2667 MT/s
+    actual: 2133 MT/s volts: curr: 1 min: 1.14 max: 1.26 width (bits): data: 72 total: 72
+    manufacturer: N/A part-no: N/A serial: 2BFADB1E
+  Device-2: DIMM_B1 type: DDR4 detail: synchronous size: 8 GiB speed: spec: 2667 MT/s
+    actual: 2133 MT/s volts: curr: 1 min: 1.14 max: 1.26 width (bits): data: 72 total: 72
+    manufacturer: N/A part-no: N/A serial: 2BFADB1E
+  Array-2: capacity: 128 GiB note: check installed: 16 GiB slots: 2 modules: 2 EC: None
+    max-module-size: 64 GiB note: est.
+  Device-1: DIMM_C1 type: DDR4 detail: synchronous size: 8 GiB speed: spec: 2667 MT/s
+    actual: 2133 MT/s volts: curr: 1 min: 1.14 max: 1.26 width (bits): data: 72 total: 72
+    manufacturer: N/A part-no: N/A serial: 2BFADB1E
+  Device-2: DIMM_D1 type: DDR4 detail: synchronous size: 8 GiB speed: spec: 2667 MT/s
+    actual: 2133 MT/s volts: curr: 1 min: 1.14 max: 1.26 width (bits): data: 72 total: 72
+    manufacturer: N/A part-no: N/A serial: 2BFADB1E
+CPU:
+  Info: 12-core model: Intel Xeon E5-2670 v3 bits: 64 type: MT MCP smt: enabled arch: Haswell
+    rev: 2 cache: L1: 768 KiB L2: 3 MiB L3: 30 MiB
+  Speed (MHz): avg: 1200 min/max: 1200/3100 cores: 1: 1200 2: 1200 3: 1200 4: 1200 5: 1200
+    6: 1200 7: 1200 8: 1200 9: 1200 10: 1200 11: 1200 12: 1200 13: 1200 14: 1200 15: 1200 16: 1200
+    17: 1200 18: 1200 19: 1200 20: 1200 21: 1200 22: 1200 23: 1200 24: 1200 bogomips: 110140
+  Flags: abm acpi aes aperfmperf apic arat arch_perfmon avx avx2 bmi1 bmi2 bts clflush cmov
+    constant_tsc cpuid cpuid_fault cqm cqm_llc cqm_occup_llc cx16 cx8 dca de ds_cpl dtes64 dtherm
+    dts epb ept ept_ad erms est f16c flexpriority flush_l1d fma fpu fsgsbase fxsr ht ibpb ibrs
+    ida intel_ppin invpcid lahf_lm lm mca mce md_clear mmx monitor movbe msr mtrr nonstop_tsc
+    nopl nx pae pat pbe pcid pclmulqdq pdcm pdpe1gb pebs pge pln pni popcnt pse pse36 pti pts
+    rdrand rdtscp rep_good sdbg sep smep smx ss ssbd sse sse2 sse4_1 sse4_2 ssse3 stibp syscall
+    tm tm2 tpr_shadow tsc tsc_adjust tsc_deadline_timer vme vmx vnmi vpid x2apic xsave xsaveopt
+    xtopology xtpr
+Graphics:
+  Message: Required tool lspci not installed. Check --recommends
+  Display: unspecified server: N/A driver: N/A tty: 142x18
+  API: N/A Message: No API data available in console. Headless machine?
+  Info: Tools: No graphics tools found.
+Audio:
+  Message: No device data found.
+  API: ALSA v: k6.12.58 status: kernel-api
+Network:
+  Message: Required tool lspci not installed. Check --recommends
+  IF-ID-1: enp5s0 state: up speed: 1000 Mbps duplex: full mac: 22:15:5c:05:30:2e
+  IP v4: 10.0.0.12/24 type: dynamic noprefixroute scope: global broadcast: 10.0.0.255
+  IP v6: 2001:4643:ac42:0:e5e0:98de:5b99:9593/64 type: temporary dynamic scope: global
+  IP v6: 2001:4643:ac42:0:22fa:d2ae:4078:e007/64 type: temporary deprecated dynamic
+    scope: global
+  IP v6: 2001:4643:ac42:0:55eb:12d4:18e5:faf9/128 type: dynamic noprefixroute scope: global
+  IP v6: 2001:4643:ac42:0:c88a:5ab0:2e04:dc6f/64 type: temporary deprecated dynamic
+    scope: global
+  IP v6: 2001:4643:ac42:0:4318:aceb:61ad:e11d/64 type: dynamic mngtmpaddr noprefixroute
+    scope: global
+  IP v6: fe80::b7a:a8a9:62fb:78e8/64 type: noprefixroute scope: link
+  IF-ID-2: tailscale0 state: unknown speed: -1 duplex: full mac: N/A
+  IP v4: 100.119.86.92/32 scope: global
+  IP v6: fd7a:115c:a1e0::7401:565c/128 scope: global
+  IP v6: fe80::9b45:f0f1:a7bf:623/64 virtual: stable-privacy proto kernel_ll scope: link
+  WAN IP: 85.164.37.69
+Bluetooth:
+  Message: No bluetooth data found.
+Logical:
+  Message: No logical block device data found.
+RAID:
+  Message: No RAID data found.
+Drives:
+  Local Storage: total: 223.57 GiB used: 80.6 GiB (36.0%)
+  ID-1: /dev/sda vendor: Kingston model: SHPM2280P2H 240G size: 223.57 GiB speed: 6.0 Gb/s
+    tech: SSD serial: 50026B725707ADE4 fw-rev: L5TP scheme: GPT
+  Message: No optical or floppy data found.
+Partition:
+  ID-1: / size: 218.47 GiB used: 80.48 GiB (36.8%) fs: ext4 dev: /dev/sda2 label: NIXROOT
+    uuid: b101efbd-a6b3-494d-9c21-21187540dc8d
+  ID-2: /boot size: 548.9 MiB used: 114.8 MiB (20.9%) fs: vfat dev: /dev/sda1 label: NIXBOOT
+    uuid: E251-F60A
+  ID-3: /mnt/remote/media size: 1.75 TiB used: 703.17 GiB (39.1%) fs: nfs4
+    remote: sleeper-service:/mnt/storage/media
+Swap:
+  ID-1: swap-1 type: zram size: 15.62 GiB used: 0 KiB (0.0%) priority: 5 dev: /dev/zram0
+Unmounted:
+  Message: No unmounted partitions found.
+USB:
+  Hub-1: 1-0:1 info: full speed or root hub ports: 2 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Hub-2: 1-1:2 info: hi-speed hub with single TT ports: 6 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 8087:8008 class-ID: 0900
+  Hub-3: 2-0:1 info: full speed or root hub ports: 2 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Hub-4: 2-1:2 info: hi-speed hub with single TT ports: 8 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 8087:8000 class-ID: 0900
+  Hub-5: 3-0:1 info: hi-speed hub with single TT ports: 15 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Hub-6: 4-0:1 info: super-speed hub ports: 6 rev: 3.0 speed: 5 Gb/s lanes: 1 chip-ID: 1d6b:0003
+    class-ID: 0900
+Sensors:
+  Src: /sys System Temperatures: cpu: 26.0 C mobo: N/A
+  Fan Speeds (rpm): N/A
+Info:
+  Processes: 301 Power: uptime: 2d 1h 23m states: freeze,mem,disk suspend: deep wakeups: 0
+    hibernate: platform Init: systemd v: 257 default: multi-user
+  Packages: pm: nix-sys pkgs: 1053 Compilers: gcc: 14.3.0 Shell: Bash v: 5.2.37
+    running-in: pty pts/0 (SSH) inxi: 3.3.38

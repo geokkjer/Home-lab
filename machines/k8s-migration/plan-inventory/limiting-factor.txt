@@ -1,0 +1,112 @@
+[nix-shell:~]$ inxi -v 7
+System:
+  Host: limiting-factor Kernel: 6.12.58 arch: x86_64 bits: 64 compiler: gcc v: 14.3.0
+    clocksource: tsc
+  Console: pty pts/0 Distro: NixOS 25.05 (Warbler)
+Machine:
+  Type: Desktop Mobo: AZW model: ME mini serial: <superuser required> uuid: <superuser required>
+    UEFI: American Megatrends LLC. v: M1V304 date: 05/12/2025
+Battery:
+  Message: No system battery data found. Is one present?
+Memory:
+  System RAM: total: 12 GiB available: 11.45 GiB used: 687.1 MiB (5.9%)
+  Message: For most reliable report, use superuser + dmidecode.
+  Array-1: capacity: 12 GiB slots: 4 modules: 4 EC: None max-module-size: 3 GiB note: est.
+  Device-1: Controller0-ChannelA type: LPDDR5 detail: synchronous size: 3 GiB speed:
+    spec: 6400 MT/s actual: 4800 MT/s volts: 0.5 width (bits): data: 16 total: 16 manufacturer: N/A
+    part-no: N/A serial: 20000000
+  Device-2: Controller0-ChannelB type: LPDDR5 detail: synchronous size: 3 GiB speed:
+    spec: 6400 MT/s actual: 4800 MT/s volts: 0.5 width (bits): data: 16 total: 16 manufacturer: N/A
+    part-no: N/A serial: 20000000
+  Device-3: Controller0-ChannelC type: LPDDR5 detail: synchronous size: 3 GiB speed:
+    spec: 6400 MT/s actual: 4800 MT/s volts: 0.5 width (bits): data: 16 total: 16
+    manufacturer: Micron Technology part-no: N/A serial: 20000000
+  Device-4: Controller0-ChannelD type: LPDDR5 detail: synchronous size: 3 GiB speed:
+    spec: 6400 MT/s actual: 4800 MT/s volts: 0.5 width (bits): data: 16 total: 16 manufacturer: N/A
+    part-no: N/A serial: 20000000
+CPU:
+  Info: quad core model: Intel N150 bits: 64 type: MCP smt: <unsupported> arch: Alder Lake rev: 0
+    cache: L1: 384 KiB L2: 2 MiB L3: 6 MiB
+  Speed (MHz): avg: 858 min/max: 700/3600 cores: 1: 858 2: 858 3: 858 4: 858 bogomips: 6451
+  Flags: 3dnowprefetch abm acpi adx aes aperfmperf apic arat arch_capabilities arch_lbr
+    arch_perfmon art avx avx2 avx_vnni bmi1 bmi2 bts cat_l2 cdp_l2 clflush clflushopt clwb cmov
+    constant_tsc cpuid cpuid_fault cx16 cx8 de ds_cpl dtes64 dtherm dts epb ept ept_ad erms est
+    f16c flexpriority flush_l1d fma fpu fsgsbase fsrm fxsr gfni ht hwp hwp_act_window hwp_epp
+    hwp_notify hwp_pkg_req ibpb ibrs ibrs_enhanced ibt ida intel_pt invpcid lahf_lm lm mca mce
+    md_clear mmx monitor movbe movdir64b movdiri msr mtrr nonstop_tsc nopl nx ospke pae pat pbe
+    pcid pclmulqdq pdcm pdpe1gb pebs pge pku pln pni popcnt pse pse36 pts rdpid rdrand rdseed
+    rdt_a rdtscp rep_good sdbg sep serialize sha_ni smap smep smx split_lock_detect ss ssbd sse
+    sse2 sse4_1 sse4_2 ssse3 stibp syscall tm tm2 tpr_shadow tsc tsc_adjust tsc_deadline_timer
+    tsc_known_freq umip user_shstk vaes vme vmx vnmi vpclmulqdq vpid waitpkg x2apic xgetbv1 xsave
+    xsavec xsaveopt xsaves xtopology xtpr
+Graphics:
+  Message: Required tool lspci not installed. Check --recommends
+  Display: unspecified server: N/A driver: N/A tty: 142x18
+  API: N/A Message: No API data available in console. Headless machine?
+  Info: Tools: No graphics tools found.
+Audio:
+  Message: No device data found.
+  API: ALSA v: k6.12.58 status: kernel-api
+Network:
+  Message: Required tool lspci not installed. Check --recommends
+  IF-ID-1: enp1s0 state: up speed: 1000 Mbps duplex: full mac: e8:ff:1e:df:99:a5
+  IP v4: 10.0.0.59/24 type: dynamic noprefixroute scope: global broadcast: 10.0.0.255
+  IP v6: 2001:4643:ac42:0:94e9:4124:9184:1cbd/128 type: dynamic noprefixroute scope: global
+  IP v6: 2001:4643:ac42:0:6b3e:54d8:722c:87f3/64 type: temporary dynamic scope: global
+  IP v6: 2001:4643:ac42:0:daad:6b22:bb91:6769/64 type: dynamic mngtmpaddr noprefixroute
+    scope: global
+  IP v6: fe80::5807:b350:23cf:677b/64 type: noprefixroute scope: link
+  IF-ID-2: enp2s0 state: down mac: e8:ff:1e:df:99:a4
+  IF-ID-3: tailscale0 state: unknown speed: -1 duplex: full mac: N/A
+  IP v4: 100.127.208.49/32 scope: global
+  IP v6: fd7a:115c:a1e0::f501:d031/128 scope: global
+  IP v6: fe80::db4:37d1:2057:d633/64 virtual: stable-privacy proto kernel_ll scope: link
+  IF-ID-4: wlo1 state: down mac: ea:08:c8:a5:d7:de
+  WAN IP: 85.164.37.69
+Bluetooth:
+  Device-1: N/A driver: btusb v: 0.8 type: USB rev: 2.0 speed: 12 Mb/s lanes: 1 bus-ID: 3-10:2
+    chip-ID: 8087:0026 class-ID: e001
+  Report: rfkill ID: hci0 rfk-id: 0 state: down bt-service: not found rfk-block: hardware: no
+    software: no address: see --recommends
+Logical:
+  Message: No logical block device data found.
+RAID:
+  Message: No RAID data found.
+Drives:
+  Local Storage: total: 3.78 TiB used: 9.13 GiB (0.2%)
+  ID-1: /dev/mmcblk0 model: DV4064 size: 58.24 GiB type: Removable tech: SSD serial: 0x889a6932
+    fw-rev: 0x8 scheme: GPT
+  ID-2: /dev/nvme0n1 model: CUSU CV3500Q 2TB size: 1.86 TiB speed: 31.6 Gb/s lanes: 4 tech: SSD
+    serial: BS8K1QB5IOS0G5TICON5 fw-rev: SN26574 temp: 30.9 C
+  ID-3: /dev/nvme1n1 model: CUSU CV3500Q 2TB size: 1.86 TiB speed: 31.6 Gb/s lanes: 4 tech: SSD
+    serial: HG3VFOSHE4KB3YOZKRDC fw-rev: SN26574 temp: 34.9 C
+  Message: No optical or floppy data found.
+Partition:
+  ID-1: / size: 56.53 GiB used: 9.05 GiB (16.0%) fs: ext4 dev: /dev/mmcblk0p2 label: nixos
+    uuid: 35a33370-c764-4ffb-9492-0be304be9b50
+  ID-2: /boot size: 511 MiB used: 73.2 MiB (14.3%) fs: vfat dev: /dev/mmcblk0p1 label: BOOT
+    uuid: A202-71FE
+Swap:
+  Alert: No swap data was found.
+Unmounted:
+  ID-1: /dev/mmcblk0boot0 size: 4 MiB fs: <superuser required> label: N/A uuid: N/A
+  ID-2: /dev/mmcblk0boot1 size: 4 MiB fs: <superuser required> label: N/A uuid: N/A
+USB:
+  Hub-1: 1-0:1 info: hi-speed hub with single TT ports: 1 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Hub-2: 2-0:1 info: super-speed hub ports: 2 rev: 3.1 speed: 20 Gb/s lanes: 2
+    chip-ID: 1d6b:0003 class-ID: 0900
+  Hub-3: 3-0:1 info: hi-speed hub with single TT ports: 12 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Device-1: 3-10:2 info: N/A type: bluetooth driver: btusb interfaces: 2 rev: 2.0 speed: 12 Mb/s
+    lanes: 1 power: 100mA chip-ID: 8087:0026 class-ID: e001
+  Hub-4: 4-0:1 info: super-speed hub ports: 4 rev: 3.1 speed: 10 Gb/s lanes: 1
+    chip-ID: 1d6b:0003 class-ID: 0900
+Sensors:
+  Src: /sys System Temperatures: cpu: 35.0 C mobo: N/A
+  Fan Speeds (rpm): N/A
+Info:
+  Processes: 126 Power: uptime: 0h 24m states: freeze,mem,disk suspend: deep wakeups: 0
+    hibernate: platform Init: systemd v: 257 default: multi-user
+  Packages: pm: nix-sys pkgs: 779 Compilers: gcc: 14.3.0 Shell: Bash v: 5.2.37
+    running-in: pty pts/0 (SSH) inxi: 3.3.38

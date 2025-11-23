@@ -1,0 +1,168 @@
+[nix-shell:~]$ inxi -v 7
+System:
+  Host: congenital-optimist Kernel: 6.12.58 arch: x86_64 bits: 64 compiler: gcc v: 14.3.0
+    clocksource: tsc
+  Console: pty pts/10 DM: GDM v: 48.0 Distro: NixOS 25.05 (Warbler)
+Machine:
+  Type: Desktop Mobo: ASRock model: X399 Taichi serial: <superuser required>
+    uuid: <superuser required> UEFI: American Megatrends v: P4.03 date: 01/18/2024
+Battery:
+  Device-1: hidpp_battery_0 model: Logitech MX Ergo Multi-Device Trackball serial: 4d-fc-8c-59
+    charge: 50% (should be ignored) rechargeable: yes status: N/A
+Memory:
+  System RAM: total: 64 GiB available: 62.68 GiB used: 30.59 GiB (48.8%)
+  Message: For most reliable report, use superuser + dmidecode.
+  Array-1: capacity: 512 GiB slots: 8 modules: 4 EC: None max-module-size: 64 GiB note: est.
+  Device-1: Channel-A DIMM 0 type: no module installed
+  Device-2: Channel-A DIMM 1 type: DDR4 detail: synchronous unbuffered (unregistered)
+    size: 16 GiB speed: N/A volts: 1 note: check width (bits): data: 64 total: 64
+    manufacturer: Corsair part-no: CMK64GX4M4C3000C15 serial: N/A
+  Device-3: Channel-B DIMM 0 type: no module installed
+  Device-4: Channel-B DIMM 1 type: DDR4 detail: synchronous unbuffered (unregistered)
+    size: 16 GiB speed: N/A volts: 1 note: check width (bits): data: 64 total: 64
+    manufacturer: Corsair part-no: CMK64GX4M4C3000C15 serial: N/A
+  Device-5: Channel-C DIMM 0 type: no module installed
+  Device-6: Channel-C DIMM 1 type: DDR4 detail: synchronous unbuffered (unregistered)
+    size: 16 GiB speed: N/A volts: 1 note: check width (bits): data: 64 total: 64
+    manufacturer: Corsair part-no: CMK64GX4M4C3000C15 serial: N/A
+  Device-7: Channel-D DIMM 0 type: no module installed
+  Device-8: Channel-D DIMM 1 type: DDR4 detail: synchronous unbuffered (unregistered)
+    size: 16 GiB speed: N/A volts: 1 note: check width (bits): data: 64 total: 64
+    manufacturer: Corsair part-no: CMK64GX4M4C3000C15 serial: N/A
+CPU:
+  Info: 12-core model: AMD Ryzen Threadripper 1920X bits: 64 type: MT MCP smt: enabled arch: Zen
+    rev: 1 cache: L1: 1.1 MiB L2: 6 MiB L3: 32 MiB
+  Speed (MHz): avg: 2200 min/max: 2200/3500 boost: enabled cores: 1: 2200 2: 2200 3: 2200
+    4: 2200 5: 2200 6: 2200 7: 2200 8: 2200 9: 2200 10: 2200 11: 2200 12: 2200 13: 2200 14: 2200
+    15: 2200 16: 2200 17: 2200 18: 2200 19: 2200 20: 2200 21: 2200 22: 2200 23: 2200 24: 2200
+    bogomips: 167667
+  Flags: 3dnowprefetch abm adx aes amd_dcm aperfmperf apic arat avic avx avx2 bmi1 bmi2 bpext
+    clflush clflushopt clzero cmov cmp_legacy constant_tsc cpb cpuid cr8_legacy cx16 cx8 de
+    decodeassists extapic extd_apicid f16c flushbyasid fma fpu fsgsbase fxsr fxsr_opt ht
+    hw_pstate ibpb lahf_lm lbrv lm mca mce misalignsse mmx mmxext monitor movbe msr mtrr mwaitx
+    nonstop_tsc nopl npt nrip_save nx osvw overflow_recov pae pat pausefilter pclmulqdq pdpe1gb
+    perfctr_core perfctr_llc perfctr_nb pfthreshold pge pni popcnt pse pse36 rapl rdrand rdseed
+    rdtscp rep_good sep sev sha_ni skinit smap smca smep ssbd sse sse2 sse4_1 sse4_2 sse4a ssse3
+    succor svm svm_lock syscall tce topoext tsc tsc_scale v_vmsave_vmload vgif vmcb_clean vme
+    vmmcall wdt xgetbv1 xsave xsavec xsaveerptr xsaveopt
+Graphics:
+  Message: Required tool lspci not installed. Check --recommends
+  Device-1: AuditoryWorks nuroum V11 driver: hid-generic,snd-usb-audio,usbhid,uvcvideo type: USB
+    rev: 2.0 speed: 480 Mb/s lanes: 1 bus-ID: 3-2:3 chip-ID: 0525:a4b1 class-ID: 0300
+    serial: AW09LCAA999D031536
+  Display: unspecified server: X.org v: 1.21.1.18 with: Xwayland v: 24.1.9
+    compositor: gnome-shell driver: N/A tty: 142x18
+  API: OpenGL Message: GL data unavailable in console, glxinfo missing.
+  Info: Tools: wl: swaymsg x11: xprop,xrandr
+Audio:
+  Device-1: Fifine Microphone driver: hid-generic,snd-usb-audio,usbhid type: USB rev: 1.1
+    speed: 12 Mb/s lanes: 1 bus-ID: 3-1:2 chip-ID: 3142:5060 class-ID: 0300
+  Device-2: AuditoryWorks nuroum V11 driver: hid-generic,snd-usb-audio,usbhid,uvcvideo type: USB
+    rev: 2.0 speed: 480 Mb/s lanes: 1 bus-ID: 3-2:3 chip-ID: 0525:a4b1 class-ID: 0300
+    serial: AW09LCAA999D031536
+  API: ALSA v: k6.12.58 status: kernel-api
+  Server-1: PipeWire v: 1.4.7 status: active with: 1: pipewire-pulse status: active
+    2: wireplumber status: active 3: pipewire-alsa type: plugin
+  Server-2: PulseAudio v: 17.0 status: off (using pipewire-pulse)
+Network:
+  Message: Required tool lspci not installed. Check --recommends
+  IF-ID-1: enp4s0 state: down mac: 70:85:c2:ce:b3:a2
+  IF-ID-2: enp6s0 state: up speed: 1000 Mbps duplex: full mac: 70:85:c2:ce:b3:a0
+  IP v4: 10.0.0.9/24 type: dynamic noprefixroute scope: global broadcast: 10.0.0.255
+  IF-ID-3: tailscale0 state: unknown speed: -1 duplex: full mac: N/A
+  IP v4: 100.109.28.53/32 scope: global
+  IP v6: fd7a:115c:a1e0::43ad:1c35/128 scope: global
+  IP v6: fe80::887a:fb4b:52a0:5ea8/64 virtual: stable-privacy proto kernel_ll scope: link
+  IF-ID-4: virbr0 state: down mac: 52:54:00:83:60:f3
+  IP v4: 192.168.122.1/24 scope: global broadcast: 192.168.122.255
+  IF-ID-5: virbr1 state: down mac: 52:54:00:2e:85:2c
+  IP v4: 192.168.100.1/24 scope: global broadcast: 192.168.100.255
+  IF-ID-6: wlp5s0 state: down mac: 72:bd:3f:db:d2:22
+  WAN IP: 85.164.37.69
+Bluetooth:
+  Device-1: N/A driver: btusb v: 0.8 type: USB rev: 2.0 speed: 12 Mb/s lanes: 1 bus-ID: 1-9:2
+    chip-ID: 8087:0aa7 class-ID: e001
+  Report: hciconfig ID: hci0 rfk-id: 0 state: up address: A4:C3:F0:67:59:A7 bt-v: 4.2 lmp-v: 8
+    sub-v: 1100 hci-v: 8 rev: 1100 class-ID: 6c0104
+Logical:
+  Message: No logical block device data found.
+RAID:
+  Device-1: stuffpool type: zfs status: ONLINE level: mirror-0 raw: size: 952 GiB free: 902 GiB
+    allocated: 50.4 GiB zfs-fs: size: 922.67 GiB free: 872.13 GiB
+  Components: Online: 1: nvme1n1 2: nvme2n1
+  Device-2: zpool type: zfs status: ONLINE level: linear raw: size: 236 GiB free: 142 GiB
+    allocated: 93.5 GiB zfs-fs: size: 229.51 GiB free: 135.18 GiB
+  Components: Online: 1: nvme0n1p2
+Drives:
+  Local Storage: total: raw: 9.37 TiB usable: 8.4 TiB used: 94.26 GiB (1.1%)
+  ID-1: /dev/nvme0n1 vendor: A-Data model: SX8200PNP size: 238.47 GiB speed: 31.6 Gb/s lanes: 4
+    tech: SSD serial: 2J3820098425 fw-rev: SS0328D temp: 38.9 C scheme: GPT
+  ID-2: /dev/nvme1n1 vendor: Intel model: SSDPEKNW010T8 size: 953.87 GiB speed: 31.6 Gb/s
+    lanes: 4 tech: SSD serial: BTNH92550RH41P0B fw-rev: 002C temp: 40.9 C scheme: GPT
+  ID-3: /dev/nvme2n1 vendor: Intel model: SSDPEKNW010T8 size: 953.87 GiB speed: 31.6 Gb/s
+    lanes: 4 tech: SSD serial: BTNH84840Z3P1P0B fw-rev: 002C temp: 36.9 C scheme: GPT
+  ID-4: /dev/sda vendor: Seagate model: ST8000AS0002-1NA17Z size: 7.28 TiB speed: 6.0 Gb/s
+    tech: HDD rpm: 5980 serial: Z8403RKS fw-rev: AR13 scheme: GPT
+  Message: No optical or floppy data found.
+Partition:
+  ID-1: / size: 137.48 GiB used: 2.3 GiB (1.7%) fs: zfs logical: zpool/root
+  ID-2: /boot size: 1022 MiB used: 131.2 MiB (12.8%) fs: vfat dev: /dev/nvme0n1p1 label: boot
+    uuid: 257B-AB7E
+  ID-3: /home size: 187.86 GiB used: 52.68 GiB (28.0%) fs: zfs logical: zpool/home
+  ID-4: /nix size: 160.4 GiB used: 25.22 GiB (15.7%) fs: zfs logical: zpool/nix
+  ID-5: /var size: 149.11 GiB used: 13.93 GiB (9.3%) fs: zfs logical: zpool/var
+Swap:
+  ID-1: swap-1 type: zram size: 31.34 GiB used: 0 KiB (0.0%) priority: 5 dev: /dev/zram0
+Unmounted:
+  ID-1: /dev/nvme1n1p9 size: 8 MiB fs: <superuser required> label: N/A uuid: N/A
+  ID-2: /dev/nvme2n1p9 size: 8 MiB fs: <superuser required> label: N/A uuid: N/A
+  ID-3: /dev/sda1 size: 7.28 TiB fs: xfs label: media uuid: 03dbdfd1-9f2e-4755-8d29-32e9352ce043
+USB:
+  Hub-1: 1-0:1 info: hi-speed hub with single TT ports: 14 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Device-1: 1-9:2 info: N/A type: bluetooth driver: btusb interfaces: 2 rev: 2.0 speed: 12 Mb/s
+    lanes: 1 power: 100mA chip-ID: 8087:0aa7 class-ID: e001
+  Hub-2: 2-0:1 info: super-speed hub ports: 8 rev: 3.1 speed: 10 Gb/s lanes: 1
+    chip-ID: 1d6b:0003 class-ID: 0900
+  Hub-3: 3-0:1 info: hi-speed hub with single TT ports: 4 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Device-1: 3-1:2 info: Fifine Microphone type: audio,HID
+    driver: hid-generic,snd-usb-audio,usbhid interfaces: 3 rev: 1.1 speed: 12 Mb/s lanes: 1
+    power: 100mA chip-ID: 3142:5060 class-ID: 0300
+  Device-2: 3-2:3 info: AuditoryWorks nuroum V11 type: video,audio,HID
+    driver: hid-generic,snd-usb-audio,usbhid,uvcvideo interfaces: 5 rev: 2.0 speed: 480 Mb/s
+    lanes: 1 power: 200mA chip-ID: 0525:a4b1 class-ID: 0300 serial: AW09LCAA999D031536
+  Hub-4: 4-0:1 info: super-speed hub ports: 4 rev: 3.0 speed: 5 Gb/s lanes: 1 chip-ID: 1d6b:0003
+    class-ID: 0900
+  Hub-5: 5-0:1 info: hi-speed hub with single TT ports: 4 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Device-1: 5-1:2 info: Logitech USB Receiver type: keyboard,mouse,HID
+    driver: logitech-djreceiver,usbhid interfaces: 3 rev: 2.0 speed: 12 Mb/s lanes: 1 power: 98mA
+    chip-ID: 046d:c52b class-ID: 0300
+  Hub-6: 5-2:3 info: hi-speed hub with single TT ports: 4 rev: 2.1 speed: 480 Mb/s lanes: 1
+    chip-ID: 2109:2812 class-ID: 0900
+  Hub-7: 5-2.1:4 info: full speed or root hub ports: 4 rev: 2.0 speed: 12 Mb/s lanes: 1
+    power: 100mA chip-ID: 0a05:7211 class-ID: 0900
+  Hub-8: 5-2.1.1:7 info: full speed or root hub ports: 4 rev: 2.0 speed: 12 Mb/s lanes: 1
+    power: 100mA chip-ID: 0a05:7211 class-ID: 0900
+  Device-1: 5-2.1.3:8 info: Keychron K2 type: keyboard,mouse driver: apple,usbhid interfaces: 2
+    rev: 2.0 speed: 12 Mb/s lanes: 1 power: 100mA chip-ID: 05ac:0250 class-ID: 0301
+  Device-2: 5-2.1.4:15 info: Microsoft Controller type: <vendor specific> driver: xpad
+    interfaces: 3 rev: 2.0 speed: 12 Mb/s lanes: 1 power: 500mA chip-ID: 045e:02d1 class-ID: ff00
+    serial: 7EED85DCFA5C
+  Device-3: 5-2.2:5 info: RDR Alice type: keyboard,HID,mouse driver: hid-generic,usbhid
+    interfaces: 3 rev: 2.0 speed: 12 Mb/s lanes: 1 power: 400mA chip-ID: 320f:5055 class-ID: 0301
+  Device-4: 5-2.4:6 info: Metadot - Das Keyboard type: keyboard,HID driver: hid-generic,usbhid
+    interfaces: 2 rev: 1.1 speed: 12 Mb/s lanes: 1 power: 100mA chip-ID: 24f0:0140 class-ID: 0300
+  Hub-9: 6-0:1 info: super-speed hub ports: 4 rev: 3.0 speed: 5 Gb/s lanes: 1 chip-ID: 1d6b:0003
+    class-ID: 0900
+  Hub-10: 6-2:2 info: super-speed hub ports: 4 rev: 3.0 speed: 5 Gb/s lanes: 1
+    chip-ID: 2109:0812 class-ID: 0900
+Sensors:
+  Src: /sys System Temperatures: cpu: 45.5 C mobo: N/A gpu: amdgpu temp: 53.0 C mem: 56.0 C
+  Fan Speeds (rpm): N/A gpu: amdgpu fan: 1279
+Info:
+  Processes: 830 Power: uptime: 5h 3m states: freeze,mem suspend: deep wakeups: 0
+    hibernate: disabled Init: systemd v: 257 default: graphical
+  Packages: 2271 pm: nix-sys pkgs: 2249 pm: flatpak pkgs: 22 Compilers: gcc: 14.3.0 Shell: Bash
+    v: 5.2.37 running-in: pty pts/10 (SSH) inxi: 3.3.38

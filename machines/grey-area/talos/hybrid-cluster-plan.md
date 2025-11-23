@@ -9,6 +9,7 @@ Creating a reference MD file for the hybrid bare metal + cloud cluster plan
 # Hybrid Bare Metal + Cloud Cluster Plan with Talos Linux
 
 ## Overview
+
 This plan outlines setting up a hybrid Kubernetes cluster using Talos Linux, combining bare metal machines (e.g., in your home lab at `/home/geir/Projects/home-lab/machines/grey-area/talos/`) with cloud instances from a European provider. The cluster will be connected via VPN for secure, unified management. This setup leverages Talos's platform-agnostic design and Omni for multi-environment orchestration.
 
 **Difficulty**: Moderate (6/10)  
@@ -16,9 +17,11 @@ This plan outlines setting up a hybrid Kubernetes cluster using Talos Linux, com
 **Why This Setup?**: Combines local hardware resilience with cloud scalability, ideal for home labs expanding to production-like environments.
 
 ## European Cloud Providers Supporting Talos VMs
+
 No major European cloud provider offers pre-built "Talos VMs" out of the box, as Talos is a custom OS. However, most support custom images, allowing you to upload or create Talos-based VMs. Here's a breakdown:
 
 ### Recommended Providers
+
 1. **Hetzner (Germany)**:
    - **Why?**: Affordable, European-based, good for small/medium clusters. Supports custom images via ISO upload or snapshot.
    - **Talos Support**: Upload Talos ISO to create VMs. Use their API for automation.
@@ -58,8 +61,9 @@ No major European cloud provider offers pre-built "Talos VMs" out of the box, as
 **Recommendation**: Start with **Hetzner** or **Scaleway** for simplicity and cost in a home lab. Use Omni to automate image creation and deployment across providers.
 
 ## Prerequisites
+
 1. **Hardware/Access**:
-   - Bare metal: Machines in your home lab (e.g., boot with Talos ISO from https://factory.talos.dev/).
+   - Bare metal: Machines in your home lab (e.g., boot with Talos ISO from <https://factory.talos.dev/>).
    - Cloud: 1-2 VMs from chosen provider (e.g., Hetzner CX11 instances).
 
 2. **Networking/VPN**:
@@ -78,21 +82,27 @@ No major European cloud provider offers pre-built "Talos VMs" out of the box, as
    - Omni setup (hosted or self-hosted).
 
 ## Step-by-Step Plan
+
 ### 1. Set Up VPN
+
 - Install VPN server on a cloud VM (e.g., WireGuard on Hetzner).
 - Configure clients on bare metal machines.
 - Test: Ping between environments.
 
 ### 2. Prepare Machines
+
 - **Bare Metal**: Boot with Talos ISO, note IPs.
 - **Cloud**: Launch VMs, upload Talos image (use Omni's image factory for custom builds).
 
 ### 3. Register in Omni
+
 - Use Omni UI/CLI to add machines: `omnictl machine set-labels <id> environment=home-lab`
 - Label cloud machines similarly.
 
 ### 4. Create Cluster Template
+
 Save this as `hybrid-cluster.yaml` in `/home/geir/Projects/home-lab/machines/grey-area/talos/`:
+
 ```yaml
 kind: Cluster
 name: hybrid-cluster
@@ -111,22 +121,26 @@ machines:
 ```
 
 ### 5. Deploy Cluster
+
 - Sync: `omnictl cluster template sync --file hybrid-cluster.yaml`
 - Monitor in Omni UI.
 
 ### 6. Verify
+
 - Get kubeconfig: `omnictl cluster kubeconfig hybrid-cluster > kubeconfig.yaml`
 - Check: `kubectl --kubeconfig kubeconfig.yaml get nodes`
 
 ## Challenges & Solutions
+
 - **VPN Issues**: Use Tailscale for easy setup.
 - **Image Upload**: Follow provider docs (e.g., Hetzner's ISO upload).
 - **Costs**: Monitor usage; use free tiers.
 - **Debugging**: Use `talosctl logs` and Omni logs.
 
 ## Next Steps
+
 - Test with 1 bare metal + 1 cloud VM.
 - Integrate with GitOps (ArgoCD via Omni).
 - Expand to more nodes as needed.
 
-For updates, refer to Omni docs: https://omni.siderolabs.com/
+For updates, refer to Omni docs: <https://omni.siderolabs.com/>
