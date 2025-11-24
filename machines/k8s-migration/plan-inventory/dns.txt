@@ -1,0 +1,94 @@
+geir@pihole:~$ inxi -v 7
+System:
+  Host: pihole Kernel: 6.12.57+deb13-amd64 arch: x86_64 bits: 64 compiler: gcc v: 14.2.0
+    clocksource: tsc
+  Console: pty pts/0 Distro: Debian GNU/Linux 13 (trixie)
+Machine:
+  Type: Desktop System: GOOGLE product: Panther v: 1.0 serial: <superuser required> Chassis:
+    type: 3 serial: <superuser required>
+  Mobo: N/A model: N/A serial: N/A BIOS: coreboot v: N/A date: 10/03/2014
+Battery:
+  Message: No system battery data found. Is one present?
+Memory:
+  System RAM: total: 2 GiB note: est. available: 1.8 GiB used: 589.6 MiB (31.9%)
+  RAM Report: message: No RAM data found using udevadm.
+CPU:
+  Info: dual core model: Intel Celeron 2955U bits: 64 type: MCP smt: <unsupported> arch: Haswell
+    rev: 1 cache: L1: 128 KiB L2: 512 KiB L3: 2 MiB
+  Speed (MHz): avg: 799 min/max: 800/1400 cores: 1: 799 2: 799 bogomips: 5587
+  Flags: abm acpi aperfmperf apic arat arch_perfmon bts clflush cmov constant_tsc cpuid
+    cpuid_fault cx16 cx8 de ds_cpl dtes64 dtherm dts epb ept ept_ad erms est flexpriority
+    flush_l1d fpu fsgsbase fxsr ht ibpb ibrs invpcid lahf_lm lm mca mce md_clear mmx monitor
+    movbe msr mtrr nonstop_tsc nopl nx pae pat pbe pcid pclmulqdq pdcm pdpe1gb pebs pge pln pni
+    popcnt pse pse36 pti pts rdrand rdtscp rep_good sdbg sep ss ssbd sse sse2 sse4_1 sse4_2 ssse3
+    stibp syscall tm tm2 tpr_shadow tsc tsc_adjust tsc_deadline_timer vme vmx vnmi vpid xsave
+    xsaveopt xtopology xtpr
+Graphics:
+  Device-1: Intel Haswell-ULT Integrated Graphics vendor: Google driver: i915 v: kernel
+    arch: Gen-7.5 ports: active: none empty: DP-1,HDMI-A-1,HDMI-A-2 bus-ID: 00:02.0
+    chip-ID: 8086:0a06 class-ID: 0300
+  Display: server: No display server data found. Headless machine? tty: 142x18
+  API: EGL v: 1.5 hw: drv: intel crocus platforms: device: 1 drv: swrast gbm: drv: crocus
+    surfaceless: drv: swrast inactive: wayland,x11,device-0
+  API: OpenGL v: 4.6 compat-v: 4.5 vendor: mesa v: 25.0.7-2 note: console (EGL sourced)
+    renderer: Mesa Intel HD Graphics (HSW GT1), llvmpipe (LLVM 19.1.7 128 bits)
+  Info: Tools: api: eglinfo,glxinfo x11: xdriinfo, xdpyinfo, xprop, xrandr
+Audio:
+  Device-1: Intel Haswell-ULT HD Audio vendor: Google driver: snd_hda_intel v: kernel
+    bus-ID: 00:03.0 chip-ID: 8086:0a0c class-ID: 0403
+  Device-2: Intel 8 Series HD Audio vendor: Google driver: snd_hda_intel v: kernel
+    bus-ID: 00:1b.0 chip-ID: 8086:9c20 class-ID: 0403
+  API: ALSA v: k6.12.57+deb13-amd64 status: kernel-api
+Network:
+  Device-1: Realtek RTL8111/8168/8211/8411 PCI Express Gigabit Ethernet driver: r8169 v: kernel
+    pcie: speed: 2.5 GT/s lanes: 1 port: 2000 bus-ID: 01:00.0 chip-ID: 10ec:8168 class-ID: 0200
+  IF: enp1s0 state: up speed: 1000 Mbps duplex: full mac: c4:54:44:8c:07:8b
+  IP v4: 10.0.0.14/24 type: dynamic scope: global broadcast: 10.0.0.255
+  IP v6: 2001:4643:ac42:0:c654:44ff:fe8c:78b/64 type: dynamic mngtmpaddr proto kernel_ra
+    scope: global
+  IP v6: fe80::c654:44ff:fe8c:78b/64 virtual: proto kernel_ll scope: link
+  Device-2: Qualcomm Atheros AR9462 Wireless Network Adapter vendor: AzureWave driver: ath9k
+    v: kernel pcie: speed: 2.5 GT/s lanes: 1 bus-ID: 02:00.0 chip-ID: 168c:0034 class-ID: 0280
+  IF: wlp2s0 state: down mac: 54:27:1e:e8:1c:2d
+  IF-ID-1: tailscale0 state: unknown speed: -1 duplex: full mac: N/A
+  IP v4: 100.103.143.108/32 scope: global
+  IP v6: fd7a:115c:a1e0::2201:8f6c/128 scope: global
+  IP v6: fe80::fce3:e3b3:141f:3b2b/64 virtual: stable-privacy proto kernel_ll scope: link
+  WAN IP: 85.164.37.69
+Bluetooth:
+  Device-1: IMC Networks driver: btusb v: 0.8 type: USB rev: 1.1 speed: 12 Mb/s lanes: 1
+    bus-ID: 1-4:3 chip-ID: 13d3:3393 class-ID: e001
+  Report: rfkill ID: hci0 rfk-id: 0 state: down bt-service: not found rfk-block: hardware: no
+    software: no address: see --recommends
+Logical:
+  Message: No logical block device data found.
+RAID:
+  Message: No RAID data found.
+Drives:
+  Local Storage: total: 14.91 GiB used: 4.52 GiB (30.3%)
+  ID-1: /dev/sda vendor: SanDisk model: SSD U110 16GB size: 14.91 GiB speed: 6.0 Gb/s tech: SSD
+    serial: 141611400181 fw-rev: 000 scheme: MBR
+  Message: No optical or floppy data found.
+Partition:
+  ID-1: / size: 13.64 GiB used: 4.51 GiB (33.1%) fs: ext4 dev: /dev/sda1 label: N/A
+    uuid: 25e52371-a4a9-4da4-856a-a4aafa661abb
+Swap:
+  ID-1: swap-1 type: partition size: 976 MiB used: 11.3 MiB (1.2%) priority: -2 dev: /dev/sda5
+    label: N/A uuid: 95b1ef4f-efbf-4b5b-839b-d3bca82a66ce
+Unmounted:
+  ID-1: /dev/sda2 size: 1 KiB fs: <superuser required> label: N/A uuid: N/A
+USB:
+  Hub-1: 1-0:1 info: hi-speed hub with single TT ports: 8 rev: 2.0 speed: 480 Mb/s lanes: 1
+    chip-ID: 1d6b:0002 class-ID: 0900
+  Device-1: 1-4:3 info: IMC Networks type: bluetooth driver: btusb interfaces: 2 rev: 1.1
+    speed: 12 Mb/s lanes: 1 power: 100mA chip-ID: 13d3:3393 class-ID: e001
+  Hub-2: 2-0:1 info: super-speed hub ports: 4 rev: 3.0 speed: 5 Gb/s lanes: 1 chip-ID: 1d6b:0003
+    class-ID: 0900
+Sensors:
+  System Temperatures: cpu: 44.0 C pch: 98.0 C mobo: N/A
+  Fan Speeds (rpm): N/A
+Info:
+  Processes: 101 Power: uptime: 8d 29m states: freeze,mem,disk suspend: deep wakeups: 0
+    hibernate: platform Init: systemd v: 257 default: graphical
+  Packages: pm: dpkg pkgs: 674 Compilers: N/A Shell: Bash v: 5.2.37 running-in: pty pts/0 (SSH)
+    inxi: 3.3.38
