@@ -4,6 +4,17 @@ This folder contains actionable planning documents, implementation details, and 
 
 ## Contents
 
+### Phase 0: Foundation (Pre-Migration)
+
+1. **[PHASE_0_FOUNDATION.md](./PHASE_0_FOUNDATION.md)** 🆕 NEW
+   - Architectural Decision Records (ADRs) to complete
+   - Static IP configuration for all nodes
+   - Backup infrastructure setup
+   - Resource reallocation (registry location decision)
+   - Tooling installation checklist
+   - Monitoring baseline capture
+   - Success criteria before Phase 1
+
 ### Foundation & Reference
 
 1. **[HARDWARE_NETWORKING_INVENTORY.md](./HARDWARE_NETWORKING_INVENTORY.md)** ✅ COMPLETE
@@ -32,16 +43,18 @@ This folder contains actionable planning documents, implementation details, and 
 ## How to Use
 
 **Getting started?**
-1. Read [HARDWARE_NETWORKING_INVENTORY.md](./HARDWARE_NETWORKING_INVENTORY.md) to understand cluster constraints
-2. Review [DNS_STRATEGY.md](./DNS_STRATEGY.md) for DNS options
-3. Read [NETWORK_UPGRADE_PLANNING.md](./NETWORK_UPGRADE_PLANNING.md) for future networking roadmap
+1. **Start with Phase 0**: Read [PHASE_0_FOUNDATION.md](./PHASE_0_FOUNDATION.md) and complete all prerequisites
+2. Read [HARDWARE_NETWORKING_INVENTORY.md](./HARDWARE_NETWORKING_INVENTORY.md) to understand cluster constraints
+3. Review [DNS_STRATEGY.md](./DNS_STRATEGY.md) for DNS options
+4. Read [NETWORK_UPGRADE_PLANNING.md](./NETWORK_UPGRADE_PLANNING.md) for future networking roadmap
 
 **Looking for specific info?**
+- **Phase 0 prep**: See PHASE_0_FOUNDATION.md
 - Cluster specs: See HARDWARE_NETWORKING_INVENTORY.md
 - DNS options: See DNS_STRATEGY.md
 - Network future: See NETWORK_UPGRADE_PLANNING.md
 
 ---
 
-**Status:** Foundation documents complete (hardware, DNS, networking)  
-**Last Updated:** 2025-11-23
+**Status:** Phase 0 document added; foundation documents complete (hardware, DNS, networking)  
+**Last Updated:** 2025-11-25

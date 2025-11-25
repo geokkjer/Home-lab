@@ -192,7 +192,7 @@ disabled = false
 
 [time]
 disabled = false
-format = "🕙[\\[ $time \\]]($style) "
+format = "[\\[ $time \\]]($style) "
 time_format = "%R"
 style = "dimmed white"
 

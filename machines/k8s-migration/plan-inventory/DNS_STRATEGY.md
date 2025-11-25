@@ -819,17 +819,20 @@ Traffic reaches service via Traefik
 ### Recommended DNS Setup by Phase
 
 **Phase 1-2 (Bootstrap):**
+
 - Keep pi-hole @ 10.0.0.14 (unchanged)
 - No ExternalDNS yet
 - Manual DNS entries or use Tailscale MagicDNS
 
 **Phase 2-3 (Stabilization):**
+
 - Deploy ExternalDNS in K8s
 - Configure RFC2136 to pi-hole
 - Annotate Ingress resources
 - New services auto-register DNS
 
 **Phase 3-4 (Optimization):**
+
 - If containerizing DNS: run BIND9 in K8s
 - ExternalDNS → K8s-hosted BIND9
 - Fully declarative DNS (Ingress → ExternalDNS → BIND9)
