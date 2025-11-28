@@ -1,0 +1,593 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Geir O. Jerstad
+#+PROPERTY: header-args:emacs-lisp :tangle init.el :mkdirp yes
+#+STARTUP: overview
+
+* Introduction
+
+This is a literate Emacs configuration using org-mode. The configuration is
+written as an org document and tangled to =init.el= using =org-babel-tangle=.
+
+To generate the config, run =M-x org-babel-tangle= or press =C-c C-v t=.
+
+* Early Init
+
+Create =early-init.el= for settings that need to run before Emacs initializes.
+
+#+begin_src emacs-lisp :tangle early-init.el
+;;; early-init.el --- Early initialization -*- lexical-binding: t; -*-
+
+;; Increase garbage collection threshold during startup
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; Disable package.el in favor of use-package setup later
+(setq package-enable-at-startup nil)
+
+;; Disable UI elements early to avoid flickering
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+;; Inhibit resizing frame
+(setq frame-inhibit-implied-resize t)
+
+;;; early-init.el ends here
+#+end_src
+
+* Init Header
+
+#+begin_src emacs-lisp
+;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; A simple, modular Emacs configuration tangled from Emacs.org
+
+;;; Code:
+#+end_src
+
+* Performance
+
+Reset garbage collection after startup and display load time.
+
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 2 1000 1000))
+            (message "Emacs loaded in %.2f seconds with %d garbage collections."
+                     (float-time (time-subtract after-init-time before-init-time))
+                     gcs-done)))
+#+end_src
+
+* Package Management
+
+Set up package archives and use-package.
+
+#+begin_src emacs-lisp
+(require 'package)
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu"   . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+(package-initialize)
+
+;; Install use-package if not available
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+#+end_src
+
+* Basic Settings
+** User Interface
+
+Clean up the UI and set sensible defaults.
+
+#+begin_src emacs-lisp
+;; Disable UI clutter
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message nil)
+(menu-bar-mode -1)
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; Visual settings
+(set-face-attribute 'default nil :height 140)
+(setq-default cursor-type 'bar)
+(global-hl-line-mode 1)
+(column-number-mode 1)
+(global-display-line-numbers-mode 1)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+** Editing Defaults
+
+Sensible editing behavior.
+
+#+begin_src emacs-lisp
+;; Use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; Text width
+(setq-default fill-column 80)
+
+;; Auto-revert buffers when files change on disk
+(global-auto-revert-mode 1)
+
+;; Remember cursor position
+(save-place-mode 1)
+
+;; Delete selection when typing
+(delete-selection-mode 1)
+
+;; Require final newline
+(setq require-final-newline t)
+
+;; Show matching parentheses
+(show-paren-mode 1)
+
+;; Better scrolling
+(setq scroll-margin 3
+      scroll-conservatively 101
+      scroll-preserve-screen-position t)
+#+end_src
+
+** File Management
+
+Better file handling and backups.
+
+#+begin_src emacs-lisp
+;; Store backups and auto-saves in temp directory
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+;; Don't create lock files
+(setq create-lockfiles nil)
+
+;; Keep recent files
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 50)
+#+end_src
+
+* Theme and Appearance
+
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :config
+  (load-theme 'doom-monokai-pro t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-height 15)
+  (doom-modeline-icon t))
+
+(use-package all-the-icons
+  :if (display-graphic-p))
+#+end_src
+
+* Completion Framework
+** Vertico
+
+Vertical completion UI.
+
+#+begin_src emacs-lisp
+(use-package vertico
+  :init (vertico-mode)
+  :custom (vertico-cycle t))
+#+end_src
+
+** Marginalia
+
+Rich annotations in the minibuffer.
+
+#+begin_src emacs-lisp
+(use-package marginalia
+  :init (marginalia-mode))
+#+end_src
+
+** Orderless
+
+Flexible completion style.
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+#+end_src
+
+** Consult
+
+Enhanced search and navigation.
+
+#+begin_src emacs-lisp
+(use-package consult
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("M-y" . consult-yank-pop)
+         ("M-g g" . consult-goto-line)))
+#+end_src
+
+** Corfu
+
+In-buffer completion popup.
+
+#+begin_src emacs-lisp
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-delay 0.2)
+  (corfu-auto-prefix 2)
+  :init (global-corfu-mode))
+#+end_src
+
+* Helpful Packages
+** Which Key
+
+Display available keybindings.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :diminish
+  :config (which-key-mode 1))
+#+end_src
+
+** Diminish
+
+Hide minor modes from modeline.
+
+#+begin_src emacs-lisp
+(use-package diminish)
+#+end_src
+
+* Org Mode
+
+#+begin_src emacs-lisp
+(use-package org
+  :config
+  (setq org-startup-indented t)
+  (setq org-hide-emphasis-markers t)
+  (setq org-ellipsis " ▾")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+
+  ;; Enable org-babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t))))
+#+end_src
+
+* Markdown
+
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :custom
+  (markdown-command "markdown")
+  :config
+  ;; Nice visual formatting
+  (setq markdown-hide-urls t)
+  (setq markdown-fontify-code-blocks-natively t))
+#+end_src
+
+* Development
+** Magit
+
+Git interface.
+
+#+begin_src emacs-lisp
+(use-package magit
+  :bind ("C-x g" . magit-status))
+#+end_src
+
+** Project Management
+
+#+begin_src emacs-lisp
+(use-package project)
+#+end_src
+
+** Nix Mode
+
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
+#+end_src
+
+** VTerm
+
+Full-featured terminal emulator in Emacs using libvterm.
+
+Requires =libvterm= to be installed on your system:
+- Arch: =sudo pacman -S libvterm=
+- Ubuntu: =sudo apt install libvterm-dev=
+
+#+begin_src emacs-lisp
+(use-package vterm
+  :commands vterm
+  :config
+  ;; Allow copy/paste with standard bindings
+  (setq vterm-copy-exclude-prompt t)
+  ;; Scroll up with mouse wheel
+  (setq vterm-scroll-limit 10000)
+  :bind (("C-x t" . vterm)
+         :map vterm-mode-map
+         ("C-c C-c" . vterm-send-ctrl-c)
+         ("C-c C-z" . vterm-send-ctrl-z)
+         ("C-c C-l" . vterm-clear)))
+#+end_src
+
+* Music / Live Coding
+** Tidal Cycles
+
+[[https://tidalcycles.org][Tidal Cycles]] is a live coding environment for algorithmic pattern music.
+It uses Haskell to describe patterns and SuperCollider for audio synthesis.
+
+*** Prerequisites (Arch Linux)
+
+Before using Tidal in Emacs, install the required system packages:
+
+#+begin_example
+# Install TidalCycles and Haskell dependencies (native Arch packages)
+sudo pacman -Sy ghc ghc-libs haskell-{tidal,bifunctors,colour,hosc,mwc-random,network,primitive,random,vector,microspec}
+
+# Install SuperCollider
+sudo pacman -S supercollider sc3-plugins
+
+# Download BootTidal.hs
+mkdir -p ~/.local/share/SuperCollider
+wget https://raw.githubusercontent.com/tidalcycles/Tidal/master/BootTidal.hs \
+  -O ~/.local/share/SuperCollider/BootTidal.hs
+#+end_example
+
+Then install SuperDirt in SuperCollider (evaluate in =sclang= or SC IDE):
+
+#+begin_example
+Quarks.checkForUpdates({Quarks.install("SuperDirt", "v1.7.4"); thisProcess.recompile()})
+#+end_example
+
+*** Workflow
+
+1. Start SuperCollider and evaluate: =SuperDirt.start;=
+2. Open a =.tidal= file in Emacs
+3. Run =M-x tidal-start-haskell=
+4. Write patterns and evaluate with =C-<return>=
+5. Use =C-c C-h= to silence everything
+
+*** Configuration
+
+#+begin_src emacs-lisp
+(use-package tidal
+  :mode ("\\.tidal\\'" . tidal-mode)
+  :custom
+  (tidal-interpreter "ghci")
+  ;; Search common locations for BootTidal.hs
+  (tidal-boot-script-path
+   (or (and (file-exists-p "~/.local/share/SuperCollider/BootTidal.hs")
+            (expand-file-name "~/.local/share/SuperCollider/BootTidal.hs"))
+       (car (file-expand-wildcards "~/.cabal/share/tidal-*/BootTidal.hs"))
+       (expand-file-name "~/.local/share/SuperCollider/BootTidal.hs")))
+  :config
+  ;; Visual feedback when hushing
+  (defun my/tidal-hush-notify ()
+    "Hush all patterns with visual notification."
+    (interactive)
+    (tidal-hush)
+    (message "🔇 All patterns silenced"))
+  :bind (:map tidal-mode-map
+         ("C-c C-s" . tidal-run-line)
+         ("C-c C-e" . tidal-run-multiple-lines)
+         ("C-c C-r" . tidal-run-region)
+         ("C-c C-h" . my/tidal-hush-notify)
+         ("C-<return>" . tidal-run-line)))
+#+end_src
+
+***
+Example Patterns
+
+Here are some patterns to try once everything is running:
+
+#+begin_example haskell
+-- Basic beat
+d1 $ sound "bd sn"
+
+-- Layered drums
+d1 $ stack [
+  sound "bd*4",
+  sound "~ sn",
+  sound "hh*8" # gain 0.6
+]
+
+-- Euclidean rhythm
+d1 $ sound "bd(3,8) sn(2,8)"
+
+-- With effects
+d1 $ sound "bd sn" # room 0.5 # delay 0.3
+
+-- Pattern transformation
+d1 $ every 4 (fast 2) $ sound "bd sn hh cp"
+
+-- Silence everything
+hush
+#+end_example
+
+* Init Footer
+
+#+begin_src emacs-lisp
+;;; init.el ends here
+#+end_src
+
+* Usage
+
+** Tangling
+
+To generate the actual elisp files from this document:
+
+1. Open this file in Emacs
+2. Run =M-x org-babel-tangle= or press =C-c C-v t=
+
+This will create:
+- =init.el= - The main configuration
+- =early-init.el= - Early initialization settings
+
+** Auto-Tangle
+
+To automatically tangle on save, add this to the end of the file:
+
+#+begin_src emacs-lisp :tangle no
+;; Local Variables:
+;; eval: (add-hook 'after-save-hook #'org-babel-tangle nil t)
+;; End:
+#+end_src
+
+Or enable it by uncommenting the local variables section at the bottom of this file.
+
+* Keybinding Cheat Sheet                                           :noexport:
+
+This section is for reference only (not tangled).
+
+** Essential Keys
+
+| Key       | Description              | Notes                    |
+|-----------+--------------------------+--------------------------|
+| =C-=      | Control key              | Hold Ctrl                |
+| =M-=      | Meta key                 | Alt or Option            |
+| =S-=      | Shift key                |                          |
+| =C-g=     | Cancel / Quit            | The panic button!        |
+| =C-x C-c= | Quit Emacs               |                          |
+| =M-x=     | Execute command          | Run any command by name  |
+
+** Files and Buffers
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-x C-f= | find-file                | Open file                |
+| =C-x C-s= | save-buffer              | Save file                |
+| =C-x C-w= | write-file               | Save as...               |
+| =C-x b=   | consult-buffer           | Switch buffer (custom)   |
+| =C-x k=   | kill-buffer              | Close buffer             |
+| =C-x C-b= | list-buffers             | List all buffers         |
+
+** Movement
+
+| Key       | Description              | Notes                    |
+|-----------+--------------------------+--------------------------|
+| =C-f=     | Forward char             | →                        |
+| =C-b=     | Backward char            | ←                        |
+| =C-n=     | Next line                | ↓                        |
+| =C-p=     | Previous line            | ↑                        |
+| =M-f=     | Forward word             |                          |
+| =M-b=     | Backward word            |                          |
+| =C-a=     | Beginning of line        |                          |
+| =C-e=     | End of line              |                          |
+| =M-<=     | Beginning of buffer      |                          |
+| =M->=     | End of buffer            |                          |
+| =C-v=     | Page down                |                          |
+| =M-v=     | Page up                  |                          |
+| =M-g g=   | Go to line               | (consult-goto-line)      |
+
+** Selection (Mark & Region)
+
+| Key     | Command                 | Description        |
+|---------+-------------------------+--------------------|
+| =C-SPC=   | set-mark-command        | Start              |
+| =C-x h=   | mark-whole-buffer       | Select all         |
+| =M-h=     | mark-paragraph          | Select paragraph   |
+| =C-x C-x= | exchange-point-and-mark | Swap cursor & mark |
+
+** Cut, Copy, Paste (Kill & Yank)
+
+| Key       | Command                  | Description            |
+|-----------+--------------------------+------------------------|
+| =C-w=     | kill-region              | Cut (kill)               |
+| =M-w=     | kill-ring-save           | Copy                     |
+| =C-y=     | yank                     | Paste                    |
+| =M-y=     | consult-yank-pop         | Cycle paste history      |
+| =C-k=     | kill-line                | Cut to end of line       |
+| =M-d=     | kill-word                | Cut word forward         |
+| =M-DEL=   | backward-kill-word       | Cut word backward        |
+
+** Undo / Redo
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-/=     | undo                     | Undo                     |
+| =C-_=     | undo                     | Undo (alternative)       |
+| =C-?=     | undo-redo                | Redo (Emacs 28+)         |
+
+** Search
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-s=     | consult-line             | Search in buffer (custom)|
+| =C-r=     | isearch-backward         | Search backward          |
+| =M-%=     | query-replace            | Find & replace           |
+| =C-M-%=   | query-replace-regexp     | Regex find & replace     |
+
+** Windows
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-x 0=   | delete-window            | Close current window     |
+| =C-x 1=   | delete-other-windows     | Keep only this window    |
+| =C-x 2=   | split-window-below       | Split horizontal         |
+| =C-x 3=   | split-window-right       | Split vertical           |
+| =C-x o=   | other-window             | Switch to other window   |
+
+** Help
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-h k=   | describe-key             | What does this key do?   |
+| =C-h f=   | describe-function        | Describe function        |
+| =C-h v=   | describe-variable        | Describe variable        |
+| =C-h m=   | describe-mode            | Current mode help        |
+| =C-h ?=   | help-for-help            | Help on help             |
+
+** Org Mode
+
+| Key         | Description              | Notes                  |
+|-------------+--------------------------+------------------------|
+| =TAB=       | Cycle visibility         | Fold/unfold heading    |
+| =S-TAB=     | Cycle global visibility  | Fold/unfold all        |
+| =M-RET=     | New heading              | Same level             |
+| =M-S-RET=   | New TODO heading         |                        |
+| =M-←/→=     | Promote/demote heading   |                        |
+| =M-↑/↓=     | Move heading up/down     |                        |
+| =C-c C-t=   | Toggle TODO state        |                        |
+| =C-c C-c=   | Execute src block        | In a code block        |
+| =C-c '=     | Edit src block           | Opens special buffer   |
+| =C-c C-v t= | Tangle file              | Generate code files    |
+
+** Magit (Git)
+
+| Key       | Command                  | Description              |
+|-----------+--------------------------+--------------------------|
+| =C-x g=   | magit-status             | Open git status          |
+| =s=       | stage                    | Stage file/hunk          |
+| =u=       | unstage                  | Unstage file/hunk        |
+| =c c=     | commit                   | Start commit             |
+| =P p=     | push                     | Push to remote           |
+| =F p=     | pull                     | Pull from remote         |
+| =b b=     | checkout branch          | Switch branch            |
+| =l l=     | log                      | View log                 |
+
+# Local Variables:
+# eval: (add-hook 'after-save-hook #'org-babel-tangle nil t)
+# End:

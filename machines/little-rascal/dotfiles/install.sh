@@ -61,6 +61,12 @@ main() {
   log_info "Setting up starship configuration..."
   link_file "$SCRIPT_DIR/.config/starship.toml" "$HOME_DIR/.config/starship.toml"
   
+  # Install Emacs configuration
+  log_info "Setting up Emacs configuration..."
+  link_file "$SCRIPT_DIR/.emacs.d/init.el" "$HOME_DIR/.emacs.d/init.el"
+  link_file "$SCRIPT_DIR/.emacs.d/early-init.el" "$HOME_DIR/.emacs.d/early-init.el"
+  link_file "$SCRIPT_DIR/.emacs.d/Emacs.org" "$HOME_DIR/.emacs.d/Emacs.org"
+  
   # Add more dotfiles as needed
   # link_file "$SCRIPT_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
   # link_file "$SCRIPT_DIR/.config/nvim" "$HOME_DIR/.config/nvim"
