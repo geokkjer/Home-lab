@@ -30,7 +30,8 @@
 
   # SSH client configuration
   programs.ssh = {
-    startAgent = true;
+    # Use the desktop's SSH agent (GNOME gcr agent) to avoid installing multiple agents.
+    startAgent = false;
     extraConfig = ''
       # Default to development key for daily use
       Host *

@@ -7,7 +7,7 @@
   fonts.packages = with pkgs; [
     # Essential system fonts
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols

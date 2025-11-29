@@ -6,8 +6,12 @@
   # GNOME Desktop Environment
   services.xserver = {
     enable = true;
-    desktopManager.gnome.enable = true;
     xkb.layout = "no";
+  };
+
+  # Use the new top-level option for desktop manager
+  services.desktopManager = {
+    gnome.enable = true;
   };
 
   # GNOME-specific packages

@@ -77,8 +77,8 @@
 
   # Enable clean seatd/greetd login
   #services.seatd-clean.enable = true;
-  # GDM
-  services.xserver.displayManager.gdm.enable = true;
+  # GDM (use new option path)
+  services.displayManager.gdm.enable = true;
 
   # ZFS services for this machine
   services.zfs = {

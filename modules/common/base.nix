@@ -13,7 +13,7 @@
     eza # Better ls
     bat # Better cat
     ripgrep # Better grep
-    du-dust # Better du
+    dust # Better du (renamed from du-dust)
     bottom # Better top
     fd # Better find
     fzf # Fuzzy finder

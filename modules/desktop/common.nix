@@ -30,14 +30,17 @@
   environment.systemPackages = with pkgs; [
     firefox
   ];
-  
+
   # GUI sudo askpass helper for desktop environments
-  programs.ssh.askPassword = "${pkgs.libsForQt5.ksshaskpass}/bin/ksshaskpass";
+  # A graphical askpass helper was previously used here (ksshaskpass), but the
+  # libsForQt5.* attribute is no longer available on newer channels. To avoid
+  # a hard dependency on a specific Qt package, leave `programs.ssh.askPassword`
+  # unset and preserve `SSH_ASKPASS` in sudo environment if a desktop askpass
+  # is provided by the user's session.
   security.sudo.extraConfig = ''
     Defaults env_keep += "SSH_ASKPASS"
   '';
-  environment.variables.SUDO_ASKPASS = "${pkgs.libsForQt5.ksshaskpass}/bin/ksshaskpass";
-  
+
   # Flatpak support
   services.flatpak.enable = true;
 }
